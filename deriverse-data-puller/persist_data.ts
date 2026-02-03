@@ -1,17 +1,17 @@
-import { writeFileSync, existsSync, appendFileSync } from "fs";
+// deriverse-data-puller/persist_data.ts
+import fs from "fs";
 
-function writeCSV(path: string, rows: any[]) {
-  if (rows.length === 0) return;
+export function persistData(
+  tradeRows: any[],
+  positionRows: any[]
+) {
+  fs.writeFileSync(
+    "trades.json",
+    JSON.stringify(tradeRows, null, 2)
+  );
 
-  const headers = Object.keys(rows[0]).join(",");
-  const values = rows.map(r => Object.values(r).join(",")).join("\n");
-
-  if (!existsSync(path)) {
-    writeFileSync(path, headers + "\n" + values + "\n");
-  } else {
-    appendFileSync(path, values + "\n");
-  }
+  fs.writeFileSync(
+    "positions.json",
+    JSON.stringify(positionRows, null, 2)
+  );
 }
-
-writeCSV("trades.csv", tradeRows);
-writeCSV("positions.csv", positionRows);
