@@ -1,17 +1,19 @@
-const trades = await engine.getTradeHistory({
-  client: client.address,
-  limit: 1000
-});
+// trade_fill_history.ts
+import { initEngine } from "./engine.js";
 
-const tradeRows = trades.map(t => ({
-  trader: client.address.toBase58(),
-  market: t.market.toBase58(),
-  side: t.side,              // buy / sell or long / short
-  price: t.price,
-  size: t.size,
-  fee: t.fee,
-  tx: t.signature,
-  timestamp: Number(t.timestamp) * 1000
-}));
+async function fetchAllTradeFills() {
+  const { connection, programId } = initEngine();
 
-console.log(tradeRows);
+  // Fetch ALL trade fill accounts
+  const allAccounts = await connection.getProgramAccounts(
+    programId
+    // No filters
+  ).send();
+
+  console.log(`Total trade fill accounts: ${allAccounts.length}`);
+  
+  // Process ALL accounts here
+  return allAccounts;
+}
+
+fetchAllTradeFills().catch(console.error);
