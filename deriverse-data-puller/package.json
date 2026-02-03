@@ -1,20 +1,15 @@
 {
   "name": "deriverse-data-puller",
-  "type": "module",
   "version": "1.0.0",
-  "description": "Deriverse Trading System Analysis Tool",
-  "main": "build/analysis.js",
+  "type": "module",
   "scripts": {
     "build": "tsc",
-    "start": "node build/analysis.js",
     "analyze": "node build/analysis.js analyze",
     "export": "node build/analysis.js export",
     "incremental": "node build/analysis.js incremental",
-    "all": "node build/analysis.js all"
+    "all": "node build/analysis.js all",
+    "start": "node build/analysis.js analyze"
   },
-  "keywords": ["deriverse", "solana", "trading", "analysis"],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@solana/kit": "^2.3.0",
     "dotenv": "^17.2.3"

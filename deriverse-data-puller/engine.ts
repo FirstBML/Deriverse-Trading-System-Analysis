@@ -1,43 +1,41 @@
-// engine.ts - SIMPLIFIED & WORKING
-import { createSolanaRpc } from "@solana/kit";
-import { address } from "@solana/kit";
-import dotenv from "dotenv";
-import fs from 'fs';
-import path from 'path';
+// engine.ts - Try this version
+import { createSolanaRpc, address } from "@solana/kit";
+import { config } from "dotenv";
+import * as fs from 'fs';
 
-dotenv.config();
+config(); // Instead of dotenv.config()
 
 export function initEngine() {
   const rpcUrl = process.env.SOLANA_RPC_URL || "https://api.devnet.solana.com";
   
   console.log(`🌐 Connecting to: ${rpcUrl}`);
+  console.log(`   Using program: Drvrseg8AQLP8B96DBGmHRjFGviFNYTkHueY9g3k27Gu`);
   
-  const connection = createSolanaRpc(rpcUrl);
+  try {
+    const connection = createSolanaRpc(rpcUrl);
 
-  const programIdEnv = process.env.DERIVERSE_PROGRAM_ID;
-  if (!programIdEnv) {
-    console.warn("⚠️  DERIVERSE_PROGRAM_ID not set in .env, using devnet default");
+    const programIdEnv = process.env.DERIVERSE_PROGRAM_ID;
+    if (!programIdEnv) {
+      console.warn("⚠️  DERIVERSE_PROGRAM_ID not set in .env, using devnet default");
+    }
+    
+    const programId = address(programIdEnv || "Drvrseg8AQLP8B96DBGmHRjFGviFNYTkHueY9g3k27Gu");
+    
+    console.log(`🎯 Deriverse Program ID: ${programId.toString()}`);
+    
+    return {
+      connection,
+      programId,
+    };
+  } catch (error: any) {
+    console.error("❌ Failed to initialize engine:", error.message);
+    throw error;
   }
-  
-  const programId = address(programIdEnv || "Drvrseg8AQLP8B96DBGmHRjFGviFNYTkHueY9g3k27Gu");
-  
-  console.log(`🎯 Deriverse Program: ${programId.toString()}`);
-  
-  return {
-    connection,
-    programId,
-  };
 }
 
-// Simple cache helper
+// Helper function
 export function ensureDir(dirPath: string) {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
   }
-}
-
-export function getCacheDir() {
-  const cacheDir = './cache';
-  ensureDir(cacheDir);
-  return cacheDir;
 }
