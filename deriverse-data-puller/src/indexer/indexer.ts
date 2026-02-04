@@ -2,11 +2,11 @@ import 'dotenv/config';
 import fs from 'fs';
 import { Connection, PublicKey, PartiallyDecodedInstruction } from '@solana/web3.js';
 
-import { fetchProgramSignatures } from './fetchSignatures';
-import { fetchTransaction } from './fetchTransaction';
-import { decodeLogs } from './decodeLogs';
-import { fingerprintInstruction } from './fingerprintInstruction';
-import { inferMarketType } from './inferMarket';
+import { fetchProgramSignatures } from './fetchSignatures.js'; 
+import { fetchTransaction } from './fetchTransaction.js';
+import { decodeLogs } from './decodeLogs.js';
+import { fingerprintInstruction } from './fingerprintInstruction.js';
+import { inferMarketType } from './inferMarket.js';
 
 const connection = new Connection(
   process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com',
@@ -28,14 +28,14 @@ export async function runIndexer() {
     const tx = await fetchTransaction(connection, s.signature);
     if (!tx || !tx.meta) continue;
 
-    const logs = decodeLogs(tx.meta.logMessages);
+    const logs = decodeLogs(tx.meta.logMessages || null);
     const marketType = inferMarketType(logs);
 
     const instructions =
-      tx.transaction.message.instructions.filter(
-        (ix): ix is PartiallyDecodedInstruction =>
+      (tx.transaction.message as any).instructions ? (tx.transaction.message as any).instructions.filter(
+        (ix: any): ix is PartiallyDecodedInstruction =>
           'data' in ix
-      );
+      ) : [];
 
     for (const ix of instructions) {
       const event = {
@@ -44,7 +44,7 @@ export async function runIndexer() {
         blockTime: tx.blockTime,
         eventType: logs.length > 0 ? 'TRADE' : 'UNKNOWN',
         instructionFingerprint: fingerprintInstruction(ix),
-        involvedAccounts: ix.accounts.map(a => a.toBase58()),
+        involvedAccounts: ix.accounts.map((a: PublicKey) => a.toBase58()),
         rawLogs: logs,
         inferredMarketType: marketType,
         success: !tx.meta.err,
