@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-02-04T09:23:23.457Z",
+  "totalAccounts": 7747,
+  "totalSOL": 228.03041346,
+  "traderCount": 824,
+  "positionCount": 910,
+  "orderCount": 910,
+  "tradeHistoryCount": 824,
+  "otherCount": 4277,
+  "topAccounts": [
+    {
+      "address": "DsLdh4M2BunZkr9Cbq1BrN1NuKz4cssY449Ac42MmuZS",
+      "sol": 66.1008909
+    },
+    {
+      "address": "BEpzM8A35uKB8uUamEQtNPNUgWGzYkyTVrKX946XhYny",
+      "sol": 3.93006144
+    },
+    {
+      "address": "4uA4oFVT2PB2k3aEN7p9sg2GfsguxvvWLofqAGb7CXhw",
+      "sol": 3.93006144
+    }
+  ]
+}

@@ -5,17 +5,19 @@
   "scripts": {
     "build": "tsc",
     "analyze": "node build/analysis.js analyze",
+    "fetch": "node build/fetch_deriverse_transactions.js",
     "export": "node build/analysis.js export",
     "incremental": "node build/analysis.js incremental",
     "all": "node build/analysis.js all",
-    "start": "node build/analysis.js analyze"
+    "start": "node build/fetch_deriverse_transactions.js"
   },
   "dependencies": {
     "@solana/kit": "^2.3.0",
+    "@solana/web3.js": "^1.98.4",
     "dotenv": "^17.2.3"
   },
   "devDependencies": {
-    "typescript": "^5.9.3",
-    "@types/node": "^20.11.5"
+    "@types/node": "^20.11.5",
+    "typescript": "^5.9.3"
   }
 }
