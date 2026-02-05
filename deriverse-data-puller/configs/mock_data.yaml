@@ -1,0 +1,11 @@
+market:
+  name: "DemoMarket"
+  tick_size: 0.01
+
+trader:
+  name: "DemoTrader"
+  max_order_size: 10
+
+storage:
+  type: "file"
+  path: "mock_events.json"
