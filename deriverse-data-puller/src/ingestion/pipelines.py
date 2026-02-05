@@ -1,28 +1,29 @@
+import json
+from pathlib import Path
 from src.ingestion.watermark import Watermark
-from src.storage.writer import EventWriter
-from src.common.logging import get_logger
 
-logger = get_logger(__name__)
+RAW = Path("data/raw_events.json")
+OUT = Path("data/normalized")
+OUT.mkdir(parents=True, exist_ok=True)
 
+def run_ingestion():
+    wm = Watermark()
+    last_ts = wm.get()
 
-def run_ingestion(events: list[dict], output_dir: str):
-    """
-    Append-only ingestion of raw events.
-    """
-    watermark = Watermark()
-    writer = EventWriter(output_dir)
+    events = json.loads(RAW.read_text())
+    new_events = []
 
-    last_seen = watermark.load()
+    for e in events:
+        if last_ts is None or e["ts"] > last_ts:
+            new_events.append(e)
 
-    ingested = 0
-    for event in events:
-        ts = event.get("ts")
+    if not new_events:
+        print("No new events")
+        return
 
-        if last_seen is not None and ts <= last_seen:
-            continue
+    with open(OUT / "events.jsonl", "a") as f:
+        for e in new_events:
+            f.write(json.dumps(e) + "\n")
 
-        writer.write(event)
-        watermark.update(ts)
-        ingested += 1
-
-    logger.info(f"Ingested {ingested} events")
+    wm.update(new_events[-1]["ts"])
+    print(f"Ingested {len(new_events)} events")
