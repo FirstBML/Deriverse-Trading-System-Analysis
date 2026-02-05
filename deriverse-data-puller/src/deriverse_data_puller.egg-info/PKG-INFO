@@ -1,0 +1,8 @@
+Metadata-Version: 2.4
+Name: deriverse-data-puller
+Version: 0.1.0
+Summary: Mock on-chain trading analytics system for Deriverse
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: pyyaml
+Requires-Dist: streamlit
