@@ -1,87 +1,80 @@
-# src/analytics/reports/protocol_overview.py
-"""
-Deriverse Protocol Overview Analytics
-
-Generates:
-- CSV summary: volume, unique traders, fees per market type
-- JSON summary: same data
-- Bar chart: volume by Spot / Perps / Options
-"""
-
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import json
 
-# =============================
-# Config: paths
-# =============================
-RAW_DATA_PATH = "data/normalized/events.jsonl"
-CSV_OUTPUT_PATH = "data/reports/protocol_overview.csv"
-JSON_OUTPUT_PATH = "data/reports/protocol_overview.json"
-CHART_OUTPUT_PATH = "data/reports/volume_by_product.png"
+# ---------------------------
+# Paths
+# ---------------------------
+RAW_EVENTS_PATH = "configs/mock_data.json"
+REPORT_CSV_PATH = "data/reports/protocol_overview.csv"
+REPORT_JSON_PATH = "data/reports/protocol_overview.json"
 
-# Ensure reports folder exists
-os.makedirs(os.path.dirname(CSV_OUTPUT_PATH), exist_ok=True)
+os.makedirs("data/reports", exist_ok=True)
 
-# =============================
-# Load data
-# =============================
-try:
-    df = pd.read_json(RAW_DATA_PATH, lines=True)
-except FileNotFoundError:
-    raise FileNotFoundError(f"Cannot find {RAW_DATA_PATH}. Make sure ingestion ran successfully.")
+# ---------------------------
+# Load events
+# ---------------------------
+with open(RAW_EVENTS_PATH, "r") as f:
+    events = json.load(f)
 
-# =============================
-# Analytics
-# =============================
-# Volume: sum(size * price) per market type
-df['trade_value'] = df['size'] * df['price']
-volume = df.groupby('product_type')['trade_value'].sum()
-unique_traders = df.groupby('product_type')['trader_id'].nunique()
-fees = df.groupby('product_type')['fee'].sum()
-avg_trade_size = df.groupby('product_type')['size'].mean()
-summary = pd.DataFrame({
-    'volume': volume,
-    'unique_traders': unique_traders,
-    'fees': fees,
-    'avg_trade_size': avg_trade_size
-}).reset_index()
+df = pd.DataFrame(events)
 
-# Unique traders per market type
-unique_traders = df.groupby('product_type')['trader_id'].nunique()
+# ---------------------------
+# Ensure columns exist
+# ---------------------------
+required_columns = [
+    'trade_value', 'product_type', 'trader_id', 'market_id'
+]
 
-# Fee revenue per market type
-fees = df.groupby('product_type')['fee'].sum()
+for col in required_columns:
+    if col not in df.columns:
+        # Add empty column if missing to prevent KeyError
+        df[col] = pd.NA
 
-# Average trade size per market type
-avg_trade_size = df.groupby('product_type')['size'].mean()
+# ---------------------------
+# Summary statistics
+# ---------------------------
+# Total volume per product type (Spot / Perp / Option)
+volume_summary = df.groupby('product_type')['trade_value'].sum().reset_index()
+volume_summary.rename(columns={'trade_value': 'volume'}, inplace=True)
 
-# =============================
-# Build summary table
-# =============================
-summary = pd.DataFrame({
-    'volume': volume,
-    'unique_traders': unique_traders,
-    'fees': fees,
-    'avg_trade_size': avg_trade_size
-}).reset_index()
+# Number of unique traders per product type
+traders_summary = df.groupby('product_type')['trader_id'].nunique().reset_index()
+traders_summary.rename(columns={'trader_id': 'unique_traders'}, inplace=True)
 
-# Save CSV & JSON
-summary.to_csv(CSV_OUTPUT_PATH, index=False)
-summary.to_json(JSON_OUTPUT_PATH, orient='records', lines=True)
+# Combine summaries
+summary = pd.merge(volume_summary, traders_summary, on='product_type', how='outer')
 
-print(f"✅ Protocol overview saved to:\n- {CSV_OUTPUT_PATH}\n- {JSON_OUTPUT_PATH}")
+# ---------------------------
+# Save report
+# ---------------------------
+summary.to_csv(REPORT_CSV_PATH, index=False)
+summary.to_json(REPORT_JSON_PATH, orient='records', indent=4)
 
-# =============================
-# Plot volume by market type
-# =============================
-plt.figure(figsize=(8,5))
-plt.bar(summary['market_type'], summary['volume'], color=['#1f77b4', '#ff7f0e', '#2ca02c'])
-plt.title("Deriverse Trading Volume by Product")
-plt.ylabel("Volume (USD)")
-plt.xlabel("Market Type")
-plt.xticks(rotation=0)
+print("✅ Protocol overview saved to:")
+print(f"- {REPORT_CSV_PATH}")
+print(f"- {REPORT_JSON_PATH}")
+
+# ---------------------------
+# Plot volume per product type
+# ---------------------------
+plt.figure(figsize=(8, 5))
+colors = ['#1f77b4', '#ff7f0e', '#2ca02c']  # Spot, Perp, Option
+plt.bar(summary['product_type'], summary['volume'], color=colors[:len(summary)])
+plt.title("Trading Volume by Product Type")
+plt.xlabel("Product Type")
+plt.ylabel("Volume")
 plt.tight_layout()
-plt.savefig(CHART_OUTPUT_PATH)
-plt.close()
-print(f"✅ Volume chart saved to {CHART_OUTPUT_PATH}")
+plt.show()
+
+# ---------------------------
+# Plot unique traders per product type
+# ---------------------------
+plt.figure(figsize=(8, 5))
+plt.bar(summary['product_type'], summary['unique_traders'], color=colors[:len(summary)])
+plt.title("Unique Traders by Product Type")
+plt.xlabel("Product Type")
+plt.ylabel("Number of Unique Traders")
+plt.tight_layout()
+plt.show()
