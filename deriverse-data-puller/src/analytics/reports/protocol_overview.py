@@ -37,7 +37,7 @@ except FileNotFoundError:
 # Volume: sum(size * price) per market type
 df['trade_value'] = df['size'] * df['price']
 volume = df.groupby('product_type')['trade_value'].sum()
-unique_traders = df.groupby('product_type')['trader'].nunique()
+unique_traders = df.groupby('product_type')['trader_id'].nunique()
 fees = df.groupby('product_type')['fee'].sum()
 avg_trade_size = df.groupby('product_type')['size'].mean()
 summary = pd.DataFrame({
@@ -48,13 +48,13 @@ summary = pd.DataFrame({
 }).reset_index()
 
 # Unique traders per market type
-unique_traders = df.groupby('market_type')['trader'].nunique()
+unique_traders = df.groupby('product_type')['trader_id'].nunique()
 
 # Fee revenue per market type
-fees = df.groupby('market_type')['fee'].sum()
+fees = df.groupby('product_type')['fee'].sum()
 
 # Average trade size per market type
-avg_trade_size = df.groupby('market_type')['size'].mean()
+avg_trade_size = df.groupby('product_type')['size'].mean()
 
 # =============================
 # Build summary table
