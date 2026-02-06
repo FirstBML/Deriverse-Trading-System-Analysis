@@ -4,7 +4,7 @@ import json
 from datetime import datetime, timedelta
 from pathlib import Path
 
-OUT = Path("data")
+OUT = Path("data/raw")
 OUT.mkdir(exist_ok=True)
 
 MARKETS = [

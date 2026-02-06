@@ -1,17 +1,13 @@
-import json
-from pathlib import Path
+from typing import List, Dict
 from collections import defaultdict
 
-EVENTS = Path("data/normalized/events.jsonl")
+def build_fees(trades: List[Dict], fee_rate=0.0005):
+    trader_fees = defaultdict(float)
+    market_fees = defaultdict(float)
 
-def compute_fees():
-    trader = defaultdict(float)
-    market = defaultdict(float)
+    for t in trades:
+        fee = abs(t["price"] * t["size"]) * fee_rate
+        trader_fees[t["trader"]] += fee
+        market_fees[t["market"]] += fee
 
-    for line in EVENTS.read_text().splitlines():
-        e = json.loads(line)
-        if e["event_type"] == "trade":
-            trader[e["trader_id"]] += e["fee"]
-            market[e["market_id"]] += e["fee"]
-
-    return trader, market
+    return dict(trader_fees), dict(market_fees)

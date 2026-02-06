@@ -1,0 +1,23 @@
+# ============================
+# Ingestion configuration
+# ============================
+
+# Path to raw mock protocol events (single file ingestion)
+raw_data_path: configs/mock_data.json
+
+# Append-only normalized output (JSONL)
+normalized_output_path: data/normalized/events.jsonl
+
+# Watermark / checkpoint store for incremental ingestion
+checkpoint_path: data/checkpoints/watermark.json
+
+# Allowed lateness for event-time processing (seconds)
+allowed_lateness_seconds: 0
+
+# ============================
+# Optional controls (future-safe)
+# ============================
+
+markets: []
+traders: []
+max_events_per_run: null

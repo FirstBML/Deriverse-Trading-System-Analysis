@@ -1,0 +1,83 @@
+[
+  {
+    "event_id": "spot_001",
+    "product_type": "spot",
+    "event_type": "trade",
+    "timestamp": 1707216000,
+    "market": "SOL/USDC",
+    "trader_id": "trader_A",
+    "side": "buy",
+    "price": 98.5,
+    "size": 10,
+    "fee": 0.25
+  },
+  {
+    "event_id": "spot_002",
+    "product_type": "spot",
+    "event_type": "trade",
+    "timestamp": 1707216300,
+    "market": "SOL/USDC",
+    "trader_id": "trader_B",
+    "side": "sell",
+    "price": 99.2,
+    "size": 5,
+    "fee": 0.12
+  },
+  {
+    "event_id": "perp_001",
+    "product_type": "perp",
+    "event_type": "open",
+    "timestamp": 1707216600,
+    "market": "SOL-PERP",
+    "trader_id": "trader_A",
+    "side": "long",
+    "price": 100.0,
+    "size": 20,
+    "fee": 0.4,
+    "funding_rate": 0.0001
+  },
+  {
+    "event_id": "perp_002",
+    "product_type": "perp",
+    "event_type": "close",
+    "timestamp": 1707217200,
+    "market": "SOL-PERP",
+    "trader_id": "trader_A",
+    "side": "long",
+    "price": 103.0,
+    "size": 20,
+    "fee": 0.4,
+    "pnl": 60.0
+  },
+  {
+    "event_id": "option_001",
+    "product_type": "option",
+    "event_type": "open",
+    "timestamp": 1707217800,
+    "market": "SOL-OPTION-110-C",
+    "trader_id": "trader_C",
+    "side": "buy",
+    "price": 4.5,
+    "size": 5,
+    "option_type": "call",
+    "strike": 110,
+    "expiry": 1709817600,
+    "premium": 22.5,
+    "fee": 0.15
+  },
+  {
+    "event_id": "option_002",
+    "product_type": "option",
+    "event_type": "exercise",
+    "timestamp": 1709820000,
+    "market": "SOL-OPTION-110-C",
+    "trader_id": "trader_C",
+    "side": "buy",
+    "price": 120,
+    "size": 5,
+    "option_type": "call",
+    "strike": 110,
+    "expiry": 1709817600,
+    "exercise_pnl": 50.0
+  }
+]

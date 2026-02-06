@@ -1,17 +1,17 @@
-import json
-from pathlib import Path
-from collections import defaultdict
+from typing import List, Dict
 
-EVENTS = Path("data/normalized/events.jsonl")
+def build_pnl(trades: List[Dict]) -> List[Dict]:
+    pnl = []
 
-def compute_pnl():
-    trader_pnl = defaultdict(float)
-    market_pnl = defaultdict(float)
+    for t in trades:
+        direction = 1 if t["side"] == "buy" else -1
 
-    for line in EVENTS.read_text().splitlines():
-        e = json.loads(line)
-        if e["event_type"] == "settle_pnl":
-            trader_pnl[e["trader_id"]] += e["realized_pnl"]
-            market_pnl[e["market_id"]] += e["realized_pnl"]
+        pnl.append({
+            "trade_id": t["trade_id"],
+            "trader": t["trader"],
+            "market": t["market"],
+            "timestamp": t["timestamp"],
+            "pnl": direction * t["price"] * t["size"] * 0.001
+        })
 
-    return trader_pnl, market_pnl
+    return pnl

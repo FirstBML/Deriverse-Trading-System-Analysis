@@ -4,7 +4,10 @@ from collections import defaultdict
 
 EVENTS = Path("data/normalized/events.jsonl")
 
-def long_short_ratio():
+def build_exposure():
+    """
+    Compute long vs short exposure per market.
+    """
     exposure = defaultdict(lambda: {"long": 0, "short": 0})
 
     for line in EVENTS.read_text().splitlines():
@@ -13,4 +16,4 @@ def long_short_ratio():
             side = "long" if e["side"] == "buy" else "short"
             exposure[e["market_id"]][side] += e["size"]
 
-    return exposure
+    return dict(exposure)

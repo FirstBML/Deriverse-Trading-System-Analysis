@@ -1,21 +1,31 @@
-from pathlib import Path
+# src/ingestion/watermark.py
 import json
+from pathlib import Path
+from typing import Set
 
-class Watermark:
-    def __init__(self, path="data/watermark.json"):
+class WatermarkStore:
+    """
+    Persistent watermark store to prevent reprocessing events.
+    """
+
+    def __init__(self, path: str):
         self.path = Path(path)
-        if not self.path.exists():
-            self._write({"last_ts": None})
+        self.seen: Set[str] = set()
+        self._load()
 
-    def _read(self):
-        return json.loads(self.path.read_text())
+    def _load(self):
+        if self.path.exists():
+            with open(self.path, "r") as f:
+                self.seen = set(json.load(f))
 
-    def _write(self, data):
-        self.path.parent.mkdir(exist_ok=True)
-        self.path.write_text(json.dumps(data))
+    def _save(self):
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        with open(self.path, "w") as f:
+            json.dump(list(self.seen), f)
 
-    def get(self):
-        return self._read()["last_ts"]
+    def is_new(self, event_id: str) -> bool:
+        return event_id not in self.seen
 
-    def update(self, ts):
-        self._write({"last_ts": ts})
+    def mark(self, event_id: str):
+        self.seen.add(event_id)
+        self._save()

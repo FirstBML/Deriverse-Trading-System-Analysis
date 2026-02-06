@@ -1,30 +1,23 @@
 # scripts/run_ingestion.py
-
-from src.ingestion.pipelines import IngestionPipeline
-from src.ingestion.watermark import WatermarkStore
-from src.common.logging import get_logger
 from configs.loader import load_config
+from src.ingestion.pipelines import IngestionPipeline
+from src.common.logging import get_logger
 
-logger = get_logger(__name__)
-
+log = get_logger(__name__)
 
 def main():
-    config = load_config("configs/ingestion.yaml")
+    log.info("Starting incremental ingestion")
 
-    logger.info("Starting incremental ingestion")
+    config = load_config("ingestion.yaml")
 
-    watermark_store = WatermarkStore(config["checkpoint_path"])
     pipeline = IngestionPipeline(
         raw_path=config["raw_data_path"],
-        analytics_path=config["analytics_staging_path"],
-        watermark_store=watermark_store,
-        allowed_lateness=config["allowed_lateness_seconds"],
+        output_path=config["normalized_output_path"],
+        checkpoint_path=config["checkpoint_path"],
     )
 
-    pipeline.run()
-
-    logger.info("Ingestion completed successfully")
-
+    count = pipeline.run()
+    log.info(f"Ingested {count} new events")
 
 if __name__ == "__main__":
     main()

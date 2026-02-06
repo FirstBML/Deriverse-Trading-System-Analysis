@@ -1,7 +1,11 @@
 from collections import defaultdict
+from typing import List, Dict
 
-def pnl_by_day(settles: list[dict]) -> dict:
+def build_time_metrics(pnls: List[Dict]) -> Dict:
     out = defaultdict(float)
-    for s in settles:
-        out[s["date"]] += s["pnl"]
+
+    for p in pnls:
+        day = p["timestamp"][:10]  # YYYY-MM-DD
+        out[day] += p["pnl"]
+
     return dict(out)
