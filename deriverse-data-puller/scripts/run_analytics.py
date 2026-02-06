@@ -14,7 +14,7 @@ logger = get_logger(__name__)
 
 
 def main():
-    config = load_config("configs/analytics.yaml")
+    config = load_config("analytics.yaml")
 
     logger.info("Starting analytics computation")
 

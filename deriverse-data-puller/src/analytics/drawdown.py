@@ -1,19 +1,21 @@
-import json
-from pathlib import Path
 from collections import defaultdict
 
-EVENTS = Path("data/normalized/events.jsonl")
-
-def compute_drawdown():
+def build_drawdowns(pnl_records: list[dict]) -> dict:
+    """
+    Compute max drawdown per trader from a list of pnl records.
+    """
+    equity = defaultdict(float)
     peak = defaultdict(float)
     drawdown = defaultdict(float)
 
-    for line in EVENTS.read_text().splitlines():
-        e = json.loads(line)
-        if e["event_type"] == "settle_pnl":
-            trader = e["trader_id"]
-            cum = e["cumulative_pnl"]
-            peak[trader] = max(peak[trader], cum)
-            drawdown[trader] = min(drawdown[trader], cum - peak[trader])
+    for r in pnl_records:
+        trader = r["trader"]
+        equity[trader] += r["pnl"]
 
-    return drawdown
+        if equity[trader] > peak[trader]:
+            peak[trader] = equity[trader]
+
+        dd = peak[trader] - equity[trader]
+        drawdown[trader] = max(drawdown[trader], dd)
+
+    return dict(drawdown)

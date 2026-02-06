@@ -1,29 +1,37 @@
+# src/ingestion/pipelines.py
 import json
+import hashlib
 from pathlib import Path
-from src.ingestion.watermark import Watermark
+from typing import List, Dict
+from src.ingestion.watermark import WatermarkStore
 
-RAW = Path("data/raw_events.json")
-OUT = Path("data/normalized")
-OUT.mkdir(parents=True, exist_ok=True)
+class IngestionPipeline:
+    def __init__(self, raw_path, output_path, checkpoint_path):
+        self.raw_path = Path(raw_path)
+        self.output_path = Path(output_path)
+        self.watermark = WatermarkStore(checkpoint_path)
 
-def run_ingestion():
-    wm = Watermark()
-    last_ts = wm.get()
+    def run(self) -> int:
+        events = json.loads(self.raw_path.read_text())
 
-    events = json.loads(RAW.read_text())
-    new_events = []
+        new_events = []
+        
+        for idx, e in enumerate(events):
+            # Derive a stable event_id if missing
+            event_id = e.get("event_id")
 
-    for e in events:
-        if last_ts is None or e["ts"] > last_ts:
-            new_events.append(e)
+            if event_id is None:
+                raw = f"{e.get('event_type')}|{e.get('timestamp')}|{e.get('trader')}|{e.get('market')}|{idx}"
+                event_id = hashlib.sha256(raw.encode()).hexdigest()
+                e["event_id"] = event_id
 
-    if not new_events:
-        print("No new events")
-        return
+            if self.watermark.is_new(event_id):
+                new_events.append(e)
+                self.watermark.mark(event_id)
 
-    with open(OUT / "events.jsonl", "a") as f:
-        for e in new_events:
-            f.write(json.dumps(e) + "\n")
+        self.output_path.parent.mkdir(parents=True, exist_ok=True)
+        with self.output_path.open("a") as f:
+            for e in new_events:
+                f.write(json.dumps(e) + "\n")
 
-    wm.update(new_events[-1]["ts"])
-    print(f"Ingested {len(new_events)} events")
+        return len(new_events)
