@@ -1,12 +1,15 @@
-# scripts/run_ingestion.py
-from configs.loader import load_config
-from src.ingestion.pipelines import IngestionPipeline
-from src.common.logging import get_logger
 
-log = get_logger(__name__)
+# scripts/run_ingestion.py
+import logging
+from src.ingestion.pipelines import IngestionPipeline
+from configs.loader import load_config
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 def main():
-    log.info("Starting incremental ingestion")
+    logger.info("Starting incremental ingestion")
 
     config = load_config("ingestion.yaml")
 
@@ -17,7 +20,8 @@ def main():
     )
 
     count = pipeline.run()
-    log.info(f"Ingested {count} new events")
+    logger.info(f"Ingested {count} new events")
+
 
 if __name__ == "__main__":
     main()

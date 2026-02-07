@@ -1,95 +1,77 @@
+# scripts/generate_mock_data.py
+from datetime import datetime, timedelta, timezone
 import random
 import uuid
 import json
-from datetime import datetime, timedelta
 from pathlib import Path
 
-OUT = Path("data/raw")
-OUT.mkdir(exist_ok=True)
+MOCK_PATH = Path("configs/mock_data.json")
 
-MARKETS = [
-    {"market_id": "SOL-PERP", "base": "SOL"},
-    {"market_id": "BTC-PERP", "base": "BTC"},
-]
+def iso_ts(dt):
+    return dt.replace(tzinfo=timezone.utc).isoformat()
 
-TRADERS = [f"trader_{i:03d}" for i in range(1, 21)]
-
-START = datetime(2026, 2, 1)
-EVENTS = []
-
-prices = {
-    "SOL-PERP": 100.0,
-    "BTC-PERP": 42000.0,
-}
-
-positions = {}
-
-def ts(i):
-    return (START + timedelta(minutes=i)).isoformat() + "Z"
-
-for i in range(500):
-    market = random.choice(MARKETS)
-    trader = random.choice(TRADERS)
-    side = random.choice(["buy", "sell"])
-
-    price_move = random.uniform(-0.5, 0.5)
-    prices[market["market_id"]] += price_move
-
-    size = round(random.uniform(0.1, 2.0), 3)
-    fee = abs(size * prices[market["market_id"]] * 0.0005)
-
-    trade = {
-        "event_type": "trade",
-        "ts": ts(i),
-        "market_id": market["market_id"],
-        "trader_id": trader,
-        "side": side,
-        "price": round(prices[market["market_id"]], 2),
-        "size": size,
-        "fee": round(fee, 4),
-        "trade_id": str(uuid.uuid4())
+def generate_mock_events(n=12, start_time=None):
+    """
+    Generate mock events for testing.
+    Event types: open, trade, close ONLY (no exercise/option_exercise).
+    Product types: spot, perp, option (all allowed).
+    """
+    if start_time is None:
+        start_time = datetime.now(timezone.utc)
+        
+    events = []
+    # ✅ Keep all markets including SOL-OPT
+    markets = ["SOL/USDC", "SOL-PERP", "BTC-PERP", "SOL-OPT"]
+    product_map = {
+        "SOL/USDC": "spot",
+        "SOL-PERP": "perp",
+        "BTC-PERP": "perp",
+        "SOL-OPT": "option",  # ✅ Keep option product type
     }
+    
+    for i in range(n):
+        market = random.choice(markets)
+        product_type = product_map[market]
+        
+        # ✅ ONLY GENERATE: open, trade, close (removed exercise/option_exercise)
+        event_type = random.choice(["trade", "open", "close"])
+        
+        base = {
+            "event_id": str(uuid.uuid4()),
+            "event_type": event_type,
+            "timestamp": iso_ts(start_time + timedelta(minutes=5 * i)),
+            "trader_id": f"trader_{random.choice(['A','B','C','D'])}",
+            "market_id": market,
+            "product_type": product_type,
+            "fee": round(random.uniform(0.05, 1.0), 2),
+        }
+        
+        if event_type == "trade":
+            base.update({
+                "side": random.choice(["buy", "sell"]),
+                "price": round(random.uniform(90, 26000), 2),
+                "size": random.randint(1, 20),
+            })
+        elif event_type in ["open", "close"]:
+            base.update({
+                "side": random.choice(["long", "short"]),
+                "price": round(random.uniform(90, 26000), 2),
+                "size": random.randint(1, 20),
+                "pnl": round(random.uniform(-50, 200), 2) if event_type == "close" else None,
+            })
+        
+        events.append(base)
+    
+    return events
 
-    EVENTS.append(trade)
+def write_mock_data(n=12):
+    """Generate and write mock events to configs/mock_data.json"""
+    events = generate_mock_events(n=n)
+    MOCK_PATH.parent.mkdir(exist_ok=True)
+    with open(MOCK_PATH, "w") as f:
+        json.dump(events, f, indent=2)
+    return len(events)
 
-    # occasionally settle pnl
-    if i % 20 == 0:
-        pnl = random.uniform(-20, 30)
-        EVENTS.append({
-            "event_type": "settle_pnl",
-            "ts": ts(i),
-            "market_id": market["market_id"],
-            "trader_id": trader,
-            "realized_pnl": round(pnl, 2),
-            "cumulative_pnl": round(random.uniform(-200, 500), 2)
-        })
-
-    # funding
-    if i % 50 == 0:
-        EVENTS.append({
-            "event_type": "funding",
-            "ts": ts(i),
-            "market_id": market["market_id"],
-            "trader_id": trader,
-            "funding_rate": 0.0001,
-            "payment": round(random.uniform(-5, 5), 2)
-        })
-
-    # rare liquidation
-    if random.random() < 0.01:
-        victim = random.choice(TRADERS)
-        EVENTS.append({
-            "event_type": "liquidation",
-            "ts": ts(i),
-            "market_id": market["market_id"],
-            "liquidated_trader": victim,
-            "liquidator": trader,
-            "price": round(prices[market["market_id"]], 2),
-            "position_size": round(random.uniform(1, 5), 2),
-            "penalty": round(random.uniform(5, 20), 2)
-        })
-
-with open(OUT / "raw_events.json", "w") as f:
-    json.dump(EVENTS, f, indent=2)
-
-print(f"Generated {len(EVENTS)} protocol events")
+if __name__ == "__main__":
+    count = write_mock_data()
+    print(f"✅ Generated {count} mock events (open, trade, close only)")
