@@ -1,6 +1,4 @@
 [project]
-[tool.uv]
-venv = ".Deriverse"
 name = "deriverse-data-puller"
 version = "0.1.0"
 description = "Mock on-chain trading analytics system for Deriverse"
@@ -14,3 +12,4 @@ dependencies = [
     "requests>=2.32.5",
     "streamlit",
 ]
+

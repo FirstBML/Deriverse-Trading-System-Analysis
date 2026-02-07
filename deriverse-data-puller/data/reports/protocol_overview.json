@@ -1,3 +1,20 @@
-{"product_type":"option","volume":1245.0,"unique_traders":1,"fees":0.3,"avg_trade_size":5.0}
-{"product_type":"perp","volume":8120.0,"unique_traders":1,"fees":1.6,"avg_trade_size":20.0}
-{"product_type":"spot","volume":2962.0,"unique_traders":2,"fees":0.74,"avg_trade_size":7.5}
+[
+    {
+        "product_type":"option",
+        "volume":22.5,
+        "unique_traders":1,
+        "volume_share_pct":0.4
+    },
+    {
+        "product_type":"perp",
+        "volume":4060.0,
+        "unique_traders":1,
+        "volume_share_pct":72.98
+    },
+    {
+        "product_type":"spot",
+        "volume":1481.0,
+        "unique_traders":2,
+        "volume_share_pct":26.62
+    }
+]

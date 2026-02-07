@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import json
+import numpy as np
 
 # ---------------------------
 # Paths
@@ -21,30 +22,33 @@ with open(RAW_EVENTS_PATH, "r") as f:
 df = pd.DataFrame(events)
 
 # ---------------------------
-# Ensure columns exist
+# Calculate volume correctly per product type
 # ---------------------------
-required_columns = [
-    'trade_value', 'product_type', 'trader_id', 'market_id'
-]
-
-for col in required_columns:
-    if col not in df.columns:
-        # Add empty column if missing to prevent KeyError
-        df[col] = pd.NA
+# Volume definition:
+# - Option: premium
+# - Spot/Perp: price * size
+df["volume"] = np.where(
+    df["product_type"] == "option",
+    df["premium"].fillna(0),
+    (df["price"].fillna(0) * df["size"].fillna(0))
+)
 
 # ---------------------------
 # Summary statistics
 # ---------------------------
-# Total volume per product type (Spot / Perp / Option)
-volume_summary = df.groupby('product_type')['trade_value'].sum().reset_index()
-volume_summary.rename(columns={'trade_value': 'volume'}, inplace=True)
+summary = (
+    df.groupby("product_type")
+      .agg(
+          volume=("volume", "sum"),
+          unique_traders=("trader_id", "nunique")
+      )
+      .reset_index()
+)
 
-# Number of unique traders per product type
-traders_summary = df.groupby('product_type')['trader_id'].nunique().reset_index()
-traders_summary.rename(columns={'trader_id': 'unique_traders'}, inplace=True)
-
-# Combine summaries
-summary = pd.merge(volume_summary, traders_summary, on='product_type', how='outer')
+# Add volume share percentage to summary
+summary["volume_share_pct"] = (
+    summary["volume"] / summary["volume"].sum() * 100
+).round(2)
 
 # ---------------------------
 # Save report
@@ -55,6 +59,8 @@ summary.to_json(REPORT_JSON_PATH, orient='records', indent=4)
 print("✅ Protocol overview saved to:")
 print(f"- {REPORT_CSV_PATH}")
 print(f"- {REPORT_JSON_PATH}")
+print("\n📊 Summary:")
+print(summary.to_string(index=False))
 
 # ---------------------------
 # Plot volume per product type
@@ -66,7 +72,8 @@ plt.title("Trading Volume by Product Type")
 plt.xlabel("Product Type")
 plt.ylabel("Volume")
 plt.tight_layout()
-plt.show()
+plt.savefig("data/reports/volume_by_product.png", dpi=150)
+plt.close()  # Close to prevent blocking
 
 # ---------------------------
 # Plot unique traders per product type
@@ -77,4 +84,9 @@ plt.title("Unique Traders by Product Type")
 plt.xlabel("Product Type")
 plt.ylabel("Number of Unique Traders")
 plt.tight_layout()
-plt.show()
+plt.savefig("data/reports/traders_by_product.png", dpi=150)
+plt.close()  
+
+print("\n📊 Charts saved to:")
+print("- data/reports/volume_by_product.png")
+print("- data/reports/traders_by_product.png")
