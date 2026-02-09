@@ -1,12 +1,12 @@
-# scripts/run_analytics.py
 import pandas as pd
 from pathlib import Path
 import io
 import logging
-
+from datetime import datetime, timedelta, UTC
 from src.analytics.pnl_engine import compute_realized_pnl
 from src.analytics.summary import compute_executive_summary
 
+now = datetime.now(UTC)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
@@ -20,16 +20,35 @@ REALIZED_PNL_PATH = ANALYTICS_DIR / "realized_pnl.csv"
 
 
 def load_events(path: Path) -> pd.DataFrame:
+    """Load events from JSONL file with flexible timestamp parsing."""
     events = []
-    with open(path) as f:
+    with open(path, 'r', encoding='utf-8') as f:
         for line in f:
-            events.append(pd.read_json(io.StringIO(line), typ="series"))
+            line = line.strip()
+            if line:  # Skip empty lines
+                events.append(pd.read_json(io.StringIO(line), typ="series"))
+    
+    if not events:
+        logger.warning(f"No events found in {path}")
+        return pd.DataFrame()
+    
     df = pd.DataFrame(events)
-    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    
+    # FIX: Use format='ISO8601' to handle different timestamp formats
+    try:
+        df["timestamp"] = pd.to_datetime(df["timestamp"], format='ISO8601', utc=True)
+    except Exception as e:
+        logger.warning(f"ISO8601 parsing failed, trying mixed format: {e}")
+        df["timestamp"] = pd.to_datetime(df["timestamp"], format='mixed', utc=True)
+    
     return df
 
 
 def run_analytics(events_df, auto_summary=True, submission_mode=True):
+    if events_df.empty:
+        logger.error("No events to analyze")
+        return None, None
+    
     logger.info(f"Loaded {len(events_df)} events")
 
     if not submission_mode:
@@ -78,7 +97,8 @@ def main():
     logger.info("=" * 60)
 
     if not NORMALIZED_EVENTS_PATH.exists():
-        logger.error("Normalized events not found. Run ingestion first.")
+        logger.error(f"Normalized events not found at {NORMALIZED_EVENTS_PATH}")
+        logger.error("Run 'python -m scripts.generate_mock_data' first")
         return
 
     events_df = load_events(NORMALIZED_EVENTS_PATH)
