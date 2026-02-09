@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 def main():
     logger.info("Starting incremental ingestion")
 
-    config = load_config("ingestion.yaml")
-
+    config = load_config("configs/ingestion.yaml")
+    
     pipeline = IngestionPipeline(
         raw_path=config["raw_data_path"],
         output_path=config["normalized_output_path"],
