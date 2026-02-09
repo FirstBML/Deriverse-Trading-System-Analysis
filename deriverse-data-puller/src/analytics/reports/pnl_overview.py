@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from src.analytics.pnl.pnl_timeseries import build_pnl_timeseries
-from src.analytics.pnl.drawdown import compute_drawdown
+from src.analytics.metrics.drawdown import compute_drawdown
 
 
 DATA_PATH = "data/processed/trades.csv"

@@ -1,0 +1,4 @@
+position_id,open_time,close_time,trader_id,market_id,product_type,side,entry_price,exit_price,size,gross_pnl,net_pnl,realized_pnl,fees,close_reason
+37fd9ff32ab13948,2026-02-09 10:25:25.110830,2026-02-09 11:25:25.110830,trader_A,SOL-PERP,perp,long,100.0,120.0,1.0,20.0,19.0,19.0,1.0,close
+ed1b56aba46d0646,2026-02-09 10:35:25.110830,2026-02-09 12:25:25.110830,trader_B,ETH-PERP,perp,short,2000.0,1900.0,1.0,100.0,98.0,98.0,2.0,close
+d0c82044fc31b09c,2026-02-09 10:45:25.110830,2026-02-09 13:25:25.110830,trader_C,SOL/USDC,spot,buy,90.0,95.0,2.0,10.0,9.6,9.6,0.4,close

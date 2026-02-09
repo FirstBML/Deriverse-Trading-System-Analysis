@@ -1,67 +1,91 @@
 # scripts/run_analytics.py
-
-from pathlib import Path
 import pandas as pd
+from pathlib import Path
+import io
+import logging
 
-from configs.loader import load_config
-from src.analytics.pnl.realised_pnl import build_realised_pnl
-from src.analytics.pnl.funding import build_funding
-from src.analytics.pnl.equity_curve import build_equity_curve
-from src.analytics.trades.activity import build_trade_activity
-from src.analytics.metrics.win_rate import build_win_rate
-from src.analytics.metrics.drawdown import build_drawdowns
-from src.analytics.metrics.exposure import build_exposure
-from src.analytics.metrics.fees import build_fees
+from src.analytics.pnl_engine import compute_realized_pnl
+from src.analytics.summary import compute_executive_summary
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+NORMALIZED_EVENTS_PATH = Path("data/normalized/events.jsonl")
+ANALYTICS_DIR = Path("data/analytics")
+POSITIONS_PATH = ANALYTICS_DIR / "positions.csv"
+REALIZED_PNL_PATH = ANALYTICS_DIR / "realized_pnl.csv"
+
+
+def load_events(path: Path) -> pd.DataFrame:
+    events = []
+    with open(path) as f:
+        for line in f:
+            events.append(pd.read_json(io.StringIO(line), typ="series"))
+    df = pd.DataFrame(events)
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    return df
+
+
+def run_analytics(events_df, auto_summary=True, submission_mode=True):
+    logger.info(f"Loaded {len(events_df)} events")
+
+    if not submission_mode:
+        logger.info(
+            f"Event counts: {events_df['event_type'].value_counts().to_dict()}"
+        )
+
+    logger.info("Computing realized PnL (truth engine)")
+    positions_df, pnl_df = compute_realized_pnl(events_df)
+
+    if positions_df.empty:
+        logger.warning("No closed positions found — analytics skipped")
+        return None, None
+
+    ANALYTICS_DIR.mkdir(parents=True, exist_ok=True)
+    positions_df.to_csv(POSITIONS_PATH, index=False)
+    pnl_df.to_csv(REALIZED_PNL_PATH, index=False)
+
+    summary = compute_executive_summary(positions_df, pnl_df)
+
+    if auto_summary:
+        print("\n" + "=" * 50)
+        print("EXECUTIVE SUMMARY")
+        print("=" * 50)
+        print(f"Total Realized PnL:  ${summary['total_pnl']:,.2f}")
+        print(f"Total Fees Paid:     ${summary['total_fees']:,.2f}")
+        print(f"Total Trades:        {summary['trade_count']}")
+        print(f"Win Rate:            {summary['win_rate']:.1%}")
+        print(f"Avg Win:             ${summary['avg_win']:,.2f}")
+        print(f"Avg Loss:            ${summary['avg_loss']:,.2f}")
+        print(f"Best Trade:          ${summary['best_trade']:,.2f}")
+        print(f"Worst Trade:         ${summary['worst_trade']:,.2f}")
+        print(f"Avg Duration:        {summary['avg_duration']}")
+        print(f"Long Ratio:          {summary['long_ratio']:.1%}")
+        print(f"Short Ratio:         {summary['short_ratio']:.1%}")
+        print(f"Max Drawdown:        ${summary['max_drawdown']:,.2f}")
+        print("=" * 50 + "\n")
+
+    logger.info("Analytics run complete ✅")
+    return positions_df, pnl_df
+
 
 def main():
-    config = load_config("analytics.yaml")
+    logger.info("=" * 60)
+    logger.info("Starting Deriverse Analytics Pipeline")
+    logger.info("=" * 60)
 
-    events_path = config["events_path"]
-    out = Path(config["output_path"])
-    out.mkdir(parents=True, exist_ok=True)
+    if not NORMALIZED_EVENTS_PATH.exists():
+        logger.error("Normalized events not found. Run ingestion first.")
+        return
 
-    # -----------------------------
-    # Trade activity (diagnostic)
-    # -----------------------------
-    trades = build_trade_activity(events_path)
-    trades.to_csv(out / "trade_activity.csv", index=False)
+    events_df = load_events(NORMALIZED_EVENTS_PATH)
+    run_analytics(events_df)
 
-    # -----------------------------
-    # Protocol-truth realised PnL
-    # -----------------------------
-    realised = build_realised_pnl(events_path)
-    realised.to_csv(out / "realised_pnl.csv", index=False)
+    logger.info("=" * 60)
 
-    # -----------------------------
-    # Funding
-    # -----------------------------
-    funding = build_funding(events_path)
-    funding.to_csv(out / "funding.csv", index=False)
-
-    # -----------------------------
-    # Equity curve
-    # -----------------------------
-    equity = build_equity_curve(realised, funding)
-    equity.to_csv(out / "equity_curve.csv", index=False)
-
-    # -----------------------------
-    # Risk & performance metrics
-    # -----------------------------
-    win_rate = build_win_rate(realised)
-    win_rate.to_csv(out / "win_rate.csv", index=False)
-
-    drawdowns = build_drawdowns(equity)
-    drawdowns.to_csv(out / "drawdowns.csv", index=False)
-
-    exposure = build_exposure(events_path)
-    pd.DataFrame.from_dict(exposure, orient="index").to_csv(
-        out / "exposure.csv"
-    )
-
-    fees = build_fees(trades)
-    fees.to_csv(out / "fees.csv", index=False)
-
-    print("✅ Analytics pipeline completed successfully")
 
 if __name__ == "__main__":
     main()
