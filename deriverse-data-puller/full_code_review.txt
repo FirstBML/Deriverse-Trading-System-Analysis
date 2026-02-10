@@ -29,20 +29,38 @@ time_bucket: "daily"
 
 ===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\configs\ingestion.yaml =====
 
+# configs/ingestion.yaml
+
+# Path to raw mock protocol events (JSON array)
 raw_data_path: configs/mock_data.json
+
+# Append-only normalized output (JSONL format)
 normalized_output_path: data/normalized/events.jsonl
+
+# Watermark / checkpoint store for incremental ingestion
 checkpoint_path: data/checkpoints/watermark.json
+
+# Allowed lateness for event-time processing (seconds)
 allowed_lateness_seconds: 0
+
+# Optional controls (future-safe)
+markets: []
+traders: []
+max_events_per_run: null
 
 
 ===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\configs\loader.py =====
 
+# configs/loader.py
+
 import yaml
 from pathlib import Path
+import logging  # âœ… ADD THIS
 
-def load_config(filename):
-    path = Path(__file__).parent / filename
-    with open(path) as f:
+logger = logging.getLogger(__name__) 
+
+def load_config(path: str) -> dict:
+    with open(Path(path), "r") as f:
         return yaml.safe_load(f)
 
 
@@ -50,175 +68,271 @@ def load_config(filename):
 
 [
   {
-    "event_id": "f404de6d-ed5e-4bdb-8661-5be3e38ae9bb",
-    "event_type": "close",
-    "timestamp": "2026-02-07T18:59:28.583826+00:00",
-    "trader_id": "trader_B",
+    "event_type": "open",
+    "timestamp": "2026-02-09T15:40:52.770879+00:00",
+    "trader_id": "trader_A",
     "market_id": "SOL-PERP",
     "product_type": "perp",
-    "fee": 0.34,
     "side": "long",
-    "price": 12903.37,
-    "size": 14,
-    "pnl": -49.38
-  },
-  {
-    "event_id": "c4a2a6d4-54d0-48ab-8429-cdd345a28185",
-    "event_type": "open",
-    "timestamp": "2026-02-07T19:04:28.583826+00:00",
-    "trader_id": "trader_C",
-    "market_id": "SOL-OPT",
-    "product_type": "option",
-    "fee": 0.75,
-    "side": "long",
-    "price": 19297.04,
-    "size": 8,
-    "pnl": null
-  },
-  {
-    "event_id": "2153b0af-702b-4994-82db-39731f76ee02",
-    "event_type": "close",
-    "timestamp": "2026-02-07T19:09:28.583826+00:00",
-    "trader_id": "trader_A",
-    "market_id": "SOL/USDC",
-    "product_type": "spot",
-    "fee": 0.16,
-    "side": "long",
-    "price": 25390.79,
-    "size": 4,
-    "pnl": 6.36
-  },
-  {
-    "event_id": "2acbf947-d0bd-4599-b09f-89fc8f1fd007",
-    "event_type": "open",
-    "timestamp": "2026-02-07T19:14:28.583826+00:00",
-    "trader_id": "trader_D",
-    "market_id": "BTC-PERP",
-    "product_type": "perp",
-    "fee": 0.94,
-    "side": "short",
-    "price": 21115.43,
-    "size": 19,
-    "pnl": null
-  },
-  {
-    "event_id": "b05f7188-3c38-4ff4-9e75-49bdb65979bd",
-    "event_type": "open",
-    "timestamp": "2026-02-07T19:19:28.583826+00:00",
-    "trader_id": "trader_A",
-    "market_id": "SOL/USDC",
-    "product_type": "spot",
-    "fee": 0.24,
-    "side": "long",
-    "price": 18632.27,
+    "price": 100,
     "size": 1,
-    "pnl": null
+    "fee": 0.5
   },
   {
-    "event_id": "d491fcd9-1882-4128-99b3-124f1bd528e3",
-    "event_type": "open",
-    "timestamp": "2026-02-07T19:24:28.583826+00:00",
-    "trader_id": "trader_A",
-    "market_id": "SOL/USDC",
-    "product_type": "spot",
-    "fee": 0.76,
-    "side": "long",
-    "price": 19553.83,
-    "size": 8,
-    "pnl": null
-  },
-  {
-    "event_id": "9055b96a-8ad9-4ff3-a4bd-937148eff16d",
-    "event_type": "trade",
-    "timestamp": "2026-02-07T19:29:28.583826+00:00",
-    "trader_id": "trader_A",
-    "market_id": "BTC-PERP",
-    "product_type": "perp",
-    "fee": 0.2,
-    "side": "sell",
-    "price": 11080.09,
-    "size": 5
-  },
-  {
-    "event_id": "7238e8e7-8330-4cfd-905d-64f9d3a8c44d",
-    "event_type": "trade",
-    "timestamp": "2026-02-07T19:34:28.583826+00:00",
-    "trader_id": "trader_A",
-    "market_id": "SOL-OPT",
-    "product_type": "option",
-    "fee": 0.62,
-    "side": "buy",
-    "price": 1825.89,
-    "size": 6
-  },
-  {
-    "event_id": "4efa4e37-d71f-4029-8a53-9e998a385ff6",
-    "event_type": "open",
-    "timestamp": "2026-02-07T19:39:28.583826+00:00",
-    "trader_id": "trader_A",
-    "market_id": "SOL-OPT",
-    "product_type": "option",
-    "fee": 0.39,
-    "side": "short",
-    "price": 2152.75,
-    "size": 11,
-    "pnl": null
-  },
-  {
-    "event_id": "c5f6859e-2a1b-4ca7-ac26-a6a8d7bba5fa",
-    "event_type": "open",
-    "timestamp": "2026-02-07T19:44:28.583826+00:00",
-    "trader_id": "trader_C",
-    "market_id": "BTC-PERP",
-    "product_type": "perp",
-    "fee": 0.4,
-    "side": "long",
-    "price": 19822.82,
-    "size": 18,
-    "pnl": null
-  },
-  {
-    "event_id": "2f404d6f-b2fd-4946-9093-7445cf161449",
-    "event_type": "open",
-    "timestamp": "2026-02-07T19:49:28.583826+00:00",
+    "event_type": "close",
+    "timestamp": "2026-02-09T16:40:52.770879+00:00",
     "trader_id": "trader_A",
     "market_id": "SOL-PERP",
     "product_type": "perp",
-    "fee": 0.47,
     "side": "long",
-    "price": 4122.88,
-    "size": 3,
-    "pnl": null
+    "price": 120,
+    "size": 1,
+    "fee": 0.5
   },
   {
-    "event_id": "5ac12a4b-7893-42e6-938a-e4bb16c99ca8",
-    "event_type": "close",
-    "timestamp": "2026-02-07T19:54:28.583826+00:00",
+    "event_type": "open",
+    "timestamp": "2026-02-09T15:50:52.770879+00:00",
     "trader_id": "trader_B",
+    "market_id": "ETH-PERP",
+    "product_type": "perp",
+    "side": "short",
+    "price": 2000,
+    "size": 1,
+    "fee": 1.0
+  },
+  {
+    "event_type": "close",
+    "timestamp": "2026-02-09T17:40:52.770879+00:00",
+    "trader_id": "trader_B",
+    "market_id": "ETH-PERP",
+    "product_type": "perp",
+    "side": "short",
+    "price": 1900,
+    "size": 1,
+    "fee": 1.0
+  },
+  {
+    "event_type": "open",
+    "timestamp": "2026-02-09T16:00:52.770879+00:00",
+    "trader_id": "trader_C",
     "market_id": "SOL/USDC",
     "product_type": "spot",
-    "fee": 0.12,
+    "side": "buy",
+    "price": 100,
+    "size": 2,
+    "fee": 0.2
+  },
+  {
+    "event_type": "close",
+    "timestamp": "2026-02-09T18:40:52.770879+00:00",
+    "trader_id": "trader_C",
+    "market_id": "SOL/USDC",
+    "product_type": "spot",
+    "side": "buy",
+    "price": 92,
+    "size": 2,
+    "fee": 0.2
+  },
+  {
+    "event_type": "open",
+    "timestamp": "2026-02-09T16:10:52.770879+00:00",
+    "trader_id": "trader_A",
+    "market_id": "SOL-PERP",
+    "product_type": "perp",
     "side": "long",
-    "price": 9722.55,
-    "size": 11,
-    "pnl": 174.42
+    "price": 105,
+    "size": 1,
+    "fee": 0.5
+  },
+  {
+    "event_type": "close",
+    "timestamp": "2026-02-09T19:40:52.770879+00:00",
+    "trader_id": "ghost_trader",
+    "market_id": "BTC-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 30000,
+    "size": 1,
+    "fee": 2.0
+  },
+  {
+    "event_type": "close",
+    "timestamp": "2026-02-09T20:40:52.770879+00:00",
+    "trader_id": "trader_B",
+    "market_id": "ETH-PERP",
+    "product_type": "perp",
+    "side": "short",
+    "price": 1800,
+    "size": 5,
+    "fee": 1.5
+  },
+  {
+    "event_type": "trade",
+    "timestamp": "2026-02-09T15:45:52.770879+00:00",
+    "trader_id": "trader_X",
+    "market_id": "SOL-PERP",
+    "product_type": "perp",
+    "side": "buy",
+    "price": 101,
+    "size": 0.5,
+    "fee": 0.1
+  },
+  {
+    "event_type": "trade",
+    "timestamp": "2026-02-09T15:55:52.770879+00:00",
+    "trader_id": "trader_Y",
+    "market_id": "ETH-PERP",
+    "product_type": "perp",
+    "side": "sell",
+    "price": 1995,
+    "size": 0.3,
+    "fee": 0.1
+  },
+  {
+    "event_type": "open",
+    "timestamp": "2026-02-09T16:05:52.770879+00:00",
+    "trader_id": "trader_D",
+    "market_id": "ETH-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 2100,
+    "size": 1,
+    "fee": 1.0
+  },
+  {
+    "event_type": "close",
+    "timestamp": "2026-02-09T19:40:52.770879+00:00",
+    "trader_id": "trader_D",
+    "market_id": "ETH-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 2050,
+    "size": 1,
+    "fee": 1.0
+  },
+  {
+    "event_type": "open",
+    "timestamp": "2026-02-09T16:40:52.770879+00:00",
+    "trader_id": "trader_E",
+    "market_id": "SOL-CALL-120-20241227",
+    "product_type": "option",
+    "option_type": "call",
+    "strike": 120,
+    "expiry": "2024-12-27T23:59:59.000000",
+    "side": "buy",
+    "price": 5.0,
+    "size": 10,
+    "fee": 2.5,
+    "delta": 0.65,
+    "implied_vol": 0.45
+  },
+  {
+    "event_type": "close",
+    "timestamp": "2026-02-10T16:40:52.770879+00:00",
+    "trader_id": "trader_E",
+    "market_id": "SOL-CALL-120-20241227",
+    "product_type": "option",
+    "option_type": "call",
+    "strike": 120,
+    "expiry": "2024-12-27T23:59:59.000000",
+    "side": "sell",
+    "price": 8.0,
+    "size": 10,
+    "fee": 2.5,
+    "delta": 0.85,
+    "implied_vol": 0.5
+  },
+  {
+    "event_type": "open",
+    "timestamp": "2026-02-09T17:40:52.770879+00:00",
+    "trader_id": "trader_F",
+    "market_id": "ETH-PUT-1900-20241227",
+    "product_type": "option",
+    "option_type": "put",
+    "strike": 1900,
+    "expiry": "2024-12-27T23:59:59.000000",
+    "side": "buy",
+    "price": 45.0,
+    "size": 5,
+    "fee": 5.0,
+    "delta": -0.35,
+    "implied_vol": 0.55
+  },
+  {
+    "event_type": "close",
+    "timestamp": "2026-02-11T15:40:52.770879+00:00",
+    "trader_id": "trader_F",
+    "market_id": "ETH-PUT-1900-20241227",
+    "product_type": "option",
+    "option_type": "put",
+    "strike": 1900,
+    "expiry": "2024-12-27T23:59:59.000000",
+    "side": "sell",
+    "price": 20.0,
+    "size": 5,
+    "fee": 5.0,
+    "delta": -0.15,
+    "implied_vol": 0.4
+  },
+  {
+    "event_type": "exercise",
+    "timestamp": "2026-03-11T15:40:52.770879+00:00",
+    "trader_id": "trader_G",
+    "market_id": "BTC-CALL-35000-20241227",
+    "product_type": "option",
+    "option_type": "call",
+    "strike": 35000,
+    "expiry": "2024-12-27T23:59:59.000000",
+    "side": "exercise",
+    "price": 35000,
+    "size": 2,
+    "fee": 50.0,
+    "underlying_price": 38000
+  },
+  {
+    "event_type": "expire",
+    "timestamp": "2024-12-27T23:59:59+00:00",
+    "trader_id": "trader_H",
+    "market_id": "SOL-PUT-80-20241227",
+    "product_type": "option",
+    "option_type": "put",
+    "strike": 80,
+    "expiry": "2024-12-27T23:59:59.000000",
+    "side": "expire",
+    "price": 0.0,
+    "size": 3,
+    "fee": 0.0,
+    "underlying_price": 95
+  },
+  {
+    "event_type": "open",
+    "timestamp": "2026-02-09T18:40:52.770879+00:00",
+    "trader_id": "trader_I",
+    "market_id": "SOL-CALL-110-20241227",
+    "product_type": "option",
+    "option_type": "call",
+    "strike": 110,
+    "expiry": "2024-12-27T23:59:59.000000",
+    "side": "buy",
+    "price": 8.0,
+    "size": 20,
+    "fee": 8.0
+  },
+  {
+    "event_type": "close",
+    "timestamp": "2026-02-10T18:40:52.770879+00:00",
+    "trader_id": "trader_I",
+    "market_id": "SOL-CALL-110-20241227",
+    "product_type": "option",
+    "option_type": "call",
+    "strike": 110,
+    "expiry": "2024-12-27T23:59:59.000000",
+    "side": "sell",
+    "price": 12.0,
+    "size": 10,
+    "fee": 6.0
   }
 ]
-
-
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\configs\mock_data.yaml =====
-
-market:
-  name: "DemoMarket"
-  tick_size: 0.01
-
-trader:
-  name: "DemoTrader"
-  max_order_size: 10
-
-storage:
-  type: "file"
-  path: "mock_events.json"
 
 
 ===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\configs\__init__.py =====
@@ -273,111 +387,378 @@ st.line_chart(
 
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\scripts\build_trades_table.py =====
-
-# scripts/build_trades_table.py
-
-import json
-import pandas as pd
-from src.analytics.etl.trade_normalizer import normalize_trades
-
-RAW_PATH = "data/raw/raw_events.json"
-OUT_PATH = "data/processed/trades.csv"
-
-def main():
-    with open(RAW_PATH, "r") as f:
-        raw_events = json.load(f)
-
-    events_df = pd.DataFrame(raw_events)
-
-    trades_df = normalize_trades(events_df)
-
-    trades_df.to_csv(OUT_PATH, index=False)
-    print(f"âœ… {OUT_PATH} created ({len(trades_df)} trades)")
-
-if __name__ == "__main__":
-    main()
-
-
 ===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\scripts\generate_mock_data.py =====
 
-# scripts/generate_mock_data.py
-from datetime import datetime, timedelta, timezone
-import random
-import uuid
 import json
+import random
+import os
+import hashlib
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
-MOCK_PATH = Path("configs/mock_data.json")
+# -------------------------------
+# CONFIG
+# -------------------------------
+OUTPUT_PATH = Path("data/normalized/events.jsonl")  # âœ… CORRECT: JSONL format
+OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-def iso_ts(dt):
-    return dt.replace(tzinfo=timezone.utc).isoformat()
+SEED = int(os.getenv("MOCK_SEED", "42"))
+random.seed(SEED)
 
-def generate_mock_events(n=12, start_time=None):
-    """
-    Generate mock events for testing.
-    Event types: open, trade, close ONLY (no exercise/option_exercise).
-    Product types: spot, perp, option (all allowed).
-    """
-    if start_time is None:
-        start_time = datetime.now(timezone.utc)
-        
-    events = []
-    # âœ… Keep all markets including SOL-OPT
-    markets = ["SOL/USDC", "SOL-PERP", "BTC-PERP", "SOL-OPT"]
-    product_map = {
-        "SOL/USDC": "spot",
-        "SOL-PERP": "perp",
-        "BTC-PERP": "perp",
-        "SOL-OPT": "option",  # âœ… Keep option product type
-    }
+# Use timezone-aware datetime
+now = datetime.now(timezone.utc)
+events = []
+
+def generate_event_id(event_data, index):
+    """Generate deterministic event ID."""
+    seed_parts = [
+        str(event_data.get('event_type', '')),
+        str(event_data.get('timestamp', '') if isinstance(event_data.get('timestamp'), str) else ''),
+        str(event_data.get('trader_id', '')),
+        str(event_data.get('market_id', '')),
+        str(index)
+    ]
+    seed = "|".join(seed_parts)
+    return hashlib.sha256(seed.encode()).hexdigest()
+
+def emit(event):
+    """Helper to add event with proper formatting and event_id."""
+    # Ensure timestamp is ISO string
+    if 'timestamp' in event and isinstance(event['timestamp'], datetime):
+        event['timestamp'] = event['timestamp'].isoformat().replace("+00:00", "Z")
     
-    for i in range(n):
-        market = random.choice(markets)
-        product_type = product_map[market]
-        
-        # âœ… ONLY GENERATE: open, trade, close (removed exercise/option_exercise)
-        event_type = random.choice(["trade", "open", "close"])
-        
-        base = {
-            "event_id": str(uuid.uuid4()),
-            "event_type": event_type,
-            "timestamp": iso_ts(start_time + timedelta(minutes=5 * i)),
-            "trader_id": f"trader_{random.choice(['A','B','C','D'])}",
-            "market_id": market,
-            "product_type": product_type,
-            "fee": round(random.uniform(0.05, 1.0), 2),
-        }
-        
-        if event_type == "trade":
-            base.update({
-                "side": random.choice(["buy", "sell"]),
-                "price": round(random.uniform(90, 26000), 2),
-                "size": random.randint(1, 20),
-            })
-        elif event_type in ["open", "close"]:
-            base.update({
-                "side": random.choice(["long", "short"]),
-                "price": round(random.uniform(90, 26000), 2),
-                "size": random.randint(1, 20),
-                "pnl": round(random.uniform(-50, 200), 2) if event_type == "close" else None,
-            })
-        
-        events.append(base)
+    # Generate event_id if not present
+    if 'event_id' not in event:
+        event['event_id'] = generate_event_id(event, len(events) + 1)
     
-    return events
+    events.append(event)
 
-def write_mock_data(n=12):
-    """Generate and write mock events to configs/mock_data.json"""
-    events = generate_mock_events(n=n)
-    MOCK_PATH.parent.mkdir(exist_ok=True)
-    with open(MOCK_PATH, "w") as f:
-        json.dump(events, f, indent=2)
-    return len(events)
+# --------------------------------------------------
+# 1ï¸âƒ£ CLEAN OPEN â†’ CLOSE PAIRS (3 positions)
+# --------------------------------------------------
 
-if __name__ == "__main__":
-    count = write_mock_data()
-    print(f"âœ… Generated {count} mock events (open, trade, close only)")
+# --- WINNING LONG ---
+emit({
+    "event_type": "open",
+    "timestamp": now,
+    "trader_id": "trader_A",
+    "market_id": "SOL-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 100,
+    "size": 1,
+    "fee": 0.5,
+})
+
+emit({
+    "event_type": "close",
+    "timestamp": now + timedelta(hours=1),
+    "trader_id": "trader_A",
+    "market_id": "SOL-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 120,
+    "size": 1,
+    "fee": 0.5,
+})
+
+# --- WINNING SHORT ---
+emit({
+    "event_type": "open",
+    "timestamp": now + timedelta(minutes=10),
+    "trader_id": "trader_B",
+    "market_id": "ETH-PERP",
+    "product_type": "perp",
+    "side": "short",
+    "price": 2000,
+    "size": 1,
+    "fee": 1.0,
+})
+
+emit({
+    "event_type": "close",
+    "timestamp": now + timedelta(hours=2),
+    "trader_id": "trader_B",
+    "market_id": "ETH-PERP",
+    "product_type": "perp",
+    "side": "short",
+    "price": 1900,
+    "size": 1,
+    "fee": 1.0,
+})
+
+# --- FORCED LOSING SPOT TRADE ---
+emit({
+    "event_type": "open",
+    "timestamp": now + timedelta(minutes=20),
+    "trader_id": "trader_C",
+    "market_id": "SOL/USDC",
+    "product_type": "spot",
+    "side": "buy",
+    "price": 100,
+    "size": 2,
+    "fee": 0.2,
+})
+
+emit({
+    "event_type": "close",
+    "timestamp": now + timedelta(hours=3),
+    "trader_id": "trader_C",
+    "market_id": "SOL/USDC",
+    "product_type": "spot",
+    "side": "buy",
+    "price": 92,
+    "size": 2,
+    "fee": 0.2,
+})
+
+# --------------------------------------------------
+# 2ï¸âƒ£ DUPLICATE OPEN (intentional edge case)
+# --------------------------------------------------
+emit({
+    "event_type": "open",
+    "timestamp": now + timedelta(minutes=30),
+    "trader_id": "trader_A",
+    "market_id": "SOL-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 105,
+    "size": 1,
+    "fee": 0.5,
+})
+
+# --------------------------------------------------
+# 3ï¸âƒ£ CLOSE WITHOUT OPEN (intentional edge case)
+# --------------------------------------------------
+emit({
+    "event_type": "close",
+    "timestamp": now + timedelta(hours=4),
+    "trader_id": "ghost_trader",
+    "market_id": "BTC-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 30000,
+    "size": 1,
+    "fee": 2.0,
+})
+
+# --------------------------------------------------
+# 4ï¸âƒ£ OVERSIZED CLOSE (intentional edge case)
+# --------------------------------------------------
+emit({
+    "event_type": "close",
+    "timestamp": now + timedelta(hours=5),
+    "trader_id": "trader_B",
+    "market_id": "ETH-PERP",
+    "product_type": "perp",
+    "side": "short",
+    "price": 1800,
+    "size": 5,
+    "fee": 1.5,
+})
+
+# --------------------------------------------------
+# 5ï¸âƒ£ TRADE / NOISE EVENTS
+# --------------------------------------------------
+emit({
+    "event_type": "trade",
+    "timestamp": now + timedelta(minutes=5),
+    "trader_id": "trader_X",
+    "market_id": "SOL-PERP",
+    "product_type": "perp",
+    "side": "buy",
+    "price": 101,
+    "size": 0.5,
+    "fee": 0.1,
+})
+
+emit({
+    "event_type": "trade",
+    "timestamp": now + timedelta(minutes=15),
+    "trader_id": "trader_Y",
+    "market_id": "ETH-PERP",
+    "product_type": "perp",
+    "side": "sell",
+    "price": 1995,
+    "size": 0.3,
+    "fee": 0.1,
+})
+
+# --- LOSING LONG PERPETUAL TRADE ---
+emit({
+    "event_type": "open",
+    "timestamp": now + timedelta(minutes=25),
+    "trader_id": "trader_D",
+    "market_id": "ETH-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 2100,
+    "size": 1,
+    "fee": 1.0,
+})
+
+emit({
+    "event_type": "close",
+    "timestamp": now + timedelta(hours=4),
+    "trader_id": "trader_D",
+    "market_id": "ETH-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 2050,
+    "size": 1,
+    "fee": 1.0,
+})
+
+# --------------------------------------------------
+# 6ï¸âƒ£ OPTIONS TRADES 
+# --------------------------------------------------
+
+# --- CALL OPTION: Winning trade ---
+emit({
+    "event_type": "open",
+    "timestamp": now + timedelta(hours=1),
+    "trader_id": "trader_E",
+    "market_id": "SOL-CALL-120-20241227",
+    "product_type": "option",
+    "option_type": "call",
+    "strike": 120,
+    "expiry": "2024-12-27T23:59:59Z",
+    "side": "buy",
+    "price": 5.0,
+    "size": 10,
+    "fee": 2.5,
+    "delta": 0.65,
+    "implied_vol": 0.45,
+})
+
+emit({
+    "event_type": "close",
+    "timestamp": now + timedelta(hours=25),
+    "trader_id": "trader_E",
+    "market_id": "SOL-CALL-120-20241227",
+    "product_type": "option",
+    "option_type": "call",
+    "strike": 120,
+    "expiry": "2024-12-27T23:59:59Z",
+    "side": "sell",
+    "price": 8.0,
+    "size": 10,
+    "fee": 2.5,
+    "delta": 0.85,
+    "implied_vol": 0.50,
+})
+
+# --- PUT OPTION: Losing trade ---
+emit({
+    "event_type": "open",
+    "timestamp": now + timedelta(hours=2),
+    "trader_id": "trader_F",
+    "market_id": "ETH-PUT-1900-20241227",
+    "product_type": "option",
+    "option_type": "put",
+    "strike": 1900,
+    "expiry": "2024-12-27T23:59:59Z",
+    "side": "buy",
+    "price": 45.0,
+    "size": 5,
+    "fee": 5.0,
+    "delta": -0.35,
+    "implied_vol": 0.55,
+})
+
+emit({
+    "event_type": "close",
+    "timestamp": now + timedelta(hours=48),
+    "trader_id": "trader_F",
+    "market_id": "ETH-PUT-1900-20241227",
+    "product_type": "option",
+    "option_type": "put",
+    "strike": 1900,
+    "expiry": "2024-12-27T23:59:59Z",
+    "side": "sell",
+    "price": 20.0,
+    "size": 5,
+    "fee": 5.0,
+    "delta": -0.15,
+    "implied_vol": 0.40,
+})
+
+# --- OPTION EXERCISE (rare but important) ---
+emit({
+    "event_type": "exercise",
+    "timestamp": now + timedelta(days=30),
+    "trader_id": "trader_G",
+    "market_id": "BTC-CALL-35000-20241227",
+    "product_type": "option",
+    "option_type": "call",
+    "strike": 35000,
+    "expiry": "2024-12-27T23:59:59Z",
+    "side": "exercise",
+    "price": 35000,
+    "size": 2,
+    "fee": 50.0,
+    "underlying_price": 38000,
+})
+
+# --- OPTION EXPIRATION (worthless) ---
+emit({
+    "event_type": "expire",
+    "timestamp": datetime(2024, 12, 27, 23, 59, 59, tzinfo=timezone.utc),
+    "trader_id": "trader_H",
+    "market_id": "SOL-PUT-80-20241227",
+    "product_type": "option",
+    "option_type": "put",
+    "strike": 80,
+    "expiry": "2024-12-27T23:59:59Z",
+    "side": "expire",
+    "price": 0.0,
+    "size": 3,
+    "fee": 0.0,
+    "underlying_price": 95,
+})
+
+# --- PARTIAL CLOSE of options position ---
+emit({
+    "event_type": "open",
+    "timestamp": now + timedelta(hours=3),
+    "trader_id": "trader_I",
+    "market_id": "SOL-CALL-110-20241227",
+    "product_type": "option",
+    "option_type": "call",
+    "strike": 110,
+    "expiry": "2024-12-27T23:59:59Z",
+    "side": "buy",
+    "price": 8.0,
+    "size": 20,
+    "fee": 8.0,
+})
+
+emit({
+    "event_type": "close",
+    "timestamp": now + timedelta(hours=27),
+    "trader_id": "trader_I",
+    "market_id": "SOL-CALL-110-20241227",
+    "product_type": "option",
+    "option_type": "call",
+    "strike": 110,
+    "expiry": "2024-12-27T23:59:59Z",
+    "side": "sell",
+    "price": 12.0,
+    "size": 10,
+    "fee": 6.0,
+})
+
+# --------------------------------------------------
+# WRITE OUTPUT AS JSONL (one event per line)
+# --------------------------------------------------
+with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
+    for event in events:
+        # Write each event as a separate JSON line
+        f.write(json.dumps(event) + "\n")
+
+print(f"âœ… Generated {len(events)} mock events â†’ {OUTPUT_PATH} (seed={SEED})")
+print(f"   Includes: Perpetuals, Spot, and OPTIONS trades")
+print(f"   Format: JSONL (one event per line)")
 
 
 ===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\scripts\launch_dashboard.py =====
@@ -411,70 +792,114 @@ if __name__ == "__main__":
 
 ===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\scripts\run_analytics.py =====
 
-# scripts/run_analytics.py
-
-from pathlib import Path
 import pandas as pd
+from pathlib import Path
+import io
+import logging
+from datetime import datetime, timedelta, UTC
+from src.analytics.pnl_engine import compute_realized_pnl
+from src.analytics.summary import compute_executive_summary
 
-from configs.loader import load_config
-from src.analytics.pnl.realised_pnl import build_realised_pnl
-from src.analytics.pnl.funding import build_funding
-from src.analytics.pnl.equity_curve import build_equity_curve
-from src.analytics.trades.activity import build_trade_activity
-from src.analytics.metrics.win_rate import build_win_rate
-from src.analytics.metrics.drawdown import build_drawdowns
-from src.analytics.metrics.exposure import build_exposure
-from src.analytics.metrics.fees import build_fees
+now = datetime.now(UTC)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+NORMALIZED_EVENTS_PATH = Path("data/normalized/events.jsonl")
+ANALYTICS_DIR = Path("data/analytics")
+POSITIONS_PATH = ANALYTICS_DIR / "positions.csv"
+REALIZED_PNL_PATH = ANALYTICS_DIR / "realized_pnl.csv"
+
+
+def load_events(path: Path) -> pd.DataFrame:
+    """Load events from JSONL file with flexible timestamp parsing."""
+    events = []
+    with open(path, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if line:  # Skip empty lines
+                events.append(pd.read_json(io.StringIO(line), typ="series"))
+    
+    if not events:
+        logger.warning(f"No events found in {path}")
+        return pd.DataFrame()
+    
+    df = pd.DataFrame(events)
+    
+    # FIX: Use format='ISO8601' to handle different timestamp formats
+    try:
+        df["timestamp"] = pd.to_datetime(df["timestamp"], format='ISO8601', utc=True)
+    except Exception as e:
+        logger.warning(f"ISO8601 parsing failed, trying mixed format: {e}")
+        df["timestamp"] = pd.to_datetime(df["timestamp"], format='mixed', utc=True)
+    
+    return df
+
+
+def run_analytics(events_df, auto_summary=True, submission_mode=True):
+    if events_df.empty:
+        logger.error("No events to analyze")
+        return None, None
+    
+    logger.info(f"Loaded {len(events_df)} events")
+
+    if not submission_mode:
+        logger.info(
+            f"Event counts: {events_df['event_type'].value_counts().to_dict()}"
+        )
+
+    logger.info("Computing realized PnL (truth engine)")
+    positions_df, pnl_df = compute_realized_pnl(events_df)
+
+    if positions_df.empty:
+        logger.warning("No closed positions found â€” analytics skipped")
+        return None, None
+
+    ANALYTICS_DIR.mkdir(parents=True, exist_ok=True)
+    positions_df.to_csv(POSITIONS_PATH, index=False)
+    pnl_df.to_csv(REALIZED_PNL_PATH, index=False)
+
+    summary = compute_executive_summary(positions_df, pnl_df)
+
+    if auto_summary:
+        print("\n" + "=" * 50)
+        print("EXECUTIVE SUMMARY")
+        print("=" * 50)
+        print(f"Total Realized PnL:  ${summary['total_pnl']:,.2f}")
+        print(f"Total Fees Paid:     ${summary['total_fees']:,.2f}")
+        print(f"Total Trades:        {summary['trade_count']}")
+        print(f"Win Rate:            {summary['win_rate']:.1%}")
+        print(f"Avg Win:             ${summary['avg_win']:,.2f}")
+        print(f"Avg Loss:            ${summary['avg_loss']:,.2f}")
+        print(f"Best Trade:          ${summary['best_trade']:,.2f}")
+        print(f"Worst Trade:         ${summary['worst_trade']:,.2f}")
+        print(f"Avg Duration:        {summary['avg_duration']}")
+        print(f"Long Ratio:          {summary['long_ratio']:.1%}")
+        print(f"Short Ratio:         {summary['short_ratio']:.1%}")
+        print(f"Max Drawdown:        ${summary['max_drawdown']:,.2f}")
+        print("=" * 50 + "\n")
+
+    logger.info("Analytics run complete âœ…")
+    return positions_df, pnl_df
+
 
 def main():
-    config = load_config("analytics.yaml")
+    logger.info("=" * 60)
+    logger.info("Starting Deriverse Analytics Pipeline")
+    logger.info("=" * 60)
 
-    events_path = config["events_path"]
-    out = Path(config["output_path"])
-    out.mkdir(parents=True, exist_ok=True)
+    if not NORMALIZED_EVENTS_PATH.exists():
+        logger.error(f"Normalized events not found at {NORMALIZED_EVENTS_PATH}")
+        logger.error("Run 'python -m scripts.generate_mock_data' first")
+        return
 
-    # -----------------------------
-    # Trade activity (diagnostic)
-    # -----------------------------
-    trades = build_trade_activity(events_path)
-    trades.to_csv(out / "trade_activity.csv", index=False)
+    events_df = load_events(NORMALIZED_EVENTS_PATH)
+    run_analytics(events_df)
 
-    # -----------------------------
-    # Protocol-truth realised PnL
-    # -----------------------------
-    realised = build_realised_pnl(events_path)
-    realised.to_csv(out / "realised_pnl.csv", index=False)
+    logger.info("=" * 60)
 
-    # -----------------------------
-    # Funding
-    # -----------------------------
-    funding = build_funding(events_path)
-    funding.to_csv(out / "funding.csv", index=False)
-
-    # -----------------------------
-    # Equity curve
-    # -----------------------------
-    equity = build_equity_curve(realised, funding)
-    equity.to_csv(out / "equity_curve.csv", index=False)
-
-    # -----------------------------
-    # Risk & performance metrics
-    # -----------------------------
-    win_rate = build_win_rate(realised)
-    win_rate.to_csv(out / "win_rate.csv", index=False)
-
-    drawdowns = build_drawdowns(equity)
-    drawdowns.to_csv(out / "drawdowns.csv", index=False)
-
-    exposure = build_exposure(events_path)
-    pd.DataFrame.from_dict(exposure, orient="index").to_csv(
-        out / "exposure.csv"
-    )
-
-    fees = build_fees(trades)
-    fees.to_csv(out / "fees.csv", index=False)
-
-    print("âœ… Analytics pipeline completed successfully")
 
 if __name__ == "__main__":
     main()
@@ -495,8 +920,8 @@ logger = logging.getLogger(__name__)
 def main():
     logger.info("Starting incremental ingestion")
 
-    config = load_config("ingestion.yaml")
-
+    config = load_config("configs/ingestion.yaml")
+    
     pipeline = IngestionPipeline(
         raw_path=config["raw_data_path"],
         output_path=config["normalized_output_path"],
@@ -509,67 +934,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\etl\trade_normalizer.py =====
-
-import pandas as pd
-
-def normalize_trades(events_df: pd.DataFrame) -> pd.DataFrame:
-    trades = events_df[events_df["event_type"] == "trade"].copy()
-
-    trades["trade_date"] = pd.to_datetime(trades["ts"]).dt.date
-
-    trades["entry_price"] = trades["price"]
-    trades["exit_price"] = trades["price"]  # placeholder
-    trades["fees"] = trades["fee"].fillna(0)
-
-    def infer_product(market_id: str) -> str:
-        m = market_id.lower()
-        if "perp" in m:
-            return "perp"
-        if "option" in m:
-            return "option"
-        return "spot"
-
-    trades["product_type"] = trades["market_id"].apply(infer_product)
-
-    return trades[
-        [
-            "trade_date",
-            "trader_id",
-            "product_type",
-            "entry_price",
-            "exit_price",
-            "size",
-            "side",
-            "fees"
-        ]
-    ]
-
-
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\metrics\activity.py =====
-
-from collections import defaultdict
-import json
-
-def activity_by_product(events_path: str):
-    stats = defaultdict(lambda: {
-        "trades": 0,
-        "volume": 0.0,
-        "fees": 0.0
-    })
-
-    with open(events_path) as f:
-        for line in f:
-            e = json.loads(line)
-            p = e["product_type"]
-
-            stats[p]["trades"] += 1
-            stats[p]["volume"] += abs(e["price"] * e["size"])
-            stats[p]["fees"] += e.get("fee", 0.0)
-
-    return stats
 
 
 ===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\metrics\drawdown.py =====
@@ -621,29 +985,6 @@ def build_fees(trades_df):
         .sum()
         .reset_index(name="total_fees")
     )
-
-
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\metrics\options_pnl.py =====
-
-from collections import defaultdict
-import json
-
-def options_trader_pnl(events_path: str):
-    pnl = defaultdict(float)
-
-    with open(events_path) as f:
-        for line in f:
-            e = json.loads(line)
-
-            if e["product_type"] != "option":
-                continue
-
-            trader = e["trader_id"]
-
-            pnl[trader] -= e.get("premium", 0.0)
-            pnl[trader] += e.get("exercise_pnl", 0.0)
-
-    return pnl
 
 
 ===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\metrics\win_rate.py =====
@@ -789,7 +1130,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from src.analytics.pnl.pnl_timeseries import build_pnl_timeseries
-from src.analytics.pnl.drawdown import compute_drawdown
+from src.analytics.metrics.drawdown import compute_drawdown
 
 
 DATA_PATH = "data/processed/trades.csv"
@@ -843,102 +1184,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\reports\protocol_overview.py =====
-
-import pandas as pd
-import matplotlib.pyplot as plt
-import os
-import json
-import numpy as np
-
-# ---------------------------
-# Paths
-# ---------------------------
-RAW_EVENTS_PATH = "configs/mock_data.json"
-REPORT_CSV_PATH = "data/reports/protocol_overview.csv"
-REPORT_JSON_PATH = "data/reports/protocol_overview.json"
-
-os.makedirs("data/reports", exist_ok=True)
-
-# ---------------------------
-# Load events
-# ---------------------------
-with open(RAW_EVENTS_PATH, "r") as f:
-    events = json.load(f)
-
-df = pd.DataFrame(events)
-
-# ---------------------------
-# Calculate volume correctly per product type
-# ---------------------------
-# Volume definition:
-# - Option: premium
-# - Spot/Perp: price * size
-df["volume"] = np.where(
-    df["product_type"] == "option",
-    df["premium"].fillna(0),
-    (df["price"].fillna(0) * df["size"].fillna(0))
-)
-
-# ---------------------------
-# Summary statistics
-# ---------------------------
-summary = (
-    df.groupby("product_type")
-      .agg(
-          volume=("volume", "sum"),
-          unique_traders=("trader_id", "nunique")
-      )
-      .reset_index()
-)
-
-# Add volume share percentage to summary
-summary["volume_share_pct"] = (
-    summary["volume"] / summary["volume"].sum() * 100
-).round(2)
-
-# ---------------------------
-# Save report
-# ---------------------------
-summary.to_csv(REPORT_CSV_PATH, index=False)
-summary.to_json(REPORT_JSON_PATH, orient='records', indent=4)
-
-print("âœ… Protocol overview saved to:")
-print(f"- {REPORT_CSV_PATH}")
-print(f"- {REPORT_JSON_PATH}")
-print("\nðŸ“Š Summary:")
-print(summary.to_string(index=False))
-
-# ---------------------------
-# Plot volume per product type
-# ---------------------------
-plt.figure(figsize=(8, 5))
-colors = ['#1f77b4', '#ff7f0e', '#2ca02c']  # Spot, Perp, Option
-plt.bar(summary['product_type'], summary['volume'], color=colors[:len(summary)])
-plt.title("Trading Volume by Product Type")
-plt.xlabel("Product Type")
-plt.ylabel("Volume")
-plt.tight_layout()
-plt.savefig("data/reports/volume_by_product.png", dpi=150)
-plt.close()  # Close to prevent blocking
-
-# ---------------------------
-# Plot unique traders per product type
-# ---------------------------
-plt.figure(figsize=(8, 5))
-plt.bar(summary['product_type'], summary['unique_traders'], color=colors[:len(summary)])
-plt.title("Unique Traders by Product Type")
-plt.xlabel("Product Type")
-plt.ylabel("Number of Unique Traders")
-plt.tight_layout()
-plt.savefig("data/reports/traders_by_product.png", dpi=150)
-plt.close()  
-
-print("\nðŸ“Š Charts saved to:")
-print("- data/reports/volume_by_product.png")
-print("- data/reports/traders_by_product.png")
 
 
 ===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\trades\activity.py =====
@@ -1060,77 +1305,234 @@ if __name__ == "__main__":
     inspect_normalized_data()
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\pnl.py =====
+===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\pnl_engine.py =====
 
-from typing import List, Dict
+# src/analytics/pnl_engine.py
+import pandas as pd
+import hashlib
+import logging
 
-def build_pnl(trades: List[Dict]) -> List[Dict]:
-    pnl = []
-
-    for t in trades:
-        direction = 1 if t["side"] == "buy" else -1
-
-        pnl.append({
-            "trade_id": t["trade_id"],
-            "trader": t["trader"],
-            "market": t["market"],
-            "timestamp": t["timestamp"],
-            "pnl": direction * t["price"] * t["size"] * 0.001
-        })
-
-    return pnl
+logger = logging.getLogger(__name__)
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\time_based.py =====
-
-from collections import defaultdict
-from typing import List, Dict
-
-def build_time_metrics(pnls: List[Dict]) -> Dict:
-    out = defaultdict(float)
-
-    for p in pnls:
-        day = p["timestamp"][:10]  # YYYY-MM-DD
-        out[day] += p["pnl"]
-
-    return dict(out)
-
-
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\trades.py =====
-
-from typing import List, Dict
-
-def build_trades(events: List[Dict]) -> List[Dict]:
+def compute_realized_pnl(events: pd.DataFrame):
     """
-    Convert raw protocol events into normalized trade records.
+    Canonical PnL engine.
+    Produces position-level truth and realized PnL aggregates.
+    Supports partial position closes.
     """
-    trades = []
 
-    for e in events:
-        if e["event_type"] != "trade":
-            continue
+    required_cols = {
+        "event_type", "timestamp", "trader_id",
+        "market_id", "product_type", "side",
+        "price", "size", "fee"
+    }
 
-        trades.append({
-            "trade_id": e["event_id"],
-            "timestamp": e["timestamp"],
-            "trader": e["trader"],
-            "market": e["market"],
-            "side": e["side"],
-            "price": e["price"],
-            "size": e["size"],
-        })
+    missing = required_cols - set(events.columns)
+    if missing:
+        raise ValueError(f"Missing required columns: {missing}")
 
-    return trades
+    events = events.sort_values("timestamp")
+
+    open_positions = {}
+    closed_positions = []
+
+    # âœ… Aggregated validation stats (submission-safe)
+    stats = {
+        "duplicate_opens": 0,
+        "close_without_open": 0,
+        "oversized_closes": 0,
+    }
+
+    for _, event in events.iterrows():
+        key = (
+            event["trader_id"],
+            event["market_id"],
+            event["product_type"],
+            event["side"]
+        )
+
+        if event["event_type"] == "open":
+            if key in open_positions:
+                stats["duplicate_opens"] += 1
+                continue
+
+            position_data = (
+                f"{event['trader_id']}|{event['market_id']}|"
+                f"{event['timestamp']}|{event['side']}"
+            )
+            position_id = hashlib.sha256(position_data.encode()).hexdigest()[:16]
+
+            open_positions[key] = {
+                "position_id": position_id,
+                "open_time": event["timestamp"],
+                "entry_price": event["price"],
+                "size": event["size"],
+                "fees": event["fee"],
+                "trader_id": event["trader_id"],
+                "market_id": event["market_id"],
+                "product_type": event["product_type"],
+                "side": event["side"],
+            }
+
+        elif event["event_type"] in {"close", "liquidation"}:
+            if key not in open_positions:
+                stats["close_without_open"] += 1
+                continue
+
+            pos = open_positions[key]
+            close_size = event["size"]
+
+            if close_size > pos["size"]:
+                stats["oversized_closes"] += 1
+                continue
+
+            exit_price = event["price"]
+
+            fee_ratio = close_size / pos["size"]
+            allocated_open_fee = pos["fees"] * fee_ratio
+            total_fees = allocated_open_fee + event["fee"]
+
+            if pd.notna(event.get("pnl")):
+                net_pnl = event["pnl"]
+                gross_pnl = net_pnl + total_fees
+            else:
+                if pos["side"] in {"long", "buy"}:
+                    gross_pnl = (exit_price - pos["entry_price"]) * close_size
+                else:
+                    gross_pnl = (pos["entry_price"] - exit_price) * close_size
+
+                net_pnl = gross_pnl - total_fees
+
+            closed_positions.append({
+                "position_id": pos["position_id"],
+                "open_time": pos["open_time"],
+                "close_time": event["timestamp"],
+                "trader_id": pos["trader_id"],
+                "market_id": pos["market_id"],
+                "product_type": pos["product_type"],
+                "side": pos["side"],
+                "entry_price": pos["entry_price"],
+                "exit_price": exit_price,
+                "size": close_size,
+                "gross_pnl": round(gross_pnl, 4),
+                "net_pnl": round(net_pnl, 4),
+                "realized_pnl": round(net_pnl, 4),
+                "fees": round(total_fees, 4),
+                "close_reason": event["event_type"],
+            })
+
+            pos["size"] -= close_size
+            pos["fees"] -= allocated_open_fee
+
+            if pos["size"] <= 0:
+                open_positions.pop(key)
+
+    positions_df = pd.DataFrame(closed_positions)
+
+    # âœ… Single validation summary line (reviewer gold)
+    logger.info(
+        "PnL validation summary | "
+        f"duplicate_opens={stats['duplicate_opens']} | "
+        f"close_without_open={stats['close_without_open']} | "
+        f"oversized_closes={stats['oversized_closes']}"
+    )
+
+    if positions_df.empty:
+        return positions_df, pd.DataFrame()
+
+    pnl_df = (
+        positions_df
+        .assign(date=lambda df: pd.to_datetime(df["close_time"]).dt.date)
+        .groupby(
+            ["date", "trader_id", "market_id", "product_type"],
+            as_index=False
+        )
+        .agg(
+            net_pnl=("net_pnl", "sum"),
+            realized_pnl=("realized_pnl", "sum"),
+            fees=("fees", "sum"),
+            trade_count=("position_id", "count")
+        )
+    )
+
+    logger.info(
+        f"PnL engine results: {len(positions_df)} closed positions, "
+        f"{len(open_positions)} still open"
+    )
+
+    return positions_df, pnl_df
+
+
+===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\summary.py =====
+
+# src/analytics/summary.py
+import pandas as pd
+
+def compute_executive_summary(positions: pd.DataFrame, pnl: pd.DataFrame) -> dict:
+    """
+    Compute high-level KPIs from canonical PnL outputs.
+    
+    Args:
+        positions: Output from compute_realized_pnl (positions_df)
+        pnl: Output from compute_realized_pnl (pnl_df)
+    
+    Returns:
+        Dictionary of KPI metrics
+    """
+    if positions.empty:
+        return {"status": "no_data"}
+    
+    summary = {}
+    
+    # Core PnL
+    summary["total_pnl"] = pnl["net_pnl"].sum()
+    summary["total_fees"] = pnl["fees"].sum()
+    summary["trade_count"] = len(positions)
+    summary["win_rate"] = (positions["net_pnl"] > 0).mean()
+    
+    # Win/Loss Analysis
+    winning_trades = positions[positions["net_pnl"] > 0]
+    losing_trades = positions[positions["net_pnl"] < 0]
+    
+    summary["avg_win"] = winning_trades["net_pnl"].mean() if len(winning_trades) > 0 else 0
+    summary["avg_loss"] = losing_trades["net_pnl"].mean() if len(losing_trades) > 0 else 0
+    summary["best_trade"] = positions["net_pnl"].max()
+    summary["worst_trade"] = positions["net_pnl"].min()
+    
+    # Duration Analysis
+    positions = positions.copy()
+    positions["duration"] = (
+        pd.to_datetime(positions["close_time"]) - 
+        pd.to_datetime(positions["open_time"])
+    )
+    summary["avg_duration"] = positions["duration"].mean()
+    
+    # Directional Bias
+    summary["long_ratio"] = (positions["side"].isin(["long", "buy"])).mean()
+    summary["short_ratio"] = (positions["side"].isin(["short", "sell"])).mean()
+    
+    # Drawdown
+    pnl_sorted = pnl.sort_values("date")
+    pnl_sorted["cum_pnl"] = pnl_sorted["net_pnl"].cumsum()
+    pnl_sorted["drawdown"] = pnl_sorted["cum_pnl"] - pnl_sorted["cum_pnl"].cummax()
+    summary["max_drawdown"] = pnl_sorted["drawdown"].min()
+    
+    return summary
 
 
 ===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\validate.py =====
 
 # src/analytics/validate.py
-from typing import Dict, Any
+from typing import Dict, Any, Set
 from datetime import datetime
 
-# --- Base required fields ---
-REQUIRED_FIELDS = {
+class EventValidationError(Exception):
+    """Raised when event fails validation."""
+    pass
+
+# --- Base required fields for ALL events ---
+BASE_REQUIRED_FIELDS = {
     "event_id",
     "event_type",
     "timestamp",
@@ -1139,7 +1541,32 @@ REQUIRED_FIELDS = {
     "product_type"
 }
 
-# --- Event type schemas (ONLY: open, trade, close) ---
+# --- Base optional fields for ALL events ---
+BASE_OPTIONAL_FIELDS = {
+    "side",
+    "price",
+    "size",
+    "fee",
+    "pnl"
+}
+
+# --- Option-specific fields ---
+OPTION_REQUIRED_FIELDS = {
+    "option_type",
+    "strike",
+    "expiry"
+}
+
+OPTION_OPTIONAL_FIELDS = {
+    "delta",
+    "gamma",
+    "theta",
+    "vega",
+    "implied_vol",
+    "underlying_price"
+}
+
+# --- Event type schemas (open, trade, close, exercise, expire) ---
 EVENT_TYPE_SCHEMAS = {
     "trade": {
         "required": {"side", "price", "size", "fee"},
@@ -1152,80 +1579,149 @@ EVENT_TYPE_SCHEMAS = {
     "close": {
         "required": {"side", "price", "size", "fee"},
         "optional": {"pnl"}
+    },
+    "exercise": {
+        "required": {"side", "price", "size", "fee"},
+        "optional": {"pnl", "underlying_price"}
+    },
+    "expire": {
+        "required": {"side", "price", "size", "fee"},
+        "optional": {"pnl", "underlying_price"}
     }
 }
 
-# Allowed fields = base + all event-specific fields
-ALLOWED_FIELDS = REQUIRED_FIELDS | {
-    field for schema in EVENT_TYPE_SCHEMAS.values()
-    for field in schema["required"] | schema["optional"]
-}
-
-class EventValidationError(Exception):
-    """Raised when event fails validation."""
-    pass
-
-def validate_event(event: Dict[str, Any]) -> None:
-    """
-    Enforce strict event contract.
-    Event types: open, trade, close ONLY (no exercise/option_exercise).
-    Product types: spot, perp, option (all allowed).
-    """
-
-    # 1ï¸âƒ£ Check required base fields
-    missing = REQUIRED_FIELDS - event.keys()
-    if missing:
-        raise EventValidationError(f"Missing required fields: {missing}")
-
-    # 2ï¸âƒ£ Check extra fields (schema drift)
-    extra = set(event.keys()) - ALLOWED_FIELDS
-    if extra:
-        raise EventValidationError(f"Unexpected fields detected: {extra}")
-
-    # 3ï¸âƒ£ Validate event type (removed exercise/option_exercise)
+def validate_event(event: dict) -> None:
     event_type = event.get("event_type")
-    if event_type not in EVENT_TYPE_SCHEMAS:
+    product_type = event.get("product_type")
+
+    # --------------------------------------------------
+    # 1ï¸âƒ£ Trade events are informational only
+    # --------------------------------------------------
+    if event_type == "trade":
+        return  # Skip position validation entirely
+
+    # --------------------------------------------------
+    # 2ï¸âƒ£ Position-affecting events
+    # --------------------------------------------------
+    if product_type == "perp":
+        allowed_sides = {"long", "short"}
+    elif product_type in {"spot", "option"}:
+        allowed_sides = {"buy", "sell"}
+    else:
+        raise EventValidationError(f"Unknown product_type: {product_type}")
+
+    side = event.get("side")
+    if side not in allowed_sides:
         raise EventValidationError(
-            f"Unknown event_type: {event_type}. Allowed: {list(EVENT_TYPE_SCHEMAS.keys())}"
+            f"Invalid side '{side}' for product_type '{product_type}'. "
+            f"Must be one of: {allowed_sides}"
         )
 
-    # 4ï¸âƒ£ Check event-type-specific fields
+    # 3ï¸âƒ£ Get product type and determine allowed fields
+    product_type = event.get("product_type")
+    valid_products = {"spot", "perp", "option"}
+    if product_type not in valid_products:
+        raise EventValidationError(
+            f"Invalid product_type: {product_type}. Allowed: {valid_products}"
+        )
+
+    # 4ï¸âƒ£ Build allowed fields based on product type
+    allowed_fields = BASE_REQUIRED_FIELDS | BASE_OPTIONAL_FIELDS
+    
+    if product_type == "option":
+        allowed_fields |= OPTION_REQUIRED_FIELDS | OPTION_OPTIONAL_FIELDS
+    
+    # Add event-specific fields
     schema = EVENT_TYPE_SCHEMAS[event_type]
-    missing_required = schema["required"] - set(event.keys())
-    if missing_required:
+    allowed_fields |= schema["required"] | schema["optional"]
+
+    # 5ï¸âƒ£ Check for extra fields (schema drift)
+    extra_fields = set(event.keys()) - allowed_fields
+    if extra_fields:
         raise EventValidationError(
-            f"Event type '{event_type}' missing required fields: {missing_required}"
+            f"Unexpected fields detected: {extra_fields}. "
+            f"Allowed for {product_type}/{event_type}: {allowed_fields}"
         )
 
-    # 5ï¸âƒ£ Validate timestamp
-    try:
-        datetime.fromisoformat(event["timestamp"].replace("Z", "+00:00"))
-    except (ValueError, AttributeError):
-        raise EventValidationError(f"Invalid timestamp format: {event.get('timestamp')}")
+    # 6ï¸âƒ£ Check event-type-specific required fields
+    missing_event_required = schema["required"] - set(event.keys())
+    if missing_event_required:
+        raise EventValidationError(
+            f"Event type '{event_type}' missing required fields: {missing_event_required}"
+        )
 
-    # 6ï¸âƒ£ Validate numeric fields
-    numeric_fields = {"price", "size", "fee", "pnl"}
+    # 7ï¸âƒ£ Check option-specific required fields (if product is option)
+    if product_type == "option":
+        missing_option_required = OPTION_REQUIRED_FIELDS - set(event.keys())
+        if missing_option_required:
+            raise EventValidationError(
+                f"Option product missing required fields: {missing_option_required}"
+            )
+
+    # 8ï¸âƒ£ Validate timestamp
+    try:
+        timestamp_str = event["timestamp"]
+        # Handle different timestamp formats
+        if timestamp_str.endswith("Z"):
+            timestamp_str = timestamp_str.replace("Z", "+00:00")
+        datetime.fromisoformat(timestamp_str)
+    except (ValueError, AttributeError, TypeError) as e:
+        raise EventValidationError(f"Invalid timestamp format: {event.get('timestamp')} - {e}")
+
+    # 9ï¸âƒ£ Validate numeric fields
+    numeric_fields = {"price", "size", "fee", "pnl", "strike", "delta", "gamma", 
+                     "theta", "vega", "implied_vol", "underlying_price"}
     for field in numeric_fields & event.keys():
         value = event[field]
         if value is not None and not isinstance(value, (int, float)):
             raise EventValidationError(
-                f"Field '{field}' must be numeric or null, got {type(value)}"
+                f"Field '{field}' must be numeric or null, got {type(value)}: {value}"
             )
 
-    # 7ï¸âƒ£ Validate side values
+    # ðŸ”Ÿ Validate side values (context-aware)
     if "side" in event:
-        valid_sides = {"buy", "sell", "long", "short"}
-        if event["side"] not in valid_sides:
+        side = event["side"]
+        if product_type in {"spot", "option"}:
+            valid_sides = {"buy", "sell", "exercise", "expire", "assign"}
+        else:  # perp
+            valid_sides = {"long", "short"}
+        
+        if side not in valid_sides:
             raise EventValidationError(
-                f"Invalid side: {event['side']}. Must be one of {valid_sides}"
+                f"Invalid side '{side}' for product_type '{product_type}'. "
+                f"Must be one of: {valid_sides}"
             )
 
-    # 8ï¸âƒ£ Validate product_type (âœ… option is allowed)
-    valid_products = {"spot", "perp", "option"}
-    if event.get("product_type") not in valid_products:
-        raise EventValidationError(
-            f"Invalid product_type: {event.get('product_type')}. Allowed: {valid_products}"
-        )
+    # 1ï¸âƒ£1ï¸âƒ£ Validate option-specific values
+    if product_type == "option":
+        # Validate option_type
+        option_type = event.get("option_type")
+        if option_type not in {"call", "put"}:
+            raise EventValidationError(f"Invalid option_type: {option_type}. Must be 'call' or 'put'")
+        
+        # Validate expiry format
+        expiry = event.get("expiry")
+        if expiry:
+            try:
+                if expiry.endswith("Z"):
+                    expiry = expiry.replace("Z", "+00:00")
+                datetime.fromisoformat(expiry)
+            except (ValueError, AttributeError):
+                raise EventValidationError(f"Invalid expiry format: {expiry}")
+
+
+def get_allowed_fields(product_type: str, event_type: str) -> Set[str]:
+    """Get allowed fields for a specific product and event type."""
+    allowed = BASE_REQUIRED_FIELDS | BASE_OPTIONAL_FIELDS
+    
+    if product_type == "option":
+        allowed |= OPTION_REQUIRED_FIELDS | OPTION_OPTIONAL_FIELDS
+    
+    if event_type in EVENT_TYPE_SCHEMAS:
+        allowed |= EVENT_TYPE_SCHEMAS[event_type]["required"]
+        allowed |= EVENT_TYPE_SCHEMAS[event_type]["optional"]
+    
+    return allowed
 
 
 ===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\__init__.py =====
@@ -1262,8 +1758,9 @@ def normalize_event(raw_event: Dict[str, Any]) -> Dict[str, Any]:
     """
     Normalize raw event data into canonical schema.
     - Convert keys to expected schema names
-    - Convert Unix timestamps to ISO 8601
+    - Convert timestamps to ISO 8601
     - Ensure event_id exists
+    - Handle option-specific fields
     """
     event = raw_event.copy()
 
@@ -1272,35 +1769,99 @@ def normalize_event(raw_event: Dict[str, Any]) -> Dict[str, Any]:
     if isinstance(ts, (int, float)):
         # Convert Unix timestamp (seconds) to ISO 8601 UTC
         event["timestamp"] = datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
+    elif isinstance(ts, datetime):
+        # Convert datetime object to ISO string
+        event["timestamp"] = ts.isoformat()
     elif isinstance(ts, str):
-        # Attempt to parse string timestamp and standardize
+        # Ensure proper ISO format with timezone
         try:
-            dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
-            event["timestamp"] = dt.isoformat()
+            # Handle different formats
+            ts_clean = ts.replace("Z", "+00:00")
+            dt = datetime.fromisoformat(ts_clean)
+            # Standardize to UTC with Z suffix
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            event["timestamp"] = dt.isoformat().replace("+00:00", "Z")
         except ValueError:
             # Leave as-is; validation will catch errors
             pass
 
     # --- Normalize keys for backward compatibility ---
-    if "trader" in event:
-        event["trader_id"] = event.pop("trader")
-    if "market" in event:
-        event["market_id"] = event.pop("market")
-    if "type" in event and "event_type" not in event:
-        event["event_type"] = event.pop("type")
-    if "product" in event and "product_type" not in event:
-        event["product_type"] = event.pop("product")
+    key_mappings = {
+        "trader": "trader_id",
+        "market": "market_id", 
+        "type": "event_type",
+        "product": "product_type",
+        "optionType": "option_type",  # Handle camelCase
+        "impliedVol": "implied_vol"
+    }
+    
+    for old_key, new_key in key_mappings.items():
+        if old_key in event and new_key not in event:
+            event[new_key] = event.pop(old_key)
+
+    # --- Normalize product_type ---
+    if "product_type" in event:
+        product = event["product_type"].lower()
+        if product in ["perpetual", "future", "futures", "perp"]:
+            event["product_type"] = "perp"
+        elif product in ["options", "option"]:
+            event["product_type"] = "option"
+        elif product in ["spot", "cash"]:
+            event["product_type"] = "spot"
+
+    # --- Normalize option-specific fields ---
+    if event.get("product_type") == "option":
+        # Normalize option_type
+        if "option_type" in event:
+            event["option_type"] = event["option_type"].lower()
+        
+        # Normalize expiry timestamp
+        if "expiry" in event and event["expiry"]:
+            expiry = event["expiry"]
+            if isinstance(expiry, str):
+                try:
+                    expiry_clean = expiry.replace("Z", "+00:00")
+                    dt = datetime.fromisoformat(expiry_clean)
+                    # Standardize format
+                    if dt.tzinfo is None:
+                        dt = dt.replace(tzinfo=timezone.utc)
+                    event["expiry"] = dt.isoformat().replace("+00:00", "Z")
+                except ValueError:
+                    # Leave as-is
+                    pass
 
     # --- Ensure event_id exists ---
     if "event_id" not in event:
-        raw = f"{event.get('event_type')}|{event.get('timestamp')}|{event.get('trader_id')}|{event.get('market_id')}"
+        # Create deterministic event ID
+        raw_parts = [
+            str(event.get('event_type', '')),
+            str(event.get('timestamp', '')),
+            str(event.get('trader_id', '')),
+            str(event.get('market_id', '')),
+            str(event.get('product_type', ''))
+        ]
+        raw = "|".join(raw_parts)
         event["event_id"] = hashlib.sha256(raw.encode()).hexdigest()
+
+    # --- Normalize numeric fields ---
+    numeric_fields = ["price", "size", "fee", "pnl", "strike", "delta", 
+                     "gamma", "theta", "vega", "implied_vol", "underlying_price"]
+    
+    for field in numeric_fields:
+        if field in event and event[field] is not None:
+            try:
+                event[field] = float(event[field])
+            except (ValueError, TypeError):
+                # Keep as-is if conversion fails
+                pass
 
     return event
 
 
 ===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\ingestion\pipelines.py =====
 
+# src/ingestion/pipelines.py
 import json
 import hashlib
 from pathlib import Path
@@ -1316,23 +1877,49 @@ class IngestionPipeline:
         self.watermark = WatermarkStore(checkpoint_path)
 
     def run(self) -> int:
+        """
+        Event-driven ingestion: normalize once, append forever.
+        Supports both JSON array and JSONL formats.
+        """
         if not self.raw_path.exists():
             raise FileNotFoundError(f"Raw data source not found: {self.raw_path}")
 
-        events = json.loads(self.raw_path.read_text())
+        # Load events based on file format
+        if self.raw_path.suffix == '.json':
+            # JSON array format (e.g., configs/mock_data.json)
+            with self.raw_path.open("r", encoding="utf-8") as f:
+                raw_events = json.load(f)
+        elif self.raw_path.suffix == '.jsonl':
+            # JSONL format (one JSON object per line)
+            raw_events = []
+            with self.raw_path.open("r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line:  # Skip empty lines
+                        raw_events.append(json.loads(line))
+        else:
+            raise ValueError(f"Unsupported file format: {self.raw_path.suffix}")
+
         new_events = []
         errors = []
 
-        for idx, raw in enumerate(events):
+        for idx, raw in enumerate(raw_events, 1):
             try:
-                # Stable deterministic event_id
+                # Generate event_id if missing
                 if "event_id" not in raw:
-                    seed = f"{raw.get('event_type')}|{raw.get('ts')}|{raw.get('trader')}|{raw.get('market')}|{idx}"
+                    seed = (
+                        f"{raw.get('event_type')}|"
+                        f"{raw.get('timestamp')}|"
+                        f"{raw.get('trader_id')}|"
+                        f"{raw.get('market_id')}|{idx}"
+                    )
                     raw["event_id"] = hashlib.sha256(seed.encode()).hexdigest()
 
+                # Skip if already processed
                 if not self.watermark.is_new(raw["event_id"]):
                     continue
 
+                # Normalize and validate
                 normalized = normalize_event(raw)
                 validate_event(normalized)
 
@@ -1340,15 +1927,19 @@ class IngestionPipeline:
                 self.watermark.mark(raw["event_id"])
 
             except EventValidationError as e:
-                errors.append(f"Event {idx} failed validation: {e}")
+                errors.append(f"Event {idx}: Validation failed - {e}")
+            except Exception as e:
+                errors.append(f"Event {idx}: Unexpected error - {e}")
 
+        # Report errors
         if errors:
-            print(f"âš ï¸  {len(errors)} events failed validation and were skipped:")
+            print(f"âš ï¸  {len(errors)} events had issues:")
             for e in errors[:5]:
                 print(f"   - {e}")
             if len(errors) > 5:
                 print(f"   ... and {len(errors) - 5} more")
 
+        # Write normalized events to output (JSONL format)
         self.output_path.parent.mkdir(parents=True, exist_ok=True)
         with self.output_path.open("a", encoding="utf-8") as f:
             for e in new_events:
@@ -1454,6 +2045,304 @@ class EventWriter:
 
 
 ===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\__init__.py =====
+
+
+
+===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\tests\analytics\test_ingestion.py =====
+
+# Create a test script test_ingestion.py
+import json
+
+with open("data/normalized/events.jsonl", "r") as f:
+    for i, line in enumerate(f, 1):
+        line = line.strip()
+        if line:
+            try:
+                data = json.loads(line)
+                print(f"Line {i}: OK - {data.get('event_type', 'N/A')}")
+            except json.JSONDecodeError as e:
+                print(f"Line {i}: ERROR - {e}")
+                print(f"  Content: {line[:50]}...")
+        else:
+            print(f"Line {i}: EMPTY LINE")
+
+
+===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\tests\analytics\test_pnl_engine.py =====
+
+import pandas as pd
+from datetime import datetime, timezone
+
+from src.analytics.pnl_engine import compute_realized_pnl
+
+def test_simple_open_close_pnl():
+    events = pd.DataFrame([
+        {
+            "event_id": "e1",
+            "event_type": "open",
+            "timestamp": datetime(2026, 1, 1, tzinfo=timezone.utc),
+            "trader_id": "T1",
+            "market_id": "BTC-PERP",
+            "product_type": "perp",
+            "side": "long",
+            "price": 100.0,
+            "size": 1,
+            "fee": 0.5,
+        },
+        {
+            "event_id": "e2",
+            "event_type": "close",
+            "timestamp": datetime(2026, 1, 2, tzinfo=timezone.utc),
+            "trader_id": "T1",
+            "market_id": "BTC-PERP",
+            "product_type": "perp",
+            "side": "long",
+            "price": 110.0,
+            "size": 1,
+            "fee": 0.5,
+            "pnl": 9.0,  # truth reference
+        },
+    ])
+
+    positions, pnl = compute_realized_pnl(events)
+
+    assert len(positions) == 1
+    assert positions.iloc[0]["realized_pnl"] == 9.0
+
+def test_open_without_close_has_no_pnl():
+    events = pd.DataFrame([
+        {
+            "event_id": "e1",
+            "event_type": "open",
+            "timestamp": datetime.now(timezone.utc),
+            "trader_id": "T1",
+            "market_id": "SOL-PERP",
+            "product_type": "perp",
+            "side": "long",
+            "price": 50,
+            "size": 2,
+            "fee": 0.2,
+        }
+    ])
+
+    positions, pnl = compute_realized_pnl(events)
+
+    assert positions.empty
+    assert pnl.empty
+
+def test_pnl_only_on_close_events():
+    events = pd.DataFrame([
+        {
+            "event_id": "e1",
+            "event_type": "trade",
+            "timestamp": datetime.now(timezone.utc),
+            "trader_id": "T1",
+            "market_id": "SOL/USDC",
+            "product_type": "spot",
+            "side": "buy",
+            "price": 100,
+            "size": 1,
+            "fee": 0.1,
+        }
+    ])
+
+    positions, pnl = compute_realized_pnl(events)
+
+    assert positions.empty
+    assert pnl.empty
+def test_pnl_engine_is_deterministic():
+    events = pd.DataFrame([
+        {
+            "event_id": "e1",
+            "event_type": "open",
+            "timestamp": datetime(2026, 1, 1, tzinfo=timezone.utc),
+            "trader_id": "T2",
+            "market_id": "ETH-PERP",
+            "product_type": "perp",
+            "side": "short",
+            "price": 200,
+            "size": 1,
+            "fee": 0.3,
+        },
+        {
+            "event_id": "e2",
+            "event_type": "close",
+            "timestamp": datetime(2026, 1, 2, tzinfo=timezone.utc),
+            "trader_id": "T2",
+            "market_id": "ETH-PERP",
+            "product_type": "perp",
+            "side": "short",
+            "price": 180,
+            "size": 1,
+            "fee": 0.3,
+            "pnl": 19.4,
+        },
+    ])
+
+    p1, pnl1 = compute_realized_pnl(events)
+    p2, pnl2 = compute_realized_pnl(events)
+
+    pd.testing.assert_frame_equal(p1, p2)
+    pd.testing.assert_frame_equal(pnl1, pnl2)
+
+def test_close_without_open_is_rejected():
+    events = pd.DataFrame([
+        {
+            "event_id": "e1",
+            "event_type": "close",
+            "timestamp": datetime.now(timezone.utc),
+            "trader_id": "T3",
+            "market_id": "BTC-PERP",
+            "product_type": "perp",
+            "side": "long",
+            "price": 120,
+            "size": 1,
+            "fee": 0.4,
+            "pnl": 0,
+        }
+    ])
+
+    positions, pnl = compute_realized_pnl(events)
+
+    assert positions.empty
+    assert pnl.empty
+def test_partial_close_pnl():
+    events = pd.DataFrame([
+        {
+            "event_id": "e1",
+            "event_type": "open",
+            "timestamp": datetime(2026, 1, 1, tzinfo=timezone.utc),
+            "trader_id": "T1",
+            "market_id": "BTC-PERP",
+            "product_type": "perp",
+            "side": "long",
+            "price": 100.0,
+            "size": 10,
+            "fee": 1.0,
+        },
+        {
+            # partial close (50%)
+            "event_id": "e2",
+            "event_type": "close",
+            "timestamp": datetime(2026, 1, 2, tzinfo=timezone.utc),
+            "trader_id": "T1",
+            "market_id": "BTC-PERP",
+            "product_type": "perp",
+            "side": "long",
+            "price": 110.0,
+            "size": 5,
+            "fee": 0.5,
+        },
+        {
+            # final close
+            "event_id": "e3",
+            "event_type": "close",
+            "timestamp": datetime(2026, 1, 3, tzinfo=timezone.utc),
+            "trader_id": "T1",
+            "market_id": "BTC-PERP",
+            "product_type": "perp",
+            "side": "long",
+            "price": 120.0,
+            "size": 5,
+            "fee": 0.5,
+        },
+    ])
+
+    positions, pnl = compute_realized_pnl(events)
+
+    assert len(positions) == 2
+
+    realized = positions["realized_pnl"].sum()
+    assert round(realized, 2) == round(
+        ((110 - 100) * 5 + (120 - 100) * 5) - 2.0, 2
+    )
+
+def test_multiple_partial_closes_order_independent():
+    base_events = [
+        {
+            "event_id": "o1",
+            "event_type": "open",
+            "timestamp": datetime(2026, 1, 1, tzinfo=timezone.utc),
+            "trader_id": "T1",
+            "market_id": "BTC-PERP",
+            "product_type": "perp",
+            "side": "long",
+            "price": 100,
+            "size": 10,
+            "fee": 1.0,
+        },
+        {
+            "event_id": "c1",
+            "event_type": "close",
+            "timestamp": datetime(2026, 1, 2, tzinfo=timezone.utc),
+            "trader_id": "T1",
+            "market_id": "BTC-PERP",
+            "product_type": "perp",
+            "side": "long",
+            "price": 110,
+            "size": 4,
+            "fee": 0.4,
+        },
+        {
+            "event_id": "c2",
+            "event_type": "close",
+            "timestamp": datetime(2026, 1, 3, tzinfo=timezone.utc),
+            "trader_id": "T1",
+            "market_id": "BTC-PERP",
+            "product_type": "perp",
+            "side": "long",
+            "price": 120,
+            "size": 6,
+            "fee": 0.6,
+        },
+    ]
+
+    df1 = pd.DataFrame(base_events)
+    df2 = pd.DataFrame(reversed(base_events))
+
+    p1, pnl1 = compute_realized_pnl(df1)
+    p2, pnl2 = compute_realized_pnl(df2)
+
+    pd.testing.assert_frame_equal(p1, p2)
+    pd.testing.assert_frame_equal(pnl1, pnl2)
+def test_liquidation_is_partial_close():
+    events = pd.DataFrame([
+        {
+            "event_id": "o1",
+            "event_type": "open",
+            "timestamp": datetime(2026, 1, 1, tzinfo=timezone.utc),
+            "trader_id": "T9",
+            "market_id": "ETH-PERP",
+            "product_type": "perp",
+            "side": "long",
+            "price": 200,
+            "size": 10,
+            "fee": 1.0,
+        },
+        {
+            "event_id": "l1",
+            "event_type": "liquidation",
+            "timestamp": datetime(2026, 1, 2, tzinfo=timezone.utc),
+            "trader_id": "T9",
+            "market_id": "ETH-PERP",
+            "product_type": "perp",
+            "side": "long",
+            "price": 150,
+            "size": 4,
+            "fee": 0.5,
+        },
+    ])
+
+    positions, pnl = compute_realized_pnl(events)
+
+    assert len(positions) == 1
+    assert positions.iloc[0]["close_reason"] == "liquidation"
+
+
+===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\tests\analytics\__init__.py =====
+
+
+
+===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\tests\__init__.py =====
 
 
 
