@@ -1,5 +1,5 @@
 date,trader_id,market_id,product_type,net_pnl,realized_pnl,fees,trade_count
-2026-02-09,trader_A,SOL-PERP,perp,38.0,38.0,2.0,2
-2026-02-09,trader_B,ETH-PERP,perp,196.0,196.0,4.0,2
-2026-02-09,trader_C,SOL/USDC,spot,-16.4,-16.4,0.4,1
-2026-02-09,trader_D,ETH-PERP,perp,-52.0,-52.0,2.0,1
+2026-02-10,trader_A,SOL-PERP,perp,19.0,19.0,1.0,1
+2026-02-10,trader_B,ETH-PERP,perp,98.0,98.0,2.0,1
+2026-02-10,trader_C,SOL/USDC,spot,-16.4,-16.4,0.4,1
+2026-02-10,trader_D,ETH-PERP,perp,-52.0,-52.0,2.0,1
