@@ -50,8 +50,13 @@ def emit(event):
     if 'event_id' not in event:
         event['event_id'] = generate_event_id(event, len(events) + 1)
     
+    # ✅ ADD THIS: Assign order type
+    if event['event_type'] in ['open', 'close']:
+        # Randomly assign order types for diversity
+        event['order_type'] = random.choice(['market', 'limit', 'stop'])
+    
     events.append(event)
-
+    
 # --------------------------------------------------
 # 1️⃣ SPOT TRADES (buy → sell) - 1 WIN, 1 LOSS
 # --------------------------------------------------
