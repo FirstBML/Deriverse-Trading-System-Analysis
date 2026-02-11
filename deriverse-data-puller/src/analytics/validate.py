@@ -41,7 +41,7 @@ OPTION_OPTIONAL_FIELDS = {
     "underlying_price"
 }
 
-# --- Event type schemas (open, trade, close, exercise, expire) ---
+# --- Event type schemas ---
 EVENT_TYPE_SCHEMAS = {
     "trade": {
         "required": {"side", "price", "size", "fee"},
@@ -56,61 +56,75 @@ EVENT_TYPE_SCHEMAS = {
         "optional": {"pnl"}
     },
     "exercise": {
-        "required": {"side", "price", "size", "fee"},
-        "optional": {"pnl", "underlying_price"}
+        "required": {"side", "size", "fee"},
+        "optional": {"price", "pnl", "underlying_price"}
     },
     "expire": {
-        "required": {"side", "price", "size", "fee"},
-        "optional": {"pnl", "underlying_price"}
+        "required": {"side", "size"},
+        "optional": {"price", "fee", "pnl", "underlying_price"}
     }
 }
 
+
 def validate_event(event: dict) -> None:
+    """
+    Validate event schema and data quality.
+    
+    Raises:
+        EventValidationError: If validation fails
+    """
     event_type = event.get("event_type")
     product_type = event.get("product_type")
 
     # --------------------------------------------------
-    # 1️⃣ Trade events are informational only
+    # 1️⃣ Trade events are informational only - skip position validation
     # --------------------------------------------------
     if event_type == "trade":
-        return  # Skip position validation entirely
+        return
 
     # --------------------------------------------------
-    # 2️⃣ Position-affecting events
+    # 2️⃣ Validate product type
     # --------------------------------------------------
-    if product_type == "perp":
-        allowed_sides = {"long", "short"}
-    elif product_type in {"spot", "option"}:
-        allowed_sides = {"buy", "sell"}
-    else:
-        raise EventValidationError(f"Unknown product_type: {product_type}")
-
-    side = event.get("side")
-    if side not in allowed_sides:
-        raise EventValidationError(
-            f"Invalid side '{side}' for product_type '{product_type}'. "
-            f"Must be one of: {allowed_sides}"
-        )
-
-    # 3️⃣ Get product type and determine allowed fields
-    product_type = event.get("product_type")
     valid_products = {"spot", "perp", "option"}
     if product_type not in valid_products:
         raise EventValidationError(
             f"Invalid product_type: {product_type}. Allowed: {valid_products}"
         )
 
+    # --------------------------------------------------
+    # 3️⃣ Product-specific side validation
+    # --------------------------------------------------
+    if product_type == "option":
+    # Options: Allow both trading terms (buy/sell) and position terms (long/short)
+        allowed_sides = {"buy", "sell", "long", "short", "exercise", "expire"}
+    elif product_type == "perp":
+        allowed_sides = {"long", "short"}
+    elif product_type == "spot":
+        allowed_sides = {"buy", "sell"}
+    
+    side = event.get("side")
+    if side and side not in allowed_sides:
+        raise EventValidationError(
+            f"Invalid side '{side}' for product_type '{product_type}'. "
+            f"Must be one of: {allowed_sides}"
+        )
+
+    # --------------------------------------------------
     # 4️⃣ Build allowed fields based on product type
+    # --------------------------------------------------
     allowed_fields = BASE_REQUIRED_FIELDS | BASE_OPTIONAL_FIELDS
     
     if product_type == "option":
         allowed_fields |= OPTION_REQUIRED_FIELDS | OPTION_OPTIONAL_FIELDS
     
     # Add event-specific fields
-    schema = EVENT_TYPE_SCHEMAS[event_type]
-    allowed_fields |= schema["required"] | schema["optional"]
+    if event_type in EVENT_TYPE_SCHEMAS:
+        schema = EVENT_TYPE_SCHEMAS[event_type]
+        allowed_fields |= schema["required"] | schema["optional"]
 
+    # --------------------------------------------------
     # 5️⃣ Check for extra fields (schema drift)
+    # --------------------------------------------------
     extra_fields = set(event.keys()) - allowed_fields
     if extra_fields:
         raise EventValidationError(
@@ -118,14 +132,20 @@ def validate_event(event: dict) -> None:
             f"Allowed for {product_type}/{event_type}: {allowed_fields}"
         )
 
+    # --------------------------------------------------
     # 6️⃣ Check event-type-specific required fields
-    missing_event_required = schema["required"] - set(event.keys())
-    if missing_event_required:
-        raise EventValidationError(
-            f"Event type '{event_type}' missing required fields: {missing_event_required}"
-        )
+    # --------------------------------------------------
+    if event_type in EVENT_TYPE_SCHEMAS:
+        schema = EVENT_TYPE_SCHEMAS[event_type]
+        missing_required = schema["required"] - set(event.keys())
+        if missing_required:
+            raise EventValidationError(
+                f"Event type '{event_type}' missing required fields: {missing_required}"
+            )
 
-    # 7️⃣ Check option-specific required fields (if product is option)
+    # --------------------------------------------------
+    # 7️⃣ Check option-specific required fields
+    # --------------------------------------------------
     if product_type == "option":
         missing_option_required = OPTION_REQUIRED_FIELDS - set(event.keys())
         if missing_option_required:
@@ -133,17 +153,20 @@ def validate_event(event: dict) -> None:
                 f"Option product missing required fields: {missing_option_required}"
             )
 
-    # 8️⃣ Validate timestamp
+    # --------------------------------------------------
+    # 8️⃣ Validate timestamp format
+    # --------------------------------------------------
     try:
         timestamp_str = event["timestamp"]
-        # Handle different timestamp formats
         if timestamp_str.endswith("Z"):
             timestamp_str = timestamp_str.replace("Z", "+00:00")
         datetime.fromisoformat(timestamp_str)
     except (ValueError, AttributeError, TypeError) as e:
         raise EventValidationError(f"Invalid timestamp format: {event.get('timestamp')} - {e}")
 
+    # --------------------------------------------------
     # 9️⃣ Validate numeric fields
+    # --------------------------------------------------
     numeric_fields = {"price", "size", "fee", "pnl", "strike", "delta", "gamma", 
                      "theta", "vega", "implied_vol", "underlying_price"}
     for field in numeric_fields & event.keys():
@@ -153,21 +176,9 @@ def validate_event(event: dict) -> None:
                 f"Field '{field}' must be numeric or null, got {type(value)}: {value}"
             )
 
-    # 🔟 Validate side values (context-aware)
-    if "side" in event:
-        side = event["side"]
-        if product_type in {"spot", "option"}:
-            valid_sides = {"buy", "sell", "exercise", "expire", "assign"}
-        else:  # perp
-            valid_sides = {"long", "short"}
-        
-        if side not in valid_sides:
-            raise EventValidationError(
-                f"Invalid side '{side}' for product_type '{product_type}'. "
-                f"Must be one of: {valid_sides}"
-            )
-
-    # 1️⃣1️⃣ Validate option-specific values
+    # --------------------------------------------------
+    # 🔟 Validate option-specific values
+    # --------------------------------------------------
     if product_type == "option":
         # Validate option_type
         option_type = event.get("option_type")
@@ -183,17 +194,3 @@ def validate_event(event: dict) -> None:
                 datetime.fromisoformat(expiry)
             except (ValueError, AttributeError):
                 raise EventValidationError(f"Invalid expiry format: {expiry}")
-
-
-def get_allowed_fields(product_type: str, event_type: str) -> Set[str]:
-    """Get allowed fields for a specific product and event type."""
-    allowed = BASE_REQUIRED_FIELDS | BASE_OPTIONAL_FIELDS
-    
-    if product_type == "option":
-        allowed |= OPTION_REQUIRED_FIELDS | OPTION_OPTIONAL_FIELDS
-    
-    if event_type in EVENT_TYPE_SCHEMAS:
-        allowed |= EVENT_TYPE_SCHEMAS[event_type]["required"]
-        allowed |= EVENT_TYPE_SCHEMAS[event_type]["optional"]
-    
-    return allowed

@@ -10,6 +10,7 @@ def normalize_event(raw_event: Dict[str, Any]) -> Dict[str, Any]:
     - Convert timestamps to ISO 8601
     - Ensure event_id exists
     - Handle option-specific fields
+    - Normalize position terminology (long→buy, short→sell for options/spot)
     """
     event = raw_event.copy()
 
@@ -58,6 +59,20 @@ def normalize_event(raw_event: Dict[str, Any]) -> Dict[str, Any]:
             event["product_type"] = "option"
         elif product in ["spot", "cash"]:
             event["product_type"] = "spot"
+
+    # --- Normalize side terminology ---
+    # Convert position terms (long/short) to trading terms (buy/sell) for spot and options
+    # Keep long/short for perps
+    if "side" in event and event.get("product_type") in ["spot", "option"]:
+        side = event["side"].lower()
+        
+        # Only normalize for open/close events, not for exercise/expire
+        if event.get("event_type") in ["open", "close", "trade"]:
+            if side == "long":
+                event["side"] = "buy"
+            elif side == "short":
+                event["side"] = "sell"
+            # Already buy/sell stays as-is
 
     # --- Normalize option-specific fields ---
     if event.get("product_type") == "option":
