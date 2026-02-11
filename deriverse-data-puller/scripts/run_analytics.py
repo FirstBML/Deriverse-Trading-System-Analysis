@@ -81,6 +81,13 @@ def run_analytics(events_df, auto_summary=True):
         print(f"Long Ratio:          {summary['long_ratio']:.1%}")
         print(f"Short Ratio:         {summary['short_ratio']:.1%}")
         print(f"Max Drawdown:        ${summary['max_drawdown']:,.2f}")
+        
+        # ✅ FIXED: Added risk-adjusted metrics to match summary.py
+        if 'sharpe_ratio' in summary:
+            print(f"Sharpe Ratio:        {summary['sharpe_ratio']:.2f}")
+        if 'sortino_ratio' in summary:
+            print(f"Sortino Ratio:       {summary['sortino_ratio']:.2f}")
+        
         print("=" * 50 + "\n")
 
     logger.info("Analytics run complete ✅")

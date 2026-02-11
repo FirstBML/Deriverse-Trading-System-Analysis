@@ -22,7 +22,8 @@ BASE_OPTIONAL_FIELDS = {
     "price",
     "size",
     "fee",
-    "pnl"
+    "pnl",
+    "order_type"  # ✅ ADDED: Allow order_type field
 }
 
 # --- Option-specific fields ---
@@ -49,11 +50,11 @@ EVENT_TYPE_SCHEMAS = {
     },
     "open": {
         "required": {"side", "price", "size", "fee"},
-        "optional": {"pnl"}
+        "optional": {"pnl", "order_type"}  # ✅ ADDED
     },
     "close": {
         "required": {"side", "price", "size", "fee"},
-        "optional": {"pnl"}
+        "optional": {"pnl", "order_type"}  # ✅ ADDED
     },
     "exercise": {
         "required": {"side", "size", "fee"},
@@ -95,7 +96,7 @@ def validate_event(event: dict) -> None:
     # 3️⃣ Product-specific side validation
     # --------------------------------------------------
     if product_type == "option":
-    # Options: Allow both trading terms (buy/sell) and position terms (long/short)
+        # Options: Allow both trading terms (buy/sell) and position terms (long/short)
         allowed_sides = {"buy", "sell", "long", "short", "exercise", "expire"}
     elif product_type == "perp":
         allowed_sides = {"long", "short"}
