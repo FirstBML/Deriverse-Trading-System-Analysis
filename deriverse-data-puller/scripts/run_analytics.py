@@ -1,12 +1,16 @@
+# scripts/run_analytics.py
 import pandas as pd
 from pathlib import Path
 import io
 import logging
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, UTC
+import sys
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from src.analytics.pnl_engine import compute_realized_pnl
 from src.analytics.summary import compute_executive_summary
+from src.analytics.analytics_builder import AnalyticsBuilder
 
-now = datetime.now(UTC)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
@@ -14,9 +18,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 NORMALIZED_EVENTS_PATH = Path("data/normalized/events.jsonl")
-ANALYTICS_DIR = Path("data/analytics")
-POSITIONS_PATH = ANALYTICS_DIR / "positions.csv"
-REALIZED_PNL_PATH = ANALYTICS_DIR / "realized_pnl.csv"
+ANALYTICS_OUTPUT_DIR = Path("data/analytics_output")
 
 
 def load_events(path: Path) -> pd.DataFrame:
@@ -25,7 +27,7 @@ def load_events(path: Path) -> pd.DataFrame:
     with open(path, 'r', encoding='utf-8') as f:
         for line in f:
             line = line.strip()
-            if line:  # Skip empty lines
+            if line:
                 events.append(pd.read_json(io.StringIO(line), typ="series"))
     
     if not events:
@@ -34,7 +36,6 @@ def load_events(path: Path) -> pd.DataFrame:
     
     df = pd.DataFrame(events)
     
-    # FIX: Use format='ISO8601' to handle different timestamp formats
     try:
         df["timestamp"] = pd.to_datetime(df["timestamp"], format='ISO8601', utc=True)
     except Exception as e:
@@ -44,32 +45,27 @@ def load_events(path: Path) -> pd.DataFrame:
     return df
 
 
-def run_analytics(events_df, auto_summary=True, submission_mode=True):
+def run_analytics(events_df, auto_summary=True):
     if events_df.empty:
         logger.error("No events to analyze")
         return None, None
     
     logger.info(f"Loaded {len(events_df)} events")
 
-    if not submission_mode:
-        logger.info(
-            f"Event counts: {events_df['event_type'].value_counts().to_dict()}"
-        )
-
     logger.info("Computing realized PnL (truth engine)")
     positions_df, pnl_df = compute_realized_pnl(events_df)
 
     if positions_df.empty:
-        logger.warning("No closed positions found — analytics skipped")
-        return None, None
+        logger.warning("No closed positions found – creating empty analytics")
+    
+    # Build all analytics outputs
+    logger.info("Building comprehensive analytics tables...")
+    builder = AnalyticsBuilder(positions_df, pnl_df, ANALYTICS_OUTPUT_DIR)
+    builder.build_all()
 
-    ANALYTICS_DIR.mkdir(parents=True, exist_ok=True)
-    positions_df.to_csv(POSITIONS_PATH, index=False)
-    pnl_df.to_csv(REALIZED_PNL_PATH, index=False)
-
-    summary = compute_executive_summary(positions_df, pnl_df)
-
-    if auto_summary:
+    if not positions_df.empty and auto_summary:
+        summary = compute_executive_summary(positions_df, pnl_df)
+        
         print("\n" + "=" * 50)
         print("EXECUTIVE SUMMARY")
         print("=" * 50)
@@ -103,8 +99,6 @@ def main():
 
     events_df = load_events(NORMALIZED_EVENTS_PATH)
     run_analytics(events_df)
-
-    logger.info("=" * 60)
 
 
 if __name__ == "__main__":
