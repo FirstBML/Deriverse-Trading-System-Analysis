@@ -65,11 +65,12 @@ class AnalyticsBuilder:
         if self.positions.empty:
             pd.DataFrame().to_csv(self.output_dir / 'positions.csv', index=False)
             return
-            
+        
         output = self.positions[[
             'position_id', 'trader_id', 'market_id', 'product_type', 'side',
             'open_time', 'close_time', 'duration_seconds',
-            'entry_price', 'exit_price', 'size', 'gross_pnl', 'fees', 'realized_pnl'
+            'entry_price', 'exit_price', 'size', 'gross_pnl', 'fees', 'realized_pnl',
+            'close_reason' 
         ]].copy()
         output.to_csv(self.output_dir / 'positions.csv', index=False)
     

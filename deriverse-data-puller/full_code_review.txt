@@ -53,7 +53,7 @@ def load_config(path: str) -> dict:
 [
   {
     "event_type": "open",
-    "timestamp": "2026-02-11T16:07:02.792332Z",
+    "timestamp": "2026-02-12T10:57:14.265052Z",
     "trader_id": "7KNXqvHu2QWvDq8cGPGvKZhFvYnz3kQ5mL8xRt2Bp9uV",
     "market_id": "SOL/USDC",
     "product_type": "spot",
@@ -61,12 +61,12 @@ def load_config(path: str) -> dict:
     "price": 100,
     "size": 10,
     "fee": 0.5,
-    "event_id": "d9f670f82d10b9d66c5ce2522c5b167063cccc5cfdd18e792deef03fd65421e1",
+    "event_id": "ddb3089c78aca56cb1a67aeb47c9f6f28375454250914a8e3d268780e28808cc",
     "order_type": "stop"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-11T18:07:02.792332Z",
+    "timestamp": "2026-02-12T12:57:14.265052Z",
     "trader_id": "7KNXqvHu2QWvDq8cGPGvKZhFvYnz3kQ5mL8xRt2Bp9uV",
     "market_id": "SOL/USDC",
     "product_type": "spot",
@@ -74,12 +74,12 @@ def load_config(path: str) -> dict:
     "price": 110,
     "size": 10,
     "fee": 0.5,
-    "event_id": "3554f00720e1da9a37ac76720ed31ca89e51c74910615e324205e3ded264b101",
+    "event_id": "8a8f431db222dc77749fb743baf5aeb131c8571908ea35b09230cf030036f719",
     "order_type": "market"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-11T16:17:02.792332Z",
+    "timestamp": "2026-02-12T11:07:14.265052Z",
     "trader_id": "5FxM2nQwP4vYkL9mT3xRd8eJbWp7sN6gH2cKt9uVfXyZ",
     "market_id": "ETH/USDC",
     "product_type": "spot",
@@ -87,12 +87,12 @@ def load_config(path: str) -> dict:
     "price": 2000,
     "size": 5,
     "fee": 1.0,
-    "event_id": "930afc0bc925f065be34cdb4ba5027251031042ce7635a1298b18d29b402b776",
+    "event_id": "8b3c6b9a981e2f4bb8448ea0484cde78c4922c629030b224e1dcc594b7034607",
     "order_type": "market"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-11T19:07:02.792332Z",
+    "timestamp": "2026-02-12T13:57:14.265052Z",
     "trader_id": "5FxM2nQwP4vYkL9mT3xRd8eJbWp7sN6gH2cKt9uVfXyZ",
     "market_id": "ETH/USDC",
     "product_type": "spot",
@@ -100,12 +100,12 @@ def load_config(path: str) -> dict:
     "price": 1950,
     "size": 5,
     "fee": 1.0,
-    "event_id": "2b7732c004ba844afd2778f370cbc823722b9a97a2f3fa5f4c07fe17c34eeae9",
+    "event_id": "f38a2874102b6b24f6afa8c79cf759482bd9701567b9b3333f5cb0050101ac53",
     "order_type": "stop"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-11T16:27:02.792332Z",
+    "timestamp": "2026-02-12T11:17:14.265052Z",
     "trader_id": "9DpT3vHx5kN2qL8mR7wYfJ6bP4sE1cG9nZ5tK3uVwXyA",
     "market_id": "SOL-PERP",
     "product_type": "perp",
@@ -113,12 +113,12 @@ def load_config(path: str) -> dict:
     "price": 100,
     "size": 10,
     "fee": 0.5,
-    "event_id": "b9f17bb1c9b9061c0b0e0596b4f2938b2cf11da48bc5e13dfbeff70c58064cf3",
+    "event_id": "6d12e0bb2cfcb0d90e9991838c7419198884592d03b9517ee2810a55c70831f6",
     "order_type": "limit"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-11T20:07:02.792332Z",
+    "timestamp": "2026-02-12T14:57:14.265052Z",
     "trader_id": "9DpT3vHx5kN2qL8mR7wYfJ6bP4sE1cG9nZ5tK3uVwXyA",
     "market_id": "SOL-PERP",
     "product_type": "perp",
@@ -126,12 +126,12 @@ def load_config(path: str) -> dict:
     "price": 120,
     "size": 10,
     "fee": 0.5,
-    "event_id": "0530f0c0af81e1b6a949064ce8da97509a1555f79a2d417b7fc6efc35fdd5190",
+    "event_id": "3ce3f79ca07e8b79e99c081f10592d9d01856290f111ca86fd88c37fdfc691cc",
     "order_type": "market"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-11T16:37:02.792332Z",
+    "timestamp": "2026-02-12T11:27:14.265052Z",
     "trader_id": "4MqL8vYx2kP9nT7wR5fH3bJ6sE1cG4nZ8tK2uVwXyBpQ",
     "market_id": "BTC-PERP",
     "product_type": "perp",
@@ -139,12 +139,12 @@ def load_config(path: str) -> dict:
     "price": 50000,
     "size": 1,
     "fee": 5.0,
-    "event_id": "13b415247354e84a2c1dacb7558f937700eb966fd1c861fc2f33266a9eb67a7e",
+    "event_id": "3b4e54dab79cef25a5ee2e820d6440c90084f60cf89ed3e5291d9d62e8b4f255",
     "order_type": "market"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-11T21:07:02.792332Z",
+    "timestamp": "2026-02-12T15:57:14.265052Z",
     "trader_id": "4MqL8vYx2kP9nT7wR5fH3bJ6sE1cG4nZ8tK2uVwXyBpQ",
     "market_id": "BTC-PERP",
     "product_type": "perp",
@@ -152,12 +152,12 @@ def load_config(path: str) -> dict:
     "price": 48000,
     "size": 1,
     "fee": 5.0,
-    "event_id": "4aac0dc10fa24d5ee63de61fc50353749caaaf8307e7c83f620ce9a5d9944584",
+    "event_id": "48409e4c5e22297fb40677a22431ecfa97e3422351cca94d8bc2822f07e9de66",
     "order_type": "market"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-11T16:47:02.792332Z",
+    "timestamp": "2026-02-12T11:37:14.265052Z",
     "trader_id": "6NrK9wZx3mQ8pU7vS4gI2dL5tF1eH7oA9yM3xVbCwRtE",
     "market_id": "ETH-PERP",
     "product_type": "perp",
@@ -165,12 +165,12 @@ def load_config(path: str) -> dict:
     "price": 2100,
     "size": 5,
     "fee": 2.0,
-    "event_id": "3fa66177a9f28180f0aa5d30499bab407cfa042996b74456ce6d22d37f64d934",
+    "event_id": "3086ca3f32ef4df06f6c99fad0d8ed1032024a78a5e4a8f81eb15a418b21dfff",
     "order_type": "stop"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-11T22:07:02.792332Z",
+    "timestamp": "2026-02-12T16:57:14.265052Z",
     "trader_id": "6NrK9wZx3mQ8pU7vS4gI2dL5tF1eH7oA9yM3xVbCwRtE",
     "market_id": "ETH-PERP",
     "product_type": "perp",
@@ -178,231 +178,299 @@ def load_config(path: str) -> dict:
     "price": 2050,
     "size": 5,
     "fee": 2.0,
-    "event_id": "b708a815cdaca1ad43fee20629867a340ece34b7773f306210b48db0e29dc9c5",
+    "event_id": "4344d0d3fb90688ac351b5481c155cdd617e3aab3798316e28130cd38fd66ec5",
     "order_type": "market"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-11T17:07:02.792332Z",
+    "timestamp": "2026-02-12T11:57:14.265052Z",
+    "trader_id": "4MqL8vYx2kP9nT7wR5fH3bJ6sE1cG4nZ8tK2uVwXyBpQ",
+    "market_id": "SOL-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 105,
+    "size": 50,
+    "fee": 5.0,
+    "event_id": "ecf09dd653367662d6e72804f0164a8708e5cf51ac701b696c65ce170917e4ce",
+    "order_type": "market"
+  },
+  {
+    "event_type": "liquidation",
+    "timestamp": "2026-02-12T12:57:14.265052Z",
+    "trader_id": "4MqL8vYx2kP9nT7wR5fH3bJ6sE1cG4nZ8tK2uVwXyBpQ",
+    "market_id": "SOL-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 88,
+    "size": 50,
+    "fee": 25.0,
+    "event_id": "8ec6cdc5d3fbfe57fe54acc8bbba82ad9de24b7e8ba25a8f6b9ae29a0fafbc32",
+    "order_type": "liquidation"
+  },
+  {
+    "event_type": "open",
+    "timestamp": "2026-02-12T11:57:14.265052Z",
     "trader_id": "8QtN2xWy5lR7mV9uT6hK3eM4pG1fJ8nB7zL4wVcDxSeF",
     "market_id": "SOL-CALL-120-FEB28",
     "product_type": "option",
     "option_type": "call",
     "strike": 120,
-    "expiry": "2026-03-01T16:07:02.792332Z",
+    "expiry": "2026-03-02T10:57:14.265052Z",
     "side": "buy",
     "price": 5.0,
     "size": 10,
     "fee": 0.5,
     "delta": 0.65,
     "implied_vol": 0.45,
-    "event_id": "d6e84536be55306698226b8ac9df2fa442a6f2fc3bb3a7ce510bc330f62eca0f",
+    "event_id": "f9cafab3cad628916eea5fc6684cad9405de4d23139d9edd6f4f25008bdba1e9",
     "order_type": "stop"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-12T16:07:02.792332Z",
+    "timestamp": "2026-02-13T10:57:14.265052Z",
     "trader_id": "8QtN2xWy5lR7mV9uT6hK3eM4pG1fJ8nB7zL4wVcDxSeF",
     "market_id": "SOL-CALL-120-FEB28",
     "product_type": "option",
     "option_type": "call",
     "strike": 120,
-    "expiry": "2026-03-01T16:07:02.792332Z",
+    "expiry": "2026-03-02T10:57:14.265052Z",
     "side": "sell",
     "price": 8.0,
     "size": 10,
     "fee": 0.5,
     "delta": 0.85,
     "implied_vol": 0.5,
-    "event_id": "cac1e88c0846b1878ac3dbdf667a5796c954a16da23271931f46934aee4b7807",
+    "event_id": "dd859392bdceb6122f901cf898d46a654fbe4538d0bc0e7330ce49766f10fe2b",
     "order_type": "stop"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-11T17:37:02.792332Z",
+    "timestamp": "2026-02-12T12:27:14.265052Z",
     "trader_id": "3HsJ7yVz4nQ6oW8tS5gL2fN9rH1eK6mC8xM5vBdEwRuG",
     "market_id": "SOL-PUT-90-FEB28",
     "product_type": "option",
     "option_type": "put",
     "strike": 90,
-    "expiry": "2026-03-01T16:07:02.792332Z",
+    "expiry": "2026-03-02T10:57:14.265052Z",
     "side": "sell",
     "price": 4.0,
     "size": 15,
     "fee": 0.7,
     "delta": -0.25,
     "implied_vol": 0.4,
-    "event_id": "d54682ea1bf854c0226eb8683ee5181404b751b39ddc6ac328c096a4bdb1a327",
+    "event_id": "21231bd6588b624e48f8ad1db92a0322becedf1807cc84ae5287eb274511b498",
     "order_type": "stop"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-13T04:07:02.792332Z",
+    "timestamp": "2026-02-13T22:57:14.265052Z",
     "trader_id": "3HsJ7yVz4nQ6oW8tS5gL2fN9rH1eK6mC8xM5vBdEwRuG",
     "market_id": "SOL-PUT-90-FEB28",
     "product_type": "option",
     "option_type": "put",
     "strike": 90,
-    "expiry": "2026-03-01T16:07:02.792332Z",
+    "expiry": "2026-03-02T10:57:14.265052Z",
     "side": "buy",
     "price": 1.5,
     "size": 15,
     "fee": 0.7,
     "delta": -0.1,
     "implied_vol": 0.3,
-    "event_id": "970e3b26d34837ed879b4ebf48f33940bf5fd62df78d8350737eaa6d6cdab30d",
+    "event_id": "85b450ec23106ab1109d77a18fbfa0e6334a948c1806c4f017e60baeb9f47a21",
     "order_type": "market"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-11T18:07:02.792332Z",
+    "timestamp": "2026-02-12T12:57:14.265052Z",
     "trader_id": "2PrM8xUz6oT5nY7vR4jL3gP1sH9eN4mD6zK8wCfGxQuH",
     "market_id": "ETH-PUT-1900-FEB28",
     "product_type": "option",
     "option_type": "put",
     "strike": 1900,
-    "expiry": "2026-03-01T16:07:02.792332Z",
+    "expiry": "2026-03-02T10:57:14.265052Z",
     "side": "buy",
     "price": 45.0,
     "size": 5,
     "fee": 1.0,
     "delta": -0.35,
     "implied_vol": 0.55,
-    "event_id": "cc202945b5f92a14d9e67b1078d32190374e9ac1b68d92250a614a5b3c1d1960",
+    "event_id": "710234138f5aa3d036315a4c2b4690660cd43cd4b57d98c62b057ffccfc9aa36",
     "order_type": "stop"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-13T16:07:02.792332Z",
+    "timestamp": "2026-02-14T10:57:14.265052Z",
     "trader_id": "2PrM8xUz6oT5nY7vR4jL3gP1sH9eN4mD6zK8wCfGxQuH",
     "market_id": "ETH-PUT-1900-FEB28",
     "product_type": "option",
     "option_type": "put",
     "strike": 1900,
-    "expiry": "2026-03-01T16:07:02.792332Z",
+    "expiry": "2026-03-02T10:57:14.265052Z",
     "side": "sell",
     "price": 20.0,
     "size": 5,
     "fee": 1.0,
     "delta": -0.15,
     "implied_vol": 0.4,
-    "event_id": "bdcf82b7553a8e644e5f658cb9e210673111fb180fb5b8585247ebdcd12f48bd",
+    "event_id": "95cec10ee1728c61fcf1b10055c479d230a2fbca29fb0e28144452e4f7df4b09",
     "order_type": "limit"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-11T19:07:02.792332Z",
+    "timestamp": "2026-02-12T13:57:14.265052Z",
     "trader_id": "5TpQ9yXz7mS6oV8uR3kM2hN4rJ1fL5nE7xP6wDgHySvI",
     "market_id": "BTC-CALL-50000-FEB28",
     "product_type": "option",
     "option_type": "call",
     "strike": 50000,
-    "expiry": "2026-03-01T16:07:02.792332Z",
+    "expiry": "2026-03-02T10:57:14.265052Z",
     "side": "buy",
     "price": 2000.0,
     "size": 1,
     "fee": 10.0,
-    "event_id": "35445b32cfd72046c10e93674471ea3e6d335bee9d02d5b280682e6f018fdfd1",
+    "event_id": "88cd81e3873647d1371b1868dbf71e3de16709b14b02ecf5d1f9097e99da168f",
     "order_type": "market"
   },
   {
     "event_type": "exercise",
-    "timestamp": "2026-02-28T16:07:02.792332Z",
+    "timestamp": "2026-03-01T10:57:14.265052Z",
     "trader_id": "5TpQ9yXz7mS6oV8uR3kM2hN4rJ1fL5nE7xP6wDgHySvI",
     "market_id": "BTC-CALL-50000-FEB28",
     "product_type": "option",
     "option_type": "call",
     "strike": 50000,
-    "expiry": "2026-03-01T16:07:02.792332Z",
+    "expiry": "2026-03-02T10:57:14.265052Z",
     "side": "exercise",
     "size": 1,
     "fee": 10.0,
     "underlying_price": 55000,
-    "event_id": "d9923d600f28e29dea3f7d33023c2910540e2c21a93c622ad0cb91a7d6c676c7"
+    "event_id": "8f574fa03c5960fd11d8db6e044913a1cfab8bf34c2191d1932aebecf9f8cfd9"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-11T20:07:02.792332Z",
+    "timestamp": "2026-02-12T14:57:14.265052Z",
     "trader_id": "4WqP8zYx5nT7mU9tS2lN6jM3rK1gH4oC8yL5vEfJxRwK",
     "market_id": "SOL-PUT-80-FEB28",
     "product_type": "option",
     "option_type": "put",
     "strike": 80,
-    "expiry": "2026-03-01T16:07:02.792332Z",
+    "expiry": "2026-03-02T10:57:14.265052Z",
     "side": "buy",
     "price": 3.0,
     "size": 20,
     "fee": 0.2,
-    "event_id": "5c043c280a3d9d9bddca0d4d31b2c859c906ec8474c4527096ad09076931116e",
+    "event_id": "533c16e94b273f50853a97c2a1a5045c634cf1c1fde7aa29698b9346c1c2f459",
     "order_type": "market"
   },
   {
     "event_type": "expire",
-    "timestamp": "2026-03-01T16:07:02.792332Z",
+    "timestamp": "2026-03-02T10:57:14.265052Z",
     "trader_id": "4WqP8zYx5nT7mU9tS2lN6jM3rK1gH4oC8yL5vEfJxRwK",
     "market_id": "SOL-PUT-80-FEB28",
     "product_type": "option",
     "option_type": "put",
     "strike": 80,
-    "expiry": "2026-03-01T16:07:02.792332Z",
+    "expiry": "2026-03-02T10:57:14.265052Z",
     "side": "expire",
     "price": 0.0,
     "size": 20,
     "fee": 0.0,
     "underlying_price": 95,
-    "event_id": "82c8061612e569de8be023c268965db2a39b177000d099c5e6f0818007742c98"
+    "event_id": "663bb985ce364533b866dba2aac02f7312185e7a552a28cede776f29fb785bb2"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-11T21:07:02.792332Z",
+    "timestamp": "2026-02-12T15:57:14.265052Z",
     "trader_id": "7KNXqvHu2QWvDq8cGPGvKZhFvYnz3kQ5mL8xRt2Bp9uV",
     "market_id": "SOL-CALL-110-FEB28",
     "product_type": "option",
     "option_type": "call",
     "strike": 110,
-    "expiry": "2026-03-01T16:07:02.792332Z",
+    "expiry": "2026-03-02T10:57:14.265052Z",
     "side": "buy",
     "price": 8.0,
     "size": 20,
     "fee": 1.0,
-    "event_id": "0d4b88fbb7f76ae082eccd60e6963c7f0fbc0b3964ecf72f1f75e853ec5473e4",
+    "event_id": "6f34145730b8358d282ce24c0cc2025fcc781622ac10448eb1ea8cdcd704314d",
     "order_type": "market"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-12T18:07:02.792332Z",
+    "timestamp": "2026-02-13T12:57:14.265052Z",
     "trader_id": "7KNXqvHu2QWvDq8cGPGvKZhFvYnz3kQ5mL8xRt2Bp9uV",
     "market_id": "SOL-CALL-110-FEB28",
     "product_type": "option",
     "option_type": "call",
     "strike": 110,
-    "expiry": "2026-03-01T16:07:02.792332Z",
+    "expiry": "2026-03-02T10:57:14.265052Z",
     "side": "sell",
     "price": 12.0,
     "size": 10,
     "fee": 0.5,
-    "event_id": "e37cd84d9e5fae49e2f07ea5401065c740edca7c19711144917850b148499fdb",
+    "event_id": "4cd54646509022bbae87dcc7cc667a7fbabbd30a333e02dbba8e7d7a69dd325a",
     "order_type": "market"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-13T18:07:02.792332Z",
+    "timestamp": "2026-02-14T12:57:14.265052Z",
     "trader_id": "7KNXqvHu2QWvDq8cGPGvKZhFvYnz3kQ5mL8xRt2Bp9uV",
     "market_id": "SOL-CALL-110-FEB28",
     "product_type": "option",
     "option_type": "call",
     "strike": 110,
-    "expiry": "2026-03-01T16:07:02.792332Z",
+    "expiry": "2026-03-02T10:57:14.265052Z",
     "side": "sell",
     "price": 15.0,
     "size": 10,
     "fee": 0.5,
-    "event_id": "10c395044de0c2a19baaacb6072521d056756d1ed30e10246a880cddb99a23c2",
+    "event_id": "5ed06055b8f03df9c44db05a5672807bf88db38448d228574843845efe62ea87",
     "order_type": "market"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-11T17:07:02.792332Z",
+    "timestamp": "2026-02-12T17:57:14.265052Z",
+    "trader_id": "7KNXqvHu2QWvDq8cGPGvKZhFvYnz3kQ5mL8xRt2Bp9uV",
+    "market_id": "BTC/USDC",
+    "product_type": "spot",
+    "side": "buy",
+    "price": 51000,
+    "size": 0.5,
+    "fee": 5.0,
+    "event_id": "222abbf413d4c09d5231dc0393225e053b6d4b128b7330fdf8cd5c04c63ade8b",
+    "order_type": "market"
+  },
+  {
+    "event_type": "open",
+    "timestamp": "2026-02-12T18:57:14.265052Z",
+    "trader_id": "5FxM2nQwP4vYkL9mT3xRd8eJbWp7sN6gH2cKt9uVfXyZ",
+    "market_id": "AVAX-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 35.5,
+    "size": 100,
+    "fee": 1.5,
+    "event_id": "8b919117414cfec16b736a3ae485160617c3b10ea6572517eb79005c78c5e78b",
+    "order_type": "limit"
+  },
+  {
+    "event_type": "open",
+    "timestamp": "2026-02-12T19:57:14.265052Z",
+    "trader_id": "9DpT3vHx5kN2qL8mR7wYfJ6bP4sE1cG9nZ5tK3uVwXyA",
+    "market_id": "ETH-CALL-2200-MAR15",
+    "product_type": "option",
+    "option_type": "call",
+    "strike": 2200,
+    "expiry": "2026-03-14T10:57:14.265052Z",
+    "side": "buy",
+    "price": 85.0,
+    "size": 3,
+    "fee": 0.5,
+    "event_id": "67dd2cce31994b1d07c70b0609dc99da7a601a2e89fbcd039f1b67043cf3df8f",
+    "order_type": "limit"
+  },
+  {
+    "event_type": "open",
+    "timestamp": "2026-02-12T11:57:14.265052Z",
     "trader_id": "7KNXqvHu2QWvDq8cGPGvKZhFvYnz3kQ5mL8xRt2Bp9uV",
     "market_id": "SOL/USDC",
     "product_type": "spot",
@@ -410,12 +478,12 @@ def load_config(path: str) -> dict:
     "price": 105,
     "size": 5,
     "fee": 0.3,
-    "event_id": "c7320d276afae24c50fe9fbbdfbfbf593f2eec88acc9ef13a946401ef53438fb",
+    "event_id": "67c1115bdaa6af8ea041f882d0aa8c48c301a512dc810fbcf4756a4e005eaa7d",
     "order_type": "stop"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-12T02:07:02.792332Z",
+    "timestamp": "2026-02-12T20:57:14.265052Z",
     "trader_id": "GhostWallet1111111111111111111111111111",
     "market_id": "GHOST-PERP",
     "product_type": "perp",
@@ -423,12 +491,12 @@ def load_config(path: str) -> dict:
     "price": 999,
     "size": 1,
     "fee": 0.1,
-    "event_id": "ab834bd961f71bf1f9b282d1843dc86ea5554f2264ae4ba6ce632e7ac11911f7",
+    "event_id": "3480bd711935d28d9bf9fb7fbdc6e77e0df97677cfb47ee23aa7b4d7b38372f7",
     "order_type": "stop"
   },
   {
     "event_type": "trade",
-    "timestamp": "2026-02-11T16:22:02.792332Z",
+    "timestamp": "2026-02-12T11:12:14.265052Z",
     "trader_id": "MarketMaker1111111111111111111111111",
     "market_id": "SOL/USDC",
     "product_type": "spot",
@@ -436,11 +504,11 @@ def load_config(path: str) -> dict:
     "price": 101,
     "size": 100,
     "fee": 1.0,
-    "event_id": "55e7dbb452424b938ee0086e38daa41daf7a2eed6fff9d3dcad8722117ac7d5f"
+    "event_id": "9cf9883b4843754c0a834d45bac8a0d5866da8deb71d228a01dea6ad2d59d2b3"
   },
   {
     "event_type": "trade",
-    "timestamp": "2026-02-11T16:52:02.792332Z",
+    "timestamp": "2026-02-12T11:42:14.265052Z",
     "trader_id": "MarketMaker1111111111111111111111111",
     "market_id": "ETH-PERP",
     "product_type": "perp",
@@ -448,7 +516,7 @@ def load_config(path: str) -> dict:
     "price": 2105,
     "size": 50,
     "fee": 5.0,
-    "event_id": "ed106e29d898c318ebb2cc04c2e43e35800302d97c2a67fac91e688dd33d495d"
+    "event_id": "6d575a153e23b9f0faef3e0d3c30af4479335bf94a9a972321e2a26467b8f80d"
   }
 ]
 
@@ -459,7 +527,7 @@ def load_config(path: str) -> dict:
 
 ===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\dashboards\app.py =====
 
-# dashboards/app.py - COMPLETE FINAL VERSION
+# dashboards/app.py - PRODUCTION READY v3.0
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
@@ -473,8 +541,7 @@ st.set_page_config(page_title="Deriverse Trading Analytics", layout="wide")
 
 st.markdown("""
     <style>
-    .metric-card { padding: 20px; border-radius: 10px; background: #f0f2f6; }
-    .stMetric { background: white; padding: 15px; border-radius: 8px; }
+    .stMetric { background: #f0f2f6; padding: 15px; border-radius: 8px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -493,12 +560,14 @@ def load_data():
         directional = pd.read_csv(DATA_DIR / "directional_bias.csv")
         order_perf = pd.read_csv(DATA_DIR / "order_type_performance.csv")
         greeks = pd.read_csv(DATA_DIR / "greeks_exposure.csv")
+        open_pos = pd.read_csv(DATA_DIR / "open_positions.csv", parse_dates=["open_time"])  # âœ… NEW
         
         return {
             'equity': equity, 'positions': positions, 'summary': summary,
             'fees': fees, 'volume': volume, 'pnl_day': pnl_day,
             'pnl_hour': pnl_hour, 'directional': directional, 
-            'order_perf': order_perf, 'greeks': greeks
+            'order_perf': order_perf, 'greeks': greeks,
+            'open_positions': open_pos  # âœ… NEW
         }
     except FileNotFoundError:
         st.error("Analytics files not found. Run: python -m scripts.run_analytics")
@@ -506,113 +575,129 @@ def load_data():
 
 data = load_data()
 
-if data is None or data['positions'].empty:
+if data is None or (data['positions'].empty and data['open_positions'].empty):
     st.warning("No trading data available.")
     st.stop()
 
-# âœ… ADD: Calculate volume in USD for positions
+# Calculate volume in USD
 if not data['positions'].empty:
     data['positions']['volume_usd'] = data['positions']['exit_price'] * data['positions']['size']
 
 # Sidebar Filters
 st.sidebar.header("ðŸŽ›ï¸ Filters")
-traders = sorted(data['positions']['trader_id'].unique())
-selected_trader = st.sidebar.selectbox("Trader", ["All"] + traders)
-
-min_date = data['positions']['close_time'].min().date()
-max_date = data['positions']['close_time'].max().date()
-date_range = st.sidebar.date_input("Date Range", value=(min_date, max_date))
-
-markets = sorted(data['positions']['market_id'].unique())
-selected_market = st.sidebar.selectbox("Market", ["All"] + markets)
+traders = sorted(pd.concat([
+    data['positions']['trader_id'] if not data['positions'].empty else pd.Series([]),
+    data['open_positions']['trader_id'] if not data['open_positions'].empty else pd.Series([])
+]).unique())
+selected_trader = st.sidebar.selectbox("Trader Account", ["All"] + list(traders))
 
 # Filter Data
-filtered_positions = data['positions'].copy()
+filtered_positions = data['positions'].copy() if not data['positions'].empty else pd.DataFrame()
+filtered_open = data['open_positions'].copy() if not data['open_positions'].empty else pd.DataFrame()
+
 if selected_trader != "All":
-    filtered_positions = filtered_positions[filtered_positions['trader_id'] == selected_trader]
-if len(date_range) == 2:
-    start, end = date_range
-    filtered_positions = filtered_positions[
-        (filtered_positions['close_time'].dt.date >= start) &
-        (filtered_positions['close_time'].dt.date <= end)
-    ]
-if selected_market != "All":
-    filtered_positions = filtered_positions[filtered_positions['market_id'] == selected_market]
+    if not filtered_positions.empty:
+        filtered_positions = filtered_positions[filtered_positions['trader_id'] == selected_trader]
+    if not filtered_open.empty:
+        filtered_open = filtered_open[filtered_open['trader_id'] == selected_trader]
 
 # KPI Tiles
-st.header("ðŸ“ˆ Key Performance Indicators")
+st.header("ðŸ“ˆ Performance Overview")
 col1, col2, col3, col4 = st.columns(4)
 
-with col1:
-    total_pnl = filtered_positions['realized_pnl'].sum()
-    st.metric("Total PnL", f"${total_pnl:,.2f}", delta=f"{total_pnl:,.2f}" if total_pnl > 0 else None)
+total_pnl = filtered_positions['realized_pnl'].sum() if not filtered_positions.empty else 0
+win_rate = (filtered_positions['realized_pnl'] > 0).mean() * 100 if not filtered_positions.empty else 0
+total_fees = filtered_positions['fees'].sum() if not filtered_positions.empty else 0
+trade_count = len(filtered_positions)
 
-with col2:
-    win_rate = (filtered_positions['realized_pnl'] > 0).mean() * 100
-    st.metric("Win Rate", f"{win_rate:.1f}%")
+col1.metric("Net Realized PnL", f"${total_pnl:,.2f}", delta=f"{total_pnl:,.2f}" if total_pnl > 0 else None)
+col2.metric("Win Rate", f"{win_rate:.1f}%")
+col3.metric("Total Closed Trades", trade_count)
+col4.metric("Fees Paid", f"${total_fees:,.2f}")
 
-with col3:
-    if selected_trader != "All":
+# Risk Management Metrics
+st.header("âš–ï¸ Risk Analysis")
+c1, c2, c3, c4 = st.columns(4)
+
+if not filtered_positions.empty:
+    winning = filtered_positions[filtered_positions['realized_pnl'] > 0]
+    losing = filtered_positions[filtered_positions['realized_pnl'] < 0]
+    
+    avg_win = winning['realized_pnl'].mean() if len(winning) > 0 else 0
+    avg_loss = losing['realized_pnl'].mean() if len(losing) > 0 else 0
+    
+    if selected_trader != "All" and not data['summary'].empty:
         trader_data = data['summary'][data['summary']['trader_id'] == selected_trader]
         max_dd = trader_data['max_drawdown'].iloc[0] if not trader_data.empty else 0
+        sharpe = trader_data['sharpe_ratio'].iloc[0] if not trader_data.empty else 0
     else:
-        max_dd = data['summary']['max_drawdown'].min()
-    st.metric("Max Drawdown", f"${max_dd:,.2f}")
+        max_dd = data['summary']['max_drawdown'].min() if not data['summary'].empty else 0
+        sharpe = data['summary']['sharpe_ratio'].mean() if not data['summary'].empty else 0
+else:
+    avg_win = avg_loss = max_dd = sharpe = 0
 
-with col4:
-    total_fees = filtered_positions['fees'].sum()
-    st.metric("Total Fees", f"${total_fees:,.2f}")
+c1.metric("Average Win", f"${avg_win:,.2f}")
+c2.metric("Average Loss", f"${avg_loss:,.2f}")
+c3.metric("Max Drawdown", f"${max_dd:,.2f}")
+c4.metric("Sharpe Ratio", f"{sharpe:.2f}")
 
-# Win/Loss Analysis
-st.header("ðŸ’¹ Win/Loss Analysis")
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    winning = filtered_positions[filtered_positions['realized_pnl'] > 0]
-    avg_win = winning['realized_pnl'].mean() if len(winning) > 0 else 0
-    st.metric("Average Win", f"${avg_win:,.2f}")
-
-with col2:
-    losing = filtered_positions[filtered_positions['realized_pnl'] < 0]
-    avg_loss = losing['realized_pnl'].mean() if len(losing) > 0 else 0
-    st.metric("Average Loss", f"${avg_loss:,.2f}")
-
-with col3:
-    profit_factor = abs(avg_win / avg_loss) if avg_loss != 0 else 0
-    st.metric("Profit Factor", f"{profit_factor:.2f}x")
-
-# Risk-Adjusted Returns
-if 'sharpe_ratio' in data['summary'].columns:
-    st.header("ðŸ“Š Risk-Adjusted Returns")
-    col1, col2 = st.columns(2)
-    with col1:
-        if selected_trader != "All":
-            trader_sharpe = data['summary'][data['summary']['trader_id'] == selected_trader]['sharpe_ratio'].iloc[0] if not data['summary'][data['summary']['trader_id'] == selected_trader].empty else 0
-        else:
-            trader_sharpe = data['summary']['sharpe_ratio'].mean()
-        st.metric("Sharpe Ratio", f"{trader_sharpe:.2f}")
-    with col2:
-        if selected_trader != "All":
-            trader_sortino = data['summary'][data['summary']['trader_id'] == selected_trader]['sortino_ratio'].iloc[0] if not data['summary'][data['summary']['trader_id'] == selected_trader].empty else 0
-        else:
-            trader_sortino = data['summary']['sortino_ratio'].mean()
-        st.metric("Sortino Ratio", f"{trader_sortino:.2f}")
+# âœ… OPEN POSITIONS - REAL DATA, NO UNREALIZED PNL
+if not filtered_open.empty:
+    st.header("ðŸ“Š Open Positions (Active Trades)")
+    st.caption("ðŸ’¡ Current positions still held. Unrealized PnL calculated at closing.")
+    
+    # Prepare display
+    open_display = filtered_open.copy()
+    open_display['time_held'] = (open_display['time_held_seconds'] / 3600).round(1)
+    
+    # Format for display
+    display_open = open_display[[
+        'position_id', 'trader_id', 'market_id', 'product_type', 'side',
+        'entry_price', 'size', 'fees_paid', 'open_time', 'time_held'
+    ]].copy()
+    
+    display_open = display_open.rename(columns={
+        'position_id': 'Position ID',
+        'trader_id': 'Trader',
+        'market_id': 'Market',
+        'product_type': 'Type',
+        'side': 'Direction',
+        'entry_price': 'Entry Price',
+        'size': 'Size',
+        'fees_paid': 'Fees Paid',
+        'open_time': 'Opened At',
+        'time_held': 'Hours Held'
+    })
+    
+    st.dataframe(
+        display_open.style.format({
+            'Entry Price': '${:,.2f}',
+            'Fees Paid': '${:,.2f}',
+            'Size': '{:,.4f}',
+            'Hours Held': '{:,.1f}h'
+        }),
+        width='stretch',
+        hide_index=True
+    )
 
 # Equity Curve
-st.header("ðŸ’° Equity Curve")
-filtered_equity = data['equity'].copy()
-if selected_trader != "All":
-    filtered_equity = filtered_equity[filtered_equity['trader_id'] == selected_trader]
-
-if not filtered_equity.empty:
-    fig = go.Figure()
-    for trader in filtered_equity['trader_id'].unique():
-        trader_eq = filtered_equity[filtered_equity['trader_id'] == trader].sort_values('timestamp')
-        trader_short = trader[:8] + "..." if len(trader) > 12 else trader
-        fig.add_trace(go.Scatter(x=trader_eq['timestamp'], y=trader_eq['cumulative_pnl'], name=f"{trader_short} PnL"))
-        fig.add_trace(go.Scatter(x=trader_eq['timestamp'], y=trader_eq['drawdown'], fill='tozeroy', fillcolor='rgba(255,0,0,0.2)', line=dict(color='red', width=0.5), name=f"{trader_short} DD"))
-    fig.update_layout(xaxis_title="Time", yaxis_title="PnL ($)", hovermode='x unified', height=400)
-    st.plotly_chart(fig, width='stretch')
+if not data['equity'].empty:
+    st.header("ðŸ’° Equity Curve")
+    filtered_equity = data['equity'].copy()
+    if selected_trader != "All":
+        filtered_equity = filtered_equity[filtered_equity['trader_id'] == selected_trader]
+    
+    if not filtered_equity.empty:
+        fig = go.Figure()
+        for trader in filtered_equity['trader_id'].unique():
+            trader_eq = filtered_equity[filtered_equity['trader_id'] == trader].sort_values('timestamp')
+            trader_short = trader[:8] + "..." if len(trader) > 12 else trader
+            fig.add_trace(go.Scatter(x=trader_eq['timestamp'], y=trader_eq['cumulative_pnl'], name=f"{trader_short} PnL"))
+            fig.add_trace(go.Scatter(x=trader_eq['timestamp'], y=trader_eq['drawdown'], fill='tozeroy', 
+                                    fillcolor='rgba(255,0,0,0.2)', line=dict(color='red', width=0.5), 
+                                    name=f"{trader_short} DD"))
+        fig.update_layout(xaxis_title="Time", yaxis_title="PnL ($)", hovermode='x unified', height=400)
+        st.plotly_chart(fig, width='stretch')
 
 # Charts Row 1
 col1, col2 = st.columns(2)
@@ -622,7 +707,8 @@ with col1:
     if not filtered_positions.empty:
         daily = filtered_positions.groupby(filtered_positions['close_time'].dt.date)['realized_pnl'].sum().reset_index()
         daily.columns = ['date', 'pnl']
-        fig = px.bar(daily, x='date', y='pnl', color='pnl', color_continuous_scale=['red', 'gray', 'green'], color_continuous_midpoint=0)
+        fig = px.bar(daily, x='date', y='pnl', color='pnl', color_continuous_scale=['red', 'gray', 'green'], 
+                    color_continuous_midpoint=0)
         fig.update_layout(height=300, showlegend=False)
         st.plotly_chart(fig, width='stretch')
 
@@ -634,83 +720,61 @@ with col2:
         fig.update_layout(height=300, showlegend=False)
         st.plotly_chart(fig, width='stretch')
 
-# âœ… NEW: Complete Fee Analysis Section
-st.header("ðŸ’¸ Complete Fee Analysis")
-col1, col2 = st.columns(2)
-
-with col1:
-    st.subheader("Fee Composition Breakdown")
-    if not data['fees'].empty:
-        # Get filtered trader fees
-        if selected_trader != "All":
-            trader_fees = data['fees'][data['fees']['trader_id'] == selected_trader]
-        else:
-            trader_fees = data['fees']
-        
-        fig = px.pie(trader_fees, values='total_fees', names='product_type', 
-                     title='Fee Distribution by Product Type')
-        fig.update_layout(height=300)
-        st.plotly_chart(fig, width='stretch')
+# Complete Fee Analysis
+if not filtered_positions.empty:
+    st.header("ðŸ’¸ Complete Fee Analysis")
+    col1, col2 = st.columns(2)
     
-    # Show fee breakdown table
-    if not filtered_positions.empty:
+    with col1:
+        st.subheader("Fee Composition")
+        if not data['fees'].empty:
+            trader_fees = data['fees'] if selected_trader == "All" else data['fees'][data['fees']['trader_id'] == selected_trader]
+            fig = px.pie(trader_fees, values='total_fees', names='product_type', title='Fee Distribution')
+            fig.update_layout(height=300)
+            st.plotly_chart(fig, width='stretch')
+        
         fee_summary = filtered_positions.groupby('product_type').agg({
             'fees': ['sum', 'mean', 'count']
         }).round(2)
         fee_summary.columns = ['Total Fees', 'Avg Fee', 'Trade Count']
         st.dataframe(fee_summary, width='stretch')
-
-with col2:
-    st.subheader("Cumulative Fee Tracking")
-    if not filtered_positions.empty:
-        # Calculate cumulative fees over time
+    
+    with col2:
+        st.subheader("Cumulative Fee Tracking")
         fee_timeline = filtered_positions.sort_values('close_time')[['close_time', 'fees']].copy()
         fee_timeline['cumulative_fees'] = fee_timeline['fees'].cumsum()
         
         fig = go.Figure()
-        fig.add_trace(go.Scatter(
-            x=fee_timeline['close_time'],
-            y=fee_timeline['cumulative_fees'],
-            mode='lines+markers',
-            name='Cumulative Fees',
-            line=dict(color='red', width=2)
-        ))
-        fig.update_layout(
-            xaxis_title="Time",
-            yaxis_title="Cumulative Fees ($)",
-            height=300
-        )
+        fig.add_trace(go.Scatter(x=fee_timeline['close_time'], y=fee_timeline['cumulative_fees'],
+                                mode='lines+markers', name='Cumulative Fees', line=dict(color='red', width=2)))
+        fig.update_layout(xaxis_title="Time", yaxis_title="Cumulative Fees ($)", height=300)
         st.plotly_chart(fig, width='stretch')
 
-# âœ… NEW: Complete Volume Analysis
-st.header("ðŸ“Š Complete Trading Volume Analysis")
-col1, col2 = st.columns(2)
-
-with col1:
-    st.subheader("Volume by Market (USD)")
-    if not filtered_positions.empty:
-        # âœ… FIXED: Calculate volume in USD properly
+# Complete Volume Analysis
+if not filtered_positions.empty:
+    st.header("ðŸ“Š Trading Volume Analysis")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("Volume by Market (USD)")
         market_vol = filtered_positions.groupby('market_id').agg({
             'volume_usd': 'sum',
             'realized_pnl': 'sum'
         }).sort_values('volume_usd', ascending=False)
         
         fig = px.bar(market_vol.reset_index(), x='market_id', y='volume_usd',
-                     title='Trading Volume by Market (USD)',
-                     labels={'volume_usd': 'Volume (USD)', 'market_id': 'Market'})
+                    title='Trading Volume (USD)', labels={'volume_usd': 'Volume (USD)'})
         fig.update_layout(height=350, xaxis_tickangle=-45)
         st.plotly_chart(fig, width='stretch')
-
-with col2:
-    st.subheader("Volume vs PnL by Market")
-    if not filtered_positions.empty:
+    
+    with col2:
+        st.subheader("Volume vs PnL")
         market_stats = filtered_positions.groupby('market_id').agg({
             'volume_usd': 'sum',
             'realized_pnl': 'sum',
             'size': 'sum'
         }).sort_values('volume_usd', ascending=False).head(10)
         
-        # Display as table with proper formatting
         display_stats = market_stats.copy()
         display_stats.columns = ['Volume (USD)', 'PnL ($)', 'Size (Units)']
         st.dataframe(display_stats.style.format({
@@ -720,20 +784,20 @@ with col2:
         }), width='stretch')
 
 # Charts Row 2
-col1, col2 = st.columns(2)
-
-with col1:
-    st.subheader("âš–ï¸ Long vs Short")
-    if not filtered_positions.empty:
+if not filtered_positions.empty:
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("âš–ï¸ Long vs Short")
         long_cnt = len(filtered_positions[filtered_positions['side'].isin(['long', 'buy'])])
         short_cnt = len(filtered_positions[filtered_positions['side'].isin(['short', 'sell'])])
-        fig = go.Figure(data=[go.Pie(labels=['Long', 'Short'], values=[long_cnt, short_cnt], hole=0.4, marker_colors=['#00cc96', '#ef553b'])])
+        fig = go.Figure(data=[go.Pie(labels=['Long', 'Short'], values=[long_cnt, short_cnt], 
+                                     hole=0.4, marker_colors=['#00cc96', '#ef553b'])])
         fig.update_layout(height=300)
         st.plotly_chart(fig, width='stretch')
-
-with col2:
-    st.subheader("ðŸ• Hourly Performance")
-    if not filtered_positions.empty:
+    
+    with col2:
+        st.subheader("ðŸ• Hourly Performance")
         hourly = filtered_positions.copy()
         hourly['hour'] = hourly['close_time'].dt.hour
         hour_pnl = hourly.groupby('hour')['realized_pnl'].mean().reset_index()
@@ -742,12 +806,16 @@ with col2:
         st.plotly_chart(fig, width='stretch')
 
 # Order Type Performance
-st.header("ðŸ“Š Order Type Performance")
 if not data['order_perf'].empty:
+    st.header("ðŸ“Š Order Type Performance")
     fig = go.Figure()
-    fig.add_trace(go.Bar(name='Win Rate', x=data['order_perf']['order_type'], y=data['order_perf']['win_rate']*100, yaxis='y', marker_color='lightblue'))
-    fig.add_trace(go.Scatter(name='Avg PnL', x=data['order_perf']['order_type'], y=data['order_perf']['avg_pnl'], yaxis='y2', marker_color='green', line=dict(width=3)))
-    fig.update_layout(xaxis_title="Order Type", yaxis_title="Win Rate (%)", yaxis2=dict(title="Avg PnL ($)", overlaying='y', side='right'), height=400)
+    fig.add_trace(go.Bar(name='Win Rate', x=data['order_perf']['order_type'], 
+                        y=data['order_perf']['win_rate']*100, yaxis='y', marker_color='lightblue'))
+    fig.add_trace(go.Scatter(name='Avg PnL', x=data['order_perf']['order_type'], 
+                            y=data['order_perf']['avg_pnl'], yaxis='y2', marker_color='green', 
+                            line=dict(width=3)))
+    fig.update_layout(xaxis_title="Order Type", yaxis_title="Win Rate (%)", 
+                     yaxis2=dict(title="Avg PnL ($)", overlaying='y', side='right'), height=400)
     st.plotly_chart(fig, width='stretch')
 
 # Greeks Exposure
@@ -762,143 +830,173 @@ if not data['greeks'].empty:
     
     with col2:
         st.subheader("Options Position Count")
-        fig = px.bar(data['greeks'], x='trader_id', y='total_option_positions', title="Number of Options Positions")
+        fig = px.bar(data['greeks'], x='trader_id', y='total_option_positions')
         st.plotly_chart(fig, width='stretch')
 
-# âœ… NEW: Open Positions with Unrealized PnL
-st.header("ðŸ“‹ Open Positions (Unrealized PnL)")
-st.info("âš ï¸ Note: This is a demo system with mock data. In production, open positions would be calculated from current market prices.")
-
-# Create sample open positions (since all are closed in demo)
-open_positions_sample = pd.DataFrame([
-    {
-        'position_id': 'OPEN-001',
-        'trader_id': '7KNXqv...Bp9uV',
-        'market_id': 'BTC-PERP',
-        'product_type': 'perp',
-        'side': 'long',
-        'entry_price': 51000.00,
-        'current_price': 52500.00,  # Mock current price
-        'size': 0.5,
-        'unrealized_pnl': (52500 - 51000) * 0.5,
-        'open_time': datetime.now()
-    },
-    {
-        'position_id': 'OPEN-002',
-        'trader_id': '5FxM2n...fXyZ',
-        'market_id': 'ETH/USDC',
-        'product_type': 'spot',
-        'side': 'buy',
-        'entry_price': 2100.00,
-        'current_price': 2150.00,
-        'size': 10,
-        'unrealized_pnl': (2150 - 2100) * 10,
-        'open_time': datetime.now()
-    }
-])
-
-st.dataframe(open_positions_sample.style.format({
-    'entry_price': '${:,.2f}',
-    'current_price': '${:,.2f}',
-    'unrealized_pnl': '${:,.2f}',
-    'size': '{:,.4f}'
-}), width='stretch', hide_index=True)
-
-st.caption("ðŸ’¡ In production: Unrealized PnL would be calculated using real-time market prices from the protocol")
-
-# Trade History Table
-st.header("ðŸ“‹ Closed Trade History")
-
+# âœ… TRADE JOURNAL WITH ANNOTATIONS
 if not filtered_positions.empty:
-    # âœ… ADDED: Volume in USD column
-    display_df = filtered_positions[[
-        'position_id', 'trader_id', 'market_id', 'product_type', 'side',
-        'entry_price', 'exit_price', 'size', 'volume_usd', 'realized_pnl', 'fees',
-        'open_time', 'close_time'
-    ]].copy()
+    st.header("ðŸ“ Trade Journal with Annotations")
+    st.caption("âœï¸ Document your trading decisions, lessons learned, and strategy insights")
     
-    # Format columns
-    display_df['realized_pnl'] = display_df['realized_pnl'].apply(lambda x: f"${x:,.2f}")
-    display_df['fees'] = display_df['fees'].apply(lambda x: f"${x:,.2f}")
-    display_df['entry_price'] = display_df['entry_price'].apply(lambda x: f"${x:,.2f}")
-    display_df['exit_price'] = display_df['exit_price'].apply(lambda x: f"${x:,.2f}")
-    display_df['volume_usd'] = display_df['volume_usd'].apply(lambda x: f"${x:,.2f}")  # âœ… ADDED
-    display_df['size'] = display_df['size'].apply(lambda x: f"{x:,.4f}")
+    # Add explanatory info
+    with st.expander("â„¹ï¸ What are trade annotations? Click to learn more..."):
+        st.markdown("""
+        **Trade annotations** are your personal trading journal entries where you document:
+        - ðŸ“Š **Market conditions** when you entered/exited
+        - ðŸŽ¯ **Why you took the trade** (setup, strategy, conviction level)
+        - ðŸ§  **Emotional state** (FOMO, confident, fearful, disciplined)
+        - âœ… **What went right** (good entries, proper risk management)
+        - âŒ **What went wrong** (early exit, late entry, ignored signals)
+        - ðŸ“š **Lessons learned** for future trades
+        
+        **Example notes:**
+        - "Entered too early before confirmation - wait for volume spike next time"
+        - "Perfect setup: broke resistance on high volume, followed plan exactly"
+        - "Emotional revenge trade after previous loss - took too much risk"
+        - "News-driven: Fed announcement caused spike - set tighter stops for news events"
+        
+        These notes help you identify patterns, improve your strategy, and become a better trader.
+        """)
     
-    # Rename for display
-    display_df = display_df.rename(columns={
-        'position_id': 'Position ID',
-        'trader_id': 'Trader',
-        'market_id': 'Market',
-        'product_type': 'Type',
-        'side': 'Side',
-        'entry_price': 'Entry',
-        'exit_price': 'Exit',
-        'size': 'Size',
-        'volume_usd': 'Volume (USD)',  # âœ… ADDED
-        'realized_pnl': 'PnL',
-        'fees': 'Fees',
-        'open_time': 'Opened',
-        'close_time': 'Closed'
-    })
+    # Prepare journal
+    available_cols = [
+        'close_time', 'trader_id', 'market_id', 'product_type', 'side',
+        'entry_price', 'exit_price', 'volume_usd', 'realized_pnl', 'fees'
+    ]
     
-    # Sort by close time descending
-    display_df = display_df.sort_values('Closed', ascending=False)
+    # Add close_reason if it exists
+    if 'close_reason' in filtered_positions.columns:
+        available_cols.append('close_reason')
     
-    st.dataframe(display_df, width='stretch', height=400, hide_index=True)
+    journal_df = filtered_positions[available_cols].copy()
+    journal_df = journal_df.sort_values('close_time', ascending=False)
     
+    # Shorten trader IDs for display
+    journal_df['trader_short'] = journal_df['trader_id'].str[:8] + '...'
+    
+    # Initialize notes in session state
+    if 'trade_notes' not in st.session_state:
+        st.session_state.trade_notes = {}
+    
+    # Add notes column
+    journal_df['trader_notes'] = journal_df.index.map(
+        lambda i: st.session_state.trade_notes.get(i, "")
+    )
+    
+    # Reorder columns for display
+    display_cols = [
+        'close_time', 'trader_short', 'market_id', 'product_type', 'side',
+        'entry_price', 'exit_price', 'volume_usd', 'realized_pnl', 'fees'
+    ]
+    
+    if 'close_reason' in journal_df.columns:
+        display_cols.append('close_reason')
+    
+    display_cols.append('trader_notes')
+    
+    # âœ… EDITABLE DATA TABLE
+    edited_journal = st.data_editor(
+        journal_df[display_cols],
+        column_config={
+            "close_time": st.column_config.DatetimeColumn(
+                "Closed At",
+                format="DD/MM/YYYY HH:mm"
+            ),
+            "trader_short": st.column_config.TextColumn(
+                "Trader",
+                help="First 8 characters of wallet address",
+                disabled=True
+            ),
+            "market_id": "Market",
+            "product_type": "Type",
+            "side": "Direction",
+            "entry_price": st.column_config.NumberColumn(
+                "Entry",
+                format="$%.2f"
+            ),
+            "exit_price": st.column_config.NumberColumn(
+                "Exit",
+                format="$%.2f",
+                help="None for exercised/expired options (PnL calculated from intrinsic value)"
+            ),
+            "volume_usd": st.column_config.NumberColumn(
+                "Volume (USD)",
+                format="$%.0f"
+            ),
+            "realized_pnl": st.column_config.NumberColumn(
+                "PnL",
+                format="$%.2f"
+            ),
+            "fees": st.column_config.NumberColumn(
+                "Fees",
+                format="$%.2f"
+            ),
+            "close_reason": st.column_config.TextColumn(
+                "Close Type",
+                help="How position was closed: close (normal), liquidation, exercise, expire"
+            ),
+            "trader_notes": st.column_config.TextColumn(
+                "ðŸ“ Your Trading Notes",
+                help="Document your analysis: strategy, emotions, lessons learned, improvements for next time",
+                max_chars=500,
+                width="large"
+            )
+        },
+        width='stretch',
+        hide_index=True,
+        num_rows="fixed",
+        disabled=[col for col in display_cols if col != 'trader_notes']
+    )
+    
+    # Update session state with edited notes
+    for idx, row in edited_journal.iterrows():
+        if pd.notna(row.get('trader_notes')) and row['trader_notes']:
+            st.session_state.trade_notes[idx] = row['trader_notes']
+    
+    # Export functionality
+    st.markdown("---")
+    col1, col2, col3, col4 = st.columns([3, 1, 1, 1])
+    
+    with col1:
+        notes_count = len([n for n in st.session_state.trade_notes.values() if n])
+        if notes_count > 0:
+            st.success(f"âœ… {notes_count} trade{'s' if notes_count != 1 else ''} annotated")
+        else:
+            st.info("ðŸ’¡ Click on the 'Your Trading Notes' column to add annotations")
+    
+    with col2:
+        # Export with full trader IDs
+        export_df = filtered_positions[available_cols].copy()
+        export_df['trader_notes'] = export_df.index.map(
+            lambda i: st.session_state.trade_notes.get(i, "")
+        )
+        
+        csv = export_df.to_csv(index=False)
+        st.download_button(
+            "ðŸ“¥ Export CSV",
+            csv,
+            "trading_journal_annotated.csv",
+            "text/csv",
+            use_container_width=True
+        )
+    
+    with col3:
+        if st.button("ðŸ—‘ï¸ Clear Notes", use_container_width=True):
+            if st.session_state.trade_notes:
+                st.session_state.trade_notes = {}
+                st.rerun()
+    
+    with col4:
+        if st.button("ðŸ“Š Stats", use_container_width=True):
+            st.toast(f"Trades: {len(journal_df)} | Annotated: {notes_count}")
+
     # Download button
-    csv = filtered_positions.to_csv(index=False)
-    st.download_button("ðŸ“¥ Download CSV", data=csv, file_name=f"trades_{datetime.now().strftime('%Y%m%d')}.csv", mime="text/csv")
-else:
-    st.info("No trades match the selected filters")
-
-# Additional Analytics
-st.header("ðŸ“Š Additional Analytics")
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    st.subheader("ðŸŽ¯ Best/Worst Trades")
-    if not filtered_positions.empty:
-        best = filtered_positions.loc[filtered_positions['realized_pnl'].idxmax()]
-        worst = filtered_positions.loc[filtered_positions['realized_pnl'].idxmin()]
-        
-        st.write(f"**Best Trade:** ${best['realized_pnl']:,.2f}")
-        st.write(f"Market: {best['market_id']}")
-        st.write(f"Volume: ${best['volume_usd']:,.2f}")
-        st.write("")
-        st.write(f"**Worst Trade:** ${worst['realized_pnl']:,.2f}")
-        st.write(f"Market: {worst['market_id']}")
-        st.write(f"Volume: ${worst['volume_usd']:,.2f}")
-
-with col2:
-    st.subheader("â±ï¸ Average Duration")
-    if not filtered_positions.empty:
-        avg_duration = filtered_positions['duration_seconds'].mean()
-        hours = int(avg_duration // 3600)
-        minutes = int((avg_duration % 3600) // 60)
-        st.metric("Avg Position Duration", f"{hours}h {minutes}m")
-        
-        st.write(f"**Shortest:** {filtered_positions['duration_seconds'].min() / 60:.0f} min")
-        st.write(f"**Longest:** {filtered_positions['duration_seconds'].max() / 3600:.1f} hrs")
-
-with col3:
-    st.subheader("ðŸ“ˆ Top Markets by Volume")
-    if not filtered_positions.empty:
-        market_vol = filtered_positions.groupby('market_id').agg({
-            'volume_usd': 'sum',
-            'realized_pnl': 'sum'
-        }).sort_values('volume_usd', ascending=False)
-        
-        for market, row in market_vol.head(5).iterrows():
-            market_short = market[:15] + "..." if len(market) > 18 else market
-            st.write(f"**{market_short}**")
-            st.write(f"Vol: ${row['volume_usd']:,.0f} | PnL: ${row['realized_pnl']:,.2f}")
-            st.write("")
+    csv = edited_journal.to_csv(index=False)
+    st.download_button("ðŸ“¥ Download Annotated Journal", csv, "trading_journal_annotated.csv", "text/csv")
 
 # Footer
 st.markdown("---")
-st.caption(f"Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Deriverse Analytics v2.0")
+st.caption(f"Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Deriverse Analytics v3.0 - Production Ready")
 
 
 ===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\dashboards\__init__.py =====
@@ -1048,25 +1146,30 @@ print("=" * 60)
 
 ===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\scripts\generate_mock_data.py =====
 
-# scripts/generate_mock_data.py
+# scripts/generate_mock_data.py 
+"""
+Generate curated mock trading data for Deriverse analytics demo.
+
+This script creates a carefully designed dataset that showcases:
+- Profitable and losing trades across all product types
+- Risk management (liquidation event)
+- Active positions (open trades)
+- Complete options lifecycle (buy, sell, exercise, expire)
+- Edge cases for robustness testing
+"""
+
 import json
-import random
-import os
 import hashlib
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
-# âœ… Output to configs/mock_data.json (JSON array format)
 OUTPUT_PATH = Path("configs/mock_data.json")
 OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-
-SEED = int(os.getenv("MOCK_SEED", "42"))
-random.seed(SEED)
 
 now = datetime.now(timezone.utc)
 events = []
 
-# âœ… REALISTIC SOLANA WALLET ADDRESSES (base58-like)
+# Realistic Solana wallet addresses (base58 format)
 WALLETS = {
     "alice": "7KNXqvHu2QWvDq8cGPGvKZhFvYnz3kQ5mL8xRt2Bp9uV",
     "bob": "5FxM2nQwP4vYkL9mT3xRd8eJbWp7sN6gH2cKt9uVfXyZ",
@@ -1080,8 +1183,9 @@ WALLETS = {
     "julia": "4WqP8zYx5nT7mU9tS2lN6jM3rK1gH4oC8yL5vEfJxRwK",
 }
 
+
 def generate_event_id(event_data, index):
-    """Generate deterministic event ID."""
+    """Generate deterministic event ID from event data."""
     seed_parts = [
         str(event_data.get('event_type', '')),
         str(event_data.get('timestamp', '') if isinstance(event_data.get('timestamp'), str) else ''),
@@ -1089,441 +1193,235 @@ def generate_event_id(event_data, index):
         str(event_data.get('market_id', '')),
         str(index)
     ]
-    seed = "|".join(seed_parts)
-    return hashlib.sha256(seed.encode()).hexdigest()
+    return hashlib.sha256("|".join(seed_parts).encode()).hexdigest()
 
-def emit(event):
-    """Helper to add event with proper formatting and event_id."""
+
+def emit(event, order_type="market"):
+    """
+    Add event to output array with automatic formatting.
+    
+    Args:
+        event: Event dictionary with trading data
+        order_type: Type of order (market/limit/stop) - defaults to market
+    """
+    # Format timestamp
     if 'timestamp' in event and isinstance(event['timestamp'], datetime):
         event['timestamp'] = event['timestamp'].isoformat().replace("+00:00", "Z")
     
+    # Generate event ID
     if 'event_id' not in event:
         event['event_id'] = generate_event_id(event, len(events) + 1)
     
-    # âœ… ADD THIS: Assign order type
-    if event['event_type'] in ['open', 'close']:
-        # Randomly assign order types for diversity
-        event['order_type'] = random.choice(['market', 'limit', 'stop'])
+    # Add order type for position events
+    if event['event_type'] in ['open', 'close', 'liquidation']:
+        event['order_type'] = order_type
     
     events.append(event)
-    
-# --------------------------------------------------
-# 1ï¸âƒ£ SPOT TRADES (buy â†’ sell) - 1 WIN, 1 LOSS
-# --------------------------------------------------
 
-# WINNING SPOT TRADE
-emit({
-    "event_type": "open",
-    "timestamp": now,
-    "trader_id": WALLETS["alice"],
-    "market_id": "SOL/USDC",
-    "product_type": "spot",
-    "side": "buy",  # âœ… FIXED: Changed from "long" to "buy"
-    "price": 100,
-    "size": 10,
-    "fee": 0.5,
-})
 
-emit({
-    "event_type": "close",
-    "timestamp": now + timedelta(hours=2),
-    "trader_id": WALLETS["alice"],
-    "market_id": "SOL/USDC",
-    "product_type": "spot",
-    "side": "sell",  # âœ… FIXED: Changed from "long" to "sell"
-    "price": 110,
-    "size": 10,
-    "fee": 0.5,
-})
+# ================================================================================
+# SPOT TRADES - Simple buy/sell with clear profit/loss
+# ================================================================================
 
-# LOSING SPOT TRADE
-emit({
-    "event_type": "open",
-    "timestamp": now + timedelta(minutes=10),
-    "trader_id": WALLETS["bob"],
-    "market_id": "ETH/USDC",
-    "product_type": "spot",
-    "side": "buy",  # âœ… FIXED: Changed from "long" to "buy"
-    "price": 2000,
-    "size": 5,
-    "fee": 1.0,
-})
+# Winning spot trade (Alice: +$99)
+emit({"event_type": "open", "timestamp": now, "trader_id": WALLETS["alice"], 
+      "market_id": "SOL/USDC", "product_type": "spot", "side": "buy", 
+      "price": 100, "size": 10, "fee": 0.5}, order_type="stop")
 
-emit({
-    "event_type": "close",
-    "timestamp": now + timedelta(hours=3),
-    "trader_id": WALLETS["bob"],
-    "market_id": "ETH/USDC",
-    "product_type": "spot",
-    "side": "sell",  # âœ… FIXED: Changed from "long" to "sell"
-    "price": 1950,
-    "size": 5,
-    "fee": 1.0,
-})
+emit({"event_type": "close", "timestamp": now + timedelta(hours=2), "trader_id": WALLETS["alice"], 
+      "market_id": "SOL/USDC", "product_type": "spot", "side": "sell", 
+      "price": 110, "size": 10, "fee": 0.5}, order_type="market")
 
-# --------------------------------------------------
-# 2ï¸âƒ£ PERPETUAL TRADES (long/short) - 2 WINS, 1 LOSS
-# --------------------------------------------------
+# Losing spot trade (Bob: -$252)
+emit({"event_type": "open", "timestamp": now + timedelta(minutes=10), "trader_id": WALLETS["bob"], 
+      "market_id": "ETH/USDC", "product_type": "spot", "side": "buy", 
+      "price": 2000, "size": 5, "fee": 1.0}, order_type="market")
 
-# WINNING LONG PERP
-emit({
-    "event_type": "open",
-    "timestamp": now + timedelta(minutes=20),
-    "trader_id": WALLETS["charlie"],
-    "market_id": "SOL-PERP",
-    "product_type": "perp",
-    "side": "long",  # âœ… CORRECT: Perps use long/short
-    "price": 100,
-    "size": 10,
-    "fee": 0.5,
-})
+emit({"event_type": "close", "timestamp": now + timedelta(hours=3), "trader_id": WALLETS["bob"], 
+      "market_id": "ETH/USDC", "product_type": "spot", "side": "sell", 
+      "price": 1950, "size": 5, "fee": 1.0}, order_type="stop")
 
-emit({
-    "event_type": "close",
-    "timestamp": now + timedelta(hours=4),
-    "trader_id": WALLETS["charlie"],
-    "market_id": "SOL-PERP",
-    "product_type": "perp",
-    "side": "long",  # âœ… CORRECT: Same side for perp close
-    "price": 120,
-    "size": 10,
-    "fee": 0.5,
-})
 
-# WINNING SHORT PERP
-emit({
-    "event_type": "open",
-    "timestamp": now + timedelta(minutes=30),
-    "trader_id": WALLETS["diana"],
-    "market_id": "BTC-PERP",
-    "product_type": "perp",
-    "side": "short",  # âœ… CORRECT: Perps use long/short
-    "price": 50000,
-    "size": 1,
-    "fee": 5.0,
-})
+# ================================================================================
+# PERPETUAL TRADES - Long/short positions with liquidation
+# ================================================================================
 
-emit({
-    "event_type": "close",
-    "timestamp": now + timedelta(hours=5),
-    "trader_id": WALLETS["diana"],
-    "market_id": "BTC-PERP",
-    "product_type": "perp",
-    "side": "short",  # âœ… CORRECT: Same side for perp close
-    "price": 48000,
-    "size": 1,
-    "fee": 5.0,
-})
+# Winning long perp (Charlie: +$199)
+emit({"event_type": "open", "timestamp": now + timedelta(minutes=20), "trader_id": WALLETS["charlie"], 
+      "market_id": "SOL-PERP", "product_type": "perp", "side": "long", 
+      "price": 100, "size": 10, "fee": 0.5}, order_type="limit")
 
-# LOSING LONG PERP
-emit({
-    "event_type": "open",
-    "timestamp": now + timedelta(minutes=40),
-    "trader_id": WALLETS["evan"],
-    "market_id": "ETH-PERP",
-    "product_type": "perp",
-    "side": "long",  # âœ… CORRECT: Perps use long/short
-    "price": 2100,
-    "size": 5,
-    "fee": 2.0,
-})
+emit({"event_type": "close", "timestamp": now + timedelta(hours=4), "trader_id": WALLETS["charlie"], 
+      "market_id": "SOL-PERP", "product_type": "perp", "side": "long", 
+      "price": 120, "size": 10, "fee": 0.5}, order_type="market")
 
-emit({
-    "event_type": "close",
-    "timestamp": now + timedelta(hours=6),
-    "trader_id": WALLETS["evan"],
-    "market_id": "ETH-PERP",
-    "product_type": "perp",
-    "side": "long",  # âœ… CORRECT: Same side for perp close
-    "price": 2050,
-    "size": 5,
-    "fee": 2.0,
-})
+# Winning short perp (Diana: +$1990)
+emit({"event_type": "open", "timestamp": now + timedelta(minutes=30), "trader_id": WALLETS["diana"], 
+      "market_id": "BTC-PERP", "product_type": "perp", "side": "short", 
+      "price": 50000, "size": 1, "fee": 5.0}, order_type="market")
 
-# --------------------------------------------------
-# 3ï¸âƒ£ OPTION TRADES - COMPLETE LIFECYCLE
-# --------------------------------------------------
+emit({"event_type": "close", "timestamp": now + timedelta(hours=5), "trader_id": WALLETS["diana"], 
+      "market_id": "BTC-PERP", "product_type": "perp", "side": "short", 
+      "price": 48000, "size": 1, "fee": 5.0}, order_type="market")
 
-# === LONG CALL OPTION: Buy call, sell it back (Winning) ===
-emit({
-    "event_type": "open",
-    "timestamp": now + timedelta(hours=1),
-    "trader_id": WALLETS["fiona"],
-    "market_id": "SOL-CALL-120-FEB28",
-    "product_type": "option",
-    "option_type": "call",
-    "strike": 120,
-    "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"),
-    "side": "buy",  # âœ… FIXED: Changed from "long" to "buy"
-    "price": 5.0,
-    "size": 10,
-    "fee": 0.5,
-    "delta": 0.65,
-    "implied_vol": 0.45,
-})
+# Losing long perp (Evan: -$254)
+emit({"event_type": "open", "timestamp": now + timedelta(minutes=40), "trader_id": WALLETS["evan"], 
+      "market_id": "ETH-PERP", "product_type": "perp", "side": "long", 
+      "price": 2100, "size": 5, "fee": 2.0}, order_type="stop")
 
-emit({
-    "event_type": "close",
-    "timestamp": now + timedelta(hours=24),
-    "trader_id": WALLETS["fiona"],
-    "market_id": "SOL-CALL-120-FEB28",
-    "product_type": "option",
-    "option_type": "call",
-    "strike": 120,
-    "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"),
-    "side": "sell",  # âœ… FIXED: Changed from "long" to "sell"
-    "price": 8.0,
-    "size": 10,
-    "fee": 0.5,
-    "delta": 0.85,
-    "implied_vol": 0.50,
-})
+emit({"event_type": "close", "timestamp": now + timedelta(hours=6), "trader_id": WALLETS["evan"], 
+      "market_id": "ETH-PERP", "product_type": "perp", "side": "long", 
+      "price": 2050, "size": 5, "fee": 2.0}, order_type="market")
 
-# === SHORT PUT OPTION: Sell put, buy it back (Winning) ===
-emit({
-    "event_type": "open",
-    "timestamp": now + timedelta(hours=1, minutes=30),
-    "trader_id": WALLETS["george"],
-    "market_id": "SOL-PUT-90-FEB28",
-    "product_type": "option",
-    "option_type": "put",
-    "strike": 90,
-    "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"),
-    "side": "sell",  # âœ… CORRECT: Selling to open short position
-    "price": 4.0,
-    "size": 15,
-    "fee": 0.7,
-    "delta": -0.25,
-    "implied_vol": 0.40,
-})
+# LIQUIDATION EVENT - Risk management showcase (Diana: -$875)
+emit({"event_type": "open", "timestamp": now + timedelta(hours=1), "trader_id": WALLETS["diana"], 
+      "market_id": "SOL-PERP", "product_type": "perp", "side": "long", 
+      "price": 105, "size": 50, "fee": 5.0}, order_type="market")
 
-emit({
-    "event_type": "close",
-    "timestamp": now + timedelta(hours=36),
-    "trader_id": WALLETS["george"],
-    "market_id": "SOL-PUT-90-FEB28",
-    "product_type": "option",
-    "option_type": "put",
-    "strike": 90,
-    "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"),
-    "side": "buy",  # âœ… CORRECT: Buying to close short position
-    "price": 1.5,
-    "size": 15,
-    "fee": 0.7,
-    "delta": -0.10,
-    "implied_vol": 0.30,
-})
+emit({"event_type": "liquidation", "timestamp": now + timedelta(hours=2), "trader_id": WALLETS["diana"], 
+      "market_id": "SOL-PERP", "product_type": "perp", "side": "long", 
+      "price": 88, "size": 50, "fee": 25.0}, order_type="liquidation")
 
-# === LONG PUT OPTION: Buy put, sell it back (Losing) ===
-emit({
-    "event_type": "open",
-    "timestamp": now + timedelta(hours=2),
-    "trader_id": WALLETS["hannah"],
-    "market_id": "ETH-PUT-1900-FEB28",
-    "product_type": "option",
-    "option_type": "put",
-    "strike": 1900,
-    "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"),
-    "side": "buy",  # âœ… FIXED: Changed from "long" to "buy"
-    "price": 45.0,
-    "size": 5,
-    "fee": 1.0,
-    "delta": -0.35,
-    "implied_vol": 0.55,
-})
 
-emit({
-    "event_type": "close",
-    "timestamp": now + timedelta(hours=48),
-    "trader_id": WALLETS["hannah"],
-    "market_id": "ETH-PUT-1900-FEB28",
-    "product_type": "option",
-    "option_type": "put",
-    "strike": 1900,
-    "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"),
-    "side": "sell",  # âœ… FIXED: Changed from "long" to "sell"
-    "price": 20.0,
-    "size": 5,
-    "fee": 1.0,
-    "delta": -0.15,
-    "implied_vol": 0.40,
-})
+# ================================================================================
+# OPTION TRADES - Complete lifecycle (buy, sell, exercise, expire)
+# ================================================================================
 
-# === LONG CALL: Buy and EXERCISE (ITM) - Winning ===
-emit({
-    "event_type": "open",
-    "timestamp": now + timedelta(hours=3),
-    "trader_id": WALLETS["ivan"],
-    "market_id": "BTC-CALL-50000-FEB28",
-    "product_type": "option",
-    "option_type": "call",
-    "strike": 50000,
-    "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"),
-    "side": "buy",  # âœ… FIXED: Changed from "long" to "buy"
-    "price": 2000.0,
-    "size": 1,
-    "fee": 10.0,
-})
+# Long call - profitable close (Fiona: +$29)
+emit({"event_type": "open", "timestamp": now + timedelta(hours=1), "trader_id": WALLETS["fiona"], 
+      "market_id": "SOL-CALL-120-FEB28", "product_type": "option", "option_type": "call", 
+      "strike": 120, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
+      "side": "buy", "price": 5.0, "size": 10, "fee": 0.5, 
+      "delta": 0.65, "implied_vol": 0.45}, order_type="stop")
 
-emit({
-    "event_type": "exercise",
-    "timestamp": now + timedelta(days=17),
-    "trader_id": WALLETS["ivan"],
-    "market_id": "BTC-CALL-50000-FEB28",
-    "product_type": "option",
-    "option_type": "call",
-    "strike": 50000,
-    "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"),
-    "side": "exercise",  # âœ… CORRECT: Exercise is its own side
-    "size": 1,
-    "fee": 10.0,
-    "underlying_price": 55000,
-})
+emit({"event_type": "close", "timestamp": now + timedelta(hours=24), "trader_id": WALLETS["fiona"], 
+      "market_id": "SOL-CALL-120-FEB28", "product_type": "option", "option_type": "call", 
+      "strike": 120, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
+      "side": "sell", "price": 8.0, "size": 10, "fee": 0.5, 
+      "delta": 0.85, "implied_vol": 0.50}, order_type="stop")
 
-# === LONG PUT: Buy and let EXPIRE worthless (Losing) ===
-emit({
-    "event_type": "open",
-    "timestamp": now + timedelta(hours=4),
-    "trader_id": WALLETS["julia"],
-    "market_id": "SOL-PUT-80-FEB28",
-    "product_type": "option",
-    "option_type": "put",
-    "strike": 80,
-    "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"),
-    "side": "buy",  # âœ… FIXED: Changed from "long" to "buy"
-    "price": 3.0,
-    "size": 20,
-    "fee": 0.2,
-})
+# Short put - profitable buyback (George: +$36.1)
+emit({"event_type": "open", "timestamp": now + timedelta(hours=1, minutes=30), "trader_id": WALLETS["george"], 
+      "market_id": "SOL-PUT-90-FEB28", "product_type": "option", "option_type": "put", 
+      "strike": 90, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
+      "side": "sell", "price": 4.0, "size": 15, "fee": 0.7, 
+      "delta": -0.25, "implied_vol": 0.40}, order_type="stop")
 
-emit({
-    "event_type": "expire",
-    "timestamp": now + timedelta(days=18),
-    "trader_id": WALLETS["julia"],
-    "market_id": "SOL-PUT-80-FEB28",
-    "product_type": "option",
-    "option_type": "put",
-    "strike": 80,
-    "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"),
-    "side": "expire",  # âœ… CORRECT: Expire is its own side
-    "price": 0.0,
-    "size": 20,
-    "fee": 0.0,
-    "underlying_price": 95,
-})
+emit({"event_type": "close", "timestamp": now + timedelta(hours=36), "trader_id": WALLETS["george"], 
+      "market_id": "SOL-PUT-90-FEB28", "product_type": "option", "option_type": "put", 
+      "strike": 90, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
+      "side": "buy", "price": 1.5, "size": 15, "fee": 0.7, 
+      "delta": -0.10, "implied_vol": 0.30}, order_type="market")
 
-# === PARTIAL CLOSE: Long call, close in 2 tranches ===
-emit({
-    "event_type": "open",
-    "timestamp": now + timedelta(hours=5),
-    "trader_id": WALLETS["alice"],
-    "market_id": "SOL-CALL-110-FEB28",
-    "product_type": "option",
-    "option_type": "call",
-    "strike": 110,
-    "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"),
-    "side": "buy",  # âœ… FIXED: Changed from "long" to "buy"
-    "price": 8.0,
-    "size": 20,
-    "fee": 1.0,
-})
+# Long put - losing close (Hannah: -$127)
+emit({"event_type": "open", "timestamp": now + timedelta(hours=2), "trader_id": WALLETS["hannah"], 
+      "market_id": "ETH-PUT-1900-FEB28", "product_type": "option", "option_type": "put", 
+      "strike": 1900, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
+      "side": "buy", "price": 45.0, "size": 5, "fee": 1.0, 
+      "delta": -0.35, "implied_vol": 0.55}, order_type="stop")
 
-# First partial close
-emit({
-    "event_type": "close",
-    "timestamp": now + timedelta(hours=26),
-    "trader_id": WALLETS["alice"],
-    "market_id": "SOL-CALL-110-FEB28",
-    "product_type": "option",
-    "option_type": "call",
-    "strike": 110,
-    "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"),
-    "side": "sell",  # âœ… FIXED: Changed from "long" to "sell"
-    "price": 12.0,
-    "size": 10,
-    "fee": 0.5,
-})
+emit({"event_type": "close", "timestamp": now + timedelta(hours=48), "trader_id": WALLETS["hannah"], 
+      "market_id": "ETH-PUT-1900-FEB28", "product_type": "option", "option_type": "put", 
+      "strike": 1900, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
+      "side": "sell", "price": 20.0, "size": 5, "fee": 1.0, 
+      "delta": -0.15, "implied_vol": 0.40}, order_type="limit")
 
-# Second partial close
-emit({
-    "event_type": "close",
-    "timestamp": now + timedelta(hours=50),
-    "trader_id": WALLETS["alice"],
-    "market_id": "SOL-CALL-110-FEB28",
-    "product_type": "option",
-    "option_type": "call",
-    "strike": 110,
-    "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"),
-    "side": "sell",  # âœ… FIXED: Changed from "long" to "sell"
-    "price": 15.0,
-    "size": 10,
-    "fee": 0.5,
-})
+# Long call - exercised ITM (Ivan: +$2980)
+emit({"event_type": "open", "timestamp": now + timedelta(hours=3), "trader_id": WALLETS["ivan"], 
+      "market_id": "BTC-CALL-50000-FEB28", "product_type": "option", "option_type": "call", 
+      "strike": 50000, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
+      "side": "buy", "price": 2000.0, "size": 1, "fee": 10.0}, order_type="market")
 
-# --------------------------------------------------
-# 4ï¸âƒ£ EDGE CASES (for robustness testing)
-# --------------------------------------------------
+emit({"event_type": "exercise", "timestamp": now + timedelta(days=17), "trader_id": WALLETS["ivan"], 
+      "market_id": "BTC-CALL-50000-FEB28", "product_type": "option", "option_type": "call", 
+      "strike": 50000, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
+      "side": "exercise", "size": 1, "fee": 10.0, "underlying_price": 55000})
 
-# Duplicate open (should be ignored)
-emit({
-    "event_type": "open",
-    "timestamp": now + timedelta(minutes=60),
-    "trader_id": WALLETS["alice"],
-    "market_id": "SOL/USDC",
-    "product_type": "spot",
-    "side": "buy",  # âœ… FIXED: Changed from "long" to "buy"
-    "price": 105,
-    "size": 5,
-    "fee": 0.3,
-})
+# Long put - expired worthless (Julia: -$60.2)
+emit({"event_type": "open", "timestamp": now + timedelta(hours=4), "trader_id": WALLETS["julia"], 
+      "market_id": "SOL-PUT-80-FEB28", "product_type": "option", "option_type": "put", 
+      "strike": 80, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
+      "side": "buy", "price": 3.0, "size": 20, "fee": 0.2}, order_type="market")
 
-# Close without open (should be rejected)
-emit({
-    "event_type": "close",
-    "timestamp": now + timedelta(hours=10),
-    "trader_id": "GhostWallet1111111111111111111111111111",
-    "market_id": "GHOST-PERP",
-    "product_type": "perp",
-    "side": "long",  # âœ… CORRECT: Perps use long/short
-    "price": 999,
-    "size": 1,
-    "fee": 0.1,
-})
+emit({"event_type": "expire", "timestamp": now + timedelta(days=18), "trader_id": WALLETS["julia"], 
+      "market_id": "SOL-PUT-80-FEB28", "product_type": "option", "option_type": "put", 
+      "strike": 80, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
+      "side": "expire", "price": 0.0, "size": 20, "fee": 0.0, "underlying_price": 95})
 
-# Trade events (informational only)
-emit({
-    "event_type": "trade",
-    "timestamp": now + timedelta(minutes=15),
-    "trader_id": "MarketMaker1111111111111111111111111",
-    "market_id": "SOL/USDC",
-    "product_type": "spot",
-    "side": "buy",  # âœ… CORRECT: Trades can use buy/sell
-    "price": 101,
-    "size": 100,
-    "fee": 1.0,
-})
+# Partial close scenario (Alice: +$39 + $69 = $108)
+emit({"event_type": "open", "timestamp": now + timedelta(hours=5), "trader_id": WALLETS["alice"], 
+      "market_id": "SOL-CALL-110-FEB28", "product_type": "option", "option_type": "call", 
+      "strike": 110, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
+      "side": "buy", "price": 8.0, "size": 20, "fee": 1.0}, order_type="market")
 
-emit({
-    "event_type": "trade",
-    "timestamp": now + timedelta(minutes=45),
-    "trader_id": "MarketMaker1111111111111111111111111",
-    "market_id": "ETH-PERP",
-    "product_type": "perp",
-    "side": "sell",  # âœ… CORRECT: Trades can use buy/sell
-    "price": 2105,
-    "size": 50,
-    "fee": 5.0,
-})
+emit({"event_type": "close", "timestamp": now + timedelta(hours=26), "trader_id": WALLETS["alice"], 
+      "market_id": "SOL-CALL-110-FEB28", "product_type": "option", "option_type": "call", 
+      "strike": 110, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
+      "side": "sell", "price": 12.0, "size": 10, "fee": 0.5}, order_type="market")
 
-# --------------------------------------------------
-# âœ… WRITE OUTPUT AS JSON ARRAY
-# --------------------------------------------------
+emit({"event_type": "close", "timestamp": now + timedelta(hours=50), "trader_id": WALLETS["alice"], 
+      "market_id": "SOL-CALL-110-FEB28", "product_type": "option", "option_type": "call", 
+      "strike": 110, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
+      "side": "sell", "price": 15.0, "size": 10, "fee": 0.5}, order_type="market")
+
+
+# ================================================================================
+# OPEN POSITIONS - Active trades (will appear in dashboard)
+# ================================================================================
+
+emit({"event_type": "open", "timestamp": now + timedelta(hours=7), "trader_id": WALLETS["alice"], 
+      "market_id": "BTC/USDC", "product_type": "spot", "side": "buy", 
+      "price": 51000, "size": 0.5, "fee": 5.0}, order_type="market")
+
+emit({"event_type": "open", "timestamp": now + timedelta(hours=8), "trader_id": WALLETS["bob"], 
+      "market_id": "AVAX-PERP", "product_type": "perp", "side": "long", 
+      "price": 35.5, "size": 100, "fee": 1.5}, order_type="limit")
+
+emit({"event_type": "open", "timestamp": now + timedelta(hours=9), "trader_id": WALLETS["charlie"], 
+      "market_id": "ETH-CALL-2200-MAR15", "product_type": "option", "option_type": "call", 
+      "strike": 2200, "expiry": (now + timedelta(days=30)).isoformat().replace("+00:00", "Z"), 
+      "side": "buy", "price": 85.0, "size": 3, "fee": 0.5}, order_type="limit")
+
+
+# ================================================================================
+# EDGE CASES - Robustness testing
+# ================================================================================
+
+# Duplicate open (will be rejected by validation)
+emit({"event_type": "open", "timestamp": now + timedelta(minutes=60), "trader_id": WALLETS["alice"], 
+      "market_id": "SOL/USDC", "product_type": "spot", "side": "buy", 
+      "price": 105, "size": 5, "fee": 0.3}, order_type="stop")
+
+# Close without open (will be rejected)
+emit({"event_type": "close", "timestamp": now + timedelta(hours=10), 
+      "trader_id": "GhostWallet1111111111111111111111111111", 
+      "market_id": "GHOST-PERP", "product_type": "perp", "side": "long", 
+      "price": 999, "size": 1, "fee": 0.1}, order_type="stop")
+
+# Trade events (informational only - not matched)
+emit({"event_type": "trade", "timestamp": now + timedelta(minutes=15), 
+      "trader_id": "MarketMaker1111111111111111111111111", 
+      "market_id": "SOL/USDC", "product_type": "spot", "side": "buy", 
+      "price": 101, "size": 100, "fee": 1.0})
+
+emit({"event_type": "trade", "timestamp": now + timedelta(minutes=45), 
+      "trader_id": "MarketMaker1111111111111111111111111", 
+      "market_id": "ETH-PERP", "product_type": "perp", "side": "sell", 
+      "price": 2105, "size": 50, "fee": 5.0})
+
+
+# ================================================================================
+# WRITE OUTPUT
+# ================================================================================
+
 with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
     json.dump(events, f, indent=2)
 
-print(f"âœ… Generated {len(events)} mock events â†’ {OUTPUT_PATH} (seed={SEED})")
+print(f"âœ… Generated {len(events)} curated mock events â†’ {OUTPUT_PATH}")
 print(f"   Wallets: {len(WALLETS)} realistic Solana addresses")
-print(f"   Includes: Spot (buy/sell), Perps (long/short), Options (buy/sell/exercise/expire)")
+print(f"   Closed Positions: 13 (spot: 2, perp: 4, options: 7)")
+print(f"   Open Positions: 3 (spot: 1, perp: 1, option: 1)")
+print(f"   Risk Features: 1 liquidation event")
 print(f"   Format: JSON array - ready for ingestion")
 
 
@@ -1558,12 +1456,11 @@ if __name__ == "__main__":
 
 ===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\scripts\run_analytics.py =====
 
-# scripts/run_analytics.py
+# scripts/run_analytics.py - WITH OPEN POSITIONS SUPPORT
 import pandas as pd
 from pathlib import Path
 import io
 import logging
-from datetime import datetime, UTC
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -1571,10 +1468,7 @@ from src.analytics.pnl_engine import compute_realized_pnl
 from src.analytics.summary import compute_executive_summary
 from src.analytics.analytics_builder import AnalyticsBuilder
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 NORMALIZED_EVENTS_PATH = Path("data/normalized/events.jsonl")
@@ -1608,19 +1502,16 @@ def load_events(path: Path) -> pd.DataFrame:
 def run_analytics(events_df, auto_summary=True):
     if events_df.empty:
         logger.error("No events to analyze")
-        return None, None
+        return None, None, None
     
     logger.info(f"Loaded {len(events_df)} events")
 
     logger.info("Computing realized PnL (truth engine)")
-    positions_df, pnl_df = compute_realized_pnl(events_df)
+    positions_df, pnl_df, open_positions_df = compute_realized_pnl(events_df)  # âœ… NOW RETURNS 3 VALUES
 
-    if positions_df.empty:
-        logger.warning("No closed positions found â€“ creating empty analytics")
-    
     # Build all analytics outputs
     logger.info("Building comprehensive analytics tables...")
-    builder = AnalyticsBuilder(positions_df, pnl_df, ANALYTICS_OUTPUT_DIR)
+    builder = AnalyticsBuilder(positions_df, pnl_df, open_positions_df, ANALYTICS_OUTPUT_DIR)  # âœ… PASS OPEN POSITIONS
     builder.build_all()
 
     if not positions_df.empty and auto_summary:
@@ -1642,16 +1533,22 @@ def run_analytics(events_df, auto_summary=True):
         print(f"Short Ratio:         {summary['short_ratio']:.1%}")
         print(f"Max Drawdown:        ${summary['max_drawdown']:,.2f}")
         
-        # âœ… FIXED: Added risk-adjusted metrics to match summary.py
         if 'sharpe_ratio' in summary:
             print(f"Sharpe Ratio:        {summary['sharpe_ratio']:.2f}")
         if 'sortino_ratio' in summary:
             print(f"Sortino Ratio:       {summary['sortino_ratio']:.2f}")
         
         print("=" * 50 + "\n")
+    
+    # âœ… Show open positions summary
+    if not open_positions_df.empty:
+        print(f"ðŸ“Š OPEN POSITIONS: {len(open_positions_df)} positions still active")
+        for _, pos in open_positions_df.iterrows():
+            trader_short = pos['trader_id'][:8] + "..." if len(pos['trader_id']) > 12 else pos['trader_id']
+            print(f"  â€¢ {trader_short} | {pos['market_id']:20} | {pos['side']:5} | ${pos['entry_price']:>8,.2f} Ã— {pos['size']:.2f}")
 
     logger.info("Analytics run complete âœ…")
-    return positions_df, pnl_df
+    return positions_df, pnl_df, open_positions_df
 
 
 def main():
@@ -1932,7 +1829,7 @@ if __name__ == "__main__":
 
 ===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\analytics_builder.py =====
 
-# src/analytics/analytics_builder.py - FIXED VERSION
+# src/analytics/analytics_builder.py - WITH OPEN POSITIONS SUPPORT
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -1945,9 +1842,11 @@ logger = logging.getLogger(__name__)
 class AnalyticsBuilder:
     """Build all required analytics tables from canonical PnL engine outputs."""
     
-    def __init__(self, positions_df: pd.DataFrame, pnl_df: pd.DataFrame, output_dir: Path):
-        self.positions = positions_df.copy()
-        self.pnl = pnl_df.copy()
+    def __init__(self, positions_df: pd.DataFrame, pnl_df: pd.DataFrame, 
+                 open_positions_df: pd.DataFrame, output_dir: Path):
+        self.positions = positions_df.copy() if not positions_df.empty else pd.DataFrame()
+        self.pnl = pnl_df.copy() if not pnl_df.empty else pd.DataFrame()
+        self.open_positions = open_positions_df.copy() if not open_positions_df.empty else pd.DataFrame()
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
@@ -1961,14 +1860,15 @@ class AnalyticsBuilder:
     
     def build_all(self):
         """Generate all required analytics outputs."""
-        if self.positions.empty:
-            logger.warning("No positions data - generating empty outputs")
-            self._generate_empty_outputs()
-            return
-        
         logger.info("Building core truth tables...")
         self._build_positions()
         self._build_realized_pnl()
+        self._build_open_positions()  # âœ… NEW
+        
+        if self.positions.empty:
+            logger.warning("No closed positions - generating empty analytics")
+            self._generate_empty_outputs()
+            return
         
         logger.info("Building performance metrics...")
         self._build_equity_curve()
@@ -1993,15 +1893,24 @@ class AnalyticsBuilder:
     
     def _build_positions(self):
         """1. Core Truth: positions.csv"""
+        if self.positions.empty:
+            pd.DataFrame().to_csv(self.output_dir / 'positions.csv', index=False)
+            return
+        
         output = self.positions[[
             'position_id', 'trader_id', 'market_id', 'product_type', 'side',
             'open_time', 'close_time', 'duration_seconds',
-            'entry_price', 'exit_price', 'size', 'gross_pnl', 'fees', 'realized_pnl'
+            'entry_price', 'exit_price', 'size', 'gross_pnl', 'fees', 'realized_pnl',
+            'close_reason' 
         ]].copy()
         output.to_csv(self.output_dir / 'positions.csv', index=False)
     
     def _build_realized_pnl(self):
         """2. Core Truth: realized_pnl.csv"""
+        if self.positions.empty:
+            pd.DataFrame().to_csv(self.output_dir / 'realized_pnl.csv', index=False)
+            return
+            
         output = self.positions[[
             'close_time', 'trader_id', 'market_id', 'realized_pnl', 'fees'
         ]].copy()
@@ -2009,6 +1918,21 @@ class AnalyticsBuilder:
         output['net_pnl'] = output['realized_pnl'] - output['fees']
         output = output[['timestamp', 'trader_id', 'market_id', 'realized_pnl', 'fees', 'net_pnl']]
         output.to_csv(self.output_dir / 'realized_pnl.csv', index=False)
+    
+    def _build_open_positions(self):
+        """âœ… NEW: open_positions.csv - Currently active positions"""
+        if self.open_positions.empty:
+            pd.DataFrame().to_csv(self.output_dir / 'open_positions.csv', index=False)
+            logger.info("No open positions")
+            return
+        
+        output = self.open_positions[[
+            'position_id', 'trader_id', 'market_id', 'product_type', 'side',
+            'entry_price', 'size', 'fees_paid', 'open_time', 'time_held_seconds'
+        ]].copy()
+        
+        output.to_csv(self.output_dir / 'open_positions.csv', index=False)
+        logger.info(f"Saved {len(output)} open positions")
     
     def _build_equity_curve(self):
         """3. Performance: equity_curve.csv"""
@@ -2044,7 +1968,6 @@ class AnalyticsBuilder:
             winning = trader_pos[trader_pos['realized_pnl'] > 0]
             losing = trader_pos[trader_pos['realized_pnl'] < 0]
             
-            # Calculate metrics
             total_pnl = trader_pos['realized_pnl'].sum()
             total_fees = trader_pos['fees'].sum()
             trade_count = len(trader_pos)
@@ -2055,32 +1978,26 @@ class AnalyticsBuilder:
             worst_trade = trader_pos['realized_pnl'].min()
             avg_duration = trader_pos['duration_seconds'].mean()
             
-            # Directional bias
             long_trades = trader_pos[trader_pos['side'].isin(['long', 'buy'])]
             short_trades = trader_pos[trader_pos['side'].isin(['short', 'sell'])]
             long_ratio = len(long_trades) / trade_count if trade_count > 0 else 0
             short_ratio = len(short_trades) / trade_count if trade_count > 0 else 0
             
-            # Max drawdown
             trader_sorted = trader_pos.sort_values('close_time')
             cum_pnl = trader_sorted['realized_pnl'].cumsum()
             rolling_max = cum_pnl.cummax()
             drawdown = cum_pnl - rolling_max
             max_drawdown = drawdown.min()
             
-            # âœ… FIXED: Risk-adjusted metrics - use positions instead of pnl
             if len(trader_pos) > 1:
-                # Create daily aggregation from positions
                 trader_daily = trader_pos.copy()
                 trader_daily['date'] = trader_daily['close_time'].dt.date
                 daily_returns = trader_daily.groupby('date')['realized_pnl'].sum()
                 
-                # Sharpe Ratio
                 mean_return = daily_returns.mean()
                 std_return = daily_returns.std()
                 sharpe_ratio = mean_return / std_return if std_return > 0 else 0
                 
-                # Sortino Ratio
                 downside_returns = daily_returns[daily_returns < 0]
                 downside_std = downside_returns.std() if len(downside_returns) > 0 else std_return
                 sortino_ratio = mean_return / downside_std if downside_std > 0 else 0
@@ -2152,7 +2069,6 @@ class AnalyticsBuilder:
         for (date, trader), group in df.groupby(['date', 'trader_id']):
             daily_pnl = group['realized_pnl'].sum()
             
-            # Calculate cumulative PnL up to this date
             trader_data = df[df['trader_id'] == trader]
             trader_data = trader_data[trader_data['date'] <= date]
             cumulative_pnl = trader_data['realized_pnl'].sum()
@@ -2211,11 +2127,10 @@ class AnalyticsBuilder:
         """10. Behavioral: order_type_performance.csv"""
         df = self.positions.copy()
         
-        # Simple heuristic: classify by duration
         df['order_type'] = df['duration_seconds'].apply(lambda x:
-            'market' if x < 300 else  # < 5 min
-            'limit' if x < 3600 else   # < 1 hour
-            'stop'                      # > 1 hour
+            'market' if x < 300 else
+            'limit' if x < 3600 else
+            'stop'
         )
         
         result = []
@@ -2246,7 +2161,6 @@ class AnalyticsBuilder:
         for trader in options['trader_id'].unique():
             trader_opts = options[options['trader_id'] == trader]
             
-            # Simplified delta calculation
             net_delta = 0
             for _, opt in trader_opts.iterrows():
                 if opt['side'] in ['buy', 'long']:
@@ -2269,10 +2183,9 @@ class AnalyticsBuilder:
     def _generate_empty_outputs(self):
         """Generate empty CSV files when no data available."""
         empty_files = [
-            'positions.csv', 'realized_pnl.csv', 'equity_curve.csv',
-            'summary_metrics.csv', 'volume_by_market.csv', 'fees_breakdown.csv',
-            'pnl_by_day.csv', 'pnl_by_hour.csv', 'directional_bias.csv',
-            'order_type_performance.csv', 'greeks_exposure.csv'
+            'equity_curve.csv', 'summary_metrics.csv', 'volume_by_market.csv',
+            'fees_breakdown.csv', 'pnl_by_day.csv', 'pnl_by_hour.csv',
+            'directional_bias.csv', 'order_type_performance.csv', 'greeks_exposure.csv'
         ]
         
         for filename in empty_files:
@@ -2337,6 +2250,7 @@ if __name__ == "__main__":
 import pandas as pd
 import hashlib
 import logging
+from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -2344,17 +2258,12 @@ logger = logging.getLogger(__name__)
 def compute_realized_pnl(events: pd.DataFrame):
     """
     Canonical PnL engine with full options lifecycle support.
+    NOW RETURNS OPEN POSITIONS TOO!
     
-    Supports:
-    - Spot: buy/sell (different sides for open/close)
-    - Perps: long/short (same side for open/close)
-    - Options: buy/sell/exercise/expire (different sides)
-    
-    Options PnL logic:
-    - buy: Pay premium (negative cash flow)
-    - sell: Receive premium or exit price (positive cash flow)
-    - exercise: Intrinsic value - fees
-    - expire: Total loss of premium paid
+    Returns:
+        positions_df: Closed positions with realized PnL
+        pnl_df: Daily PnL aggregates
+        open_positions_df: Currently open positions (NEW!)
     """
 
     required_cols = {
@@ -2381,11 +2290,7 @@ def compute_realized_pnl(events: pd.DataFrame):
 
     for _, event in events.iterrows():
 
-        # POSITION KEY GENERATION
-        # For options that open with SELL (short positions), we need to track them differently
-
         if event["product_type"] == "perp":
-            # Perps: Include side (long stays long, short stays short)
             key = (
                 event["trader_id"],
                 event["market_id"],
@@ -2393,24 +2298,19 @@ def compute_realized_pnl(events: pd.DataFrame):
                 event["side"]
             )
         elif event["product_type"] == "option":
-            # Options: Exclude side from key
-            # BUT track the opening side in the position data
             key = (
                 event["trader_id"],
                 event["market_id"],
                 event["product_type"]
             )
         else:  # spot
-            # Spot: Exclude side (buy opens, sell closes)
             key = (
                 event["trader_id"],
                 event["market_id"],
                 event["product_type"]
             )
 
-        # ==========================================
         # OPEN POSITION
-        # ==========================================
         if event["event_type"] == "open":
             if key in open_positions:
                 stats["duplicate_opens"] += 1
@@ -2434,15 +2334,12 @@ def compute_realized_pnl(events: pd.DataFrame):
                 "side": event["side"],
             }
             
-            # Store option-specific fields
             if event["product_type"] == "option":
                 open_positions[key]["option_type"] = event.get("option_type")
                 open_positions[key]["strike"] = event.get("strike")
                 open_positions[key]["expiry"] = event.get("expiry")
 
-        # ==========================================
-        # CLOSE POSITION (close, liquidation, exercise, expire)
-        # ==========================================
+        # CLOSE POSITION
         elif event["event_type"] in {"close", "liquidation", "exercise", "expire"}:
             if key not in open_positions:
                 stats["close_without_open"] += 1
@@ -2461,9 +2358,7 @@ def compute_realized_pnl(events: pd.DataFrame):
             close_fee = event.get("fee", 0)
             total_fees = allocated_open_fee + close_fee
 
-            # ==========================================
-            # OPTIONS PNL CALCULATION
-            # ==========================================
+            # OPTIONS PNL
             if pos["product_type"] == "option":
                 gross_pnl = calculate_option_pnl(
                     event_type=event["event_type"],
@@ -2478,21 +2373,17 @@ def compute_realized_pnl(events: pd.DataFrame):
                 net_pnl = gross_pnl - total_fees
                 exit_price = event.get("price", 0)
 
-            # ==========================================
-            # SPOT/PERP PNL CALCULATION
-            # ==========================================
+            # SPOT/PERP PNL
             else:
                 exit_price = event["price"]
 
-                # If PnL provided in event, use it (already net)
                 if pd.notna(event.get("pnl")):
                     net_pnl = event["pnl"]
                     gross_pnl = net_pnl + total_fees
                 else:
-                    # Calculate from price difference
                     if pos["side"] in {"long", "buy"}:
                         gross_pnl = (exit_price - pos["entry_price"]) * close_size
-                    else:  # short/sell
+                    else:
                         gross_pnl = (pos["entry_price"] - exit_price) * close_size
 
                     net_pnl = gross_pnl - total_fees
@@ -2534,30 +2425,57 @@ def compute_realized_pnl(events: pd.DataFrame):
     )
 
     if positions_df.empty:
-        return positions_df, pd.DataFrame()
+        positions_df = pd.DataFrame()
+        pnl_df = pd.DataFrame()
+    else:
+        # Build daily PnL aggregates
+        pnl_df = (
+            positions_df
+            .assign(date=lambda df: pd.to_datetime(df["close_time"]).dt.date)
+            .groupby(
+                ["date", "trader_id", "market_id", "product_type"],
+                as_index=False
+            )
+            .agg(
+                net_pnl=("net_pnl", "sum"),
+                realized_pnl=("realized_pnl", "sum"),
+                fees=("fees", "sum"),
+                trade_count=("position_id", "count")
+            )
+        )
 
-    # Build daily PnL aggregates
-    pnl_df = (
-        positions_df
-        .assign(date=lambda df: pd.to_datetime(df["close_time"]).dt.date)
-        .groupby(
-            ["date", "trader_id", "market_id", "product_type"],
-            as_index=False
-        )
-        .agg(
-            net_pnl=("net_pnl", "sum"),
-            realized_pnl=("realized_pnl", "sum"),
-            fees=("fees", "sum"),
-            trade_count=("position_id", "count")
-        )
-    )
+    # âœ… NEW: Build open positions dataframe
+    open_positions_list = []
+    for key, pos in open_positions.items():
+        # Calculate time held
+        now = datetime.now(timezone.utc)
+        open_time = pd.to_datetime(pos["open_time"])
+        if open_time.tzinfo is None:
+            open_time = open_time.tz_localize(timezone.utc)
+        
+        time_held = (now - open_time).total_seconds()
+        
+        open_positions_list.append({
+            "position_id": pos["position_id"],
+            "trader_id": pos["trader_id"],
+            "market_id": pos["market_id"],
+            "product_type": pos["product_type"],
+            "side": pos["side"],
+            "entry_price": pos["entry_price"],
+            "size": pos["size"],
+            "fees_paid": pos["fees"],
+            "open_time": pos["open_time"],
+            "time_held_seconds": time_held
+        })
+    
+    open_positions_df = pd.DataFrame(open_positions_list)
 
     logger.info(
         f"PnL engine results: {len(positions_df)} closed positions, "
-        f"{len(open_positions)} still open"
+        f"{len(open_positions_df)} still open"
     )
 
-    return positions_df, pnl_df
+    return positions_df, pnl_df, open_positions_df
 
 
 def calculate_option_pnl(
@@ -2570,76 +2488,39 @@ def calculate_option_pnl(
     underlying_price: float,
     size: float
 ) -> float:
-    """
-    Calculate options PnL based on event type.
+    """Calculate options PnL based on event type."""
     
-    Args:
-        event_type: close, exercise, or expire
-        option_type: call or put
-        side: buy or sell
-        entry_price: Premium paid when opening
-        exit_price: Premium received when closing (if close event)
-        strike: Strike price
-        underlying_price: Current underlying price (for exercise/expire)
-        size: Number of contracts
-    
-    Returns:
-        Gross PnL (before fees)
-    """
-    
-    # ==========================================
-    # CASE 1: NORMAL CLOSE (sell option back)
-    # ==========================================
     if event_type == "close":
         if side == "buy":
-            # Bought option, now selling it back
             gross_pnl = (exit_price - entry_price) * size
-        else:  # side == "sell"
-            # Sold option, now buying it back
+        else:
             gross_pnl = (entry_price - exit_price) * size
         return gross_pnl
     
-    # ==========================================
-    # CASE 2: EXERCISE (convert to underlying)
-    # ==========================================
     elif event_type == "exercise":
         if side == "buy":
-            # Long option holder exercises
-            if option_type == "call":
-                # Call: Right to BUY at strike
-                intrinsic_value = max(0, underlying_price - strike)
-            else:  # put
-                # Put: Right to SELL at strike
-                intrinsic_value = max(0, strike - underlying_price)
-            
-            # PnL = intrinsic value - premium paid
-            gross_pnl = (intrinsic_value - entry_price) * size
-        else:
-            # Short option holder (assigned) - opposite side
             if option_type == "call":
                 intrinsic_value = max(0, underlying_price - strike)
             else:
                 intrinsic_value = max(0, strike - underlying_price)
-            
-            # PnL = premium received - intrinsic value paid out
+            gross_pnl = (intrinsic_value - entry_price) * size
+        else:
+            if option_type == "call":
+                intrinsic_value = max(0, underlying_price - strike)
+            else:
+                intrinsic_value = max(0, strike - underlying_price)
             gross_pnl = (entry_price - intrinsic_value) * size
         
         return gross_pnl
     
-    # ==========================================
-    # CASE 3: EXPIRE (worthless)
-    # ==========================================
     elif event_type == "expire":
         if side == "buy":
-            # Long option expires worthless - lose premium
             gross_pnl = -entry_price * size
-        else:  # side == "sell"
-            # Short option expires worthless - keep premium
+        else:
             gross_pnl = entry_price * size
         
         return gross_pnl
     
-    # Fallback
     return 0.0
 
 
@@ -2721,7 +2602,7 @@ def compute_executive_summary(positions: pd.DataFrame, pnl: pd.DataFrame) -> dic
 
 ===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\validate.py =====
 
-# src/analytics/validate.py
+# src/analytics/validate.py - WITH LIQUIDATION SUPPORT
 from typing import Dict, Any, Set
 from datetime import datetime
 
@@ -2746,7 +2627,7 @@ BASE_OPTIONAL_FIELDS = {
     "size",
     "fee",
     "pnl",
-    "order_type"  # âœ… ADDED: Allow order_type field
+    "order_type"
 }
 
 # --- Option-specific fields ---
@@ -2773,11 +2654,15 @@ EVENT_TYPE_SCHEMAS = {
     },
     "open": {
         "required": {"side", "price", "size", "fee"},
-        "optional": {"pnl", "order_type"}  # âœ… ADDED
+        "optional": {"pnl", "order_type"}
     },
     "close": {
         "required": {"side", "price", "size", "fee"},
-        "optional": {"pnl", "order_type"}  # âœ… ADDED
+        "optional": {"pnl", "order_type"}
+    },
+    "liquidation": {  # âœ… NEW: Liquidation event schema
+        "required": {"side", "price", "size", "fee"},
+        "optional": {"pnl", "order_type"}
     },
     "exercise": {
         "required": {"side", "size", "fee"},
@@ -2800,26 +2685,19 @@ def validate_event(event: dict) -> None:
     event_type = event.get("event_type")
     product_type = event.get("product_type")
 
-    # --------------------------------------------------
-    # 1ï¸âƒ£ Trade events are informational only - skip position validation
-    # --------------------------------------------------
+    # Trade events are informational only - skip position validation
     if event_type == "trade":
         return
 
-    # --------------------------------------------------
-    # 2ï¸âƒ£ Validate product type
-    # --------------------------------------------------
+    # Validate product type
     valid_products = {"spot", "perp", "option"}
     if product_type not in valid_products:
         raise EventValidationError(
             f"Invalid product_type: {product_type}. Allowed: {valid_products}"
         )
 
-    # --------------------------------------------------
-    # 3ï¸âƒ£ Product-specific side validation
-    # --------------------------------------------------
+    # Product-specific side validation
     if product_type == "option":
-        # Options: Allow both trading terms (buy/sell) and position terms (long/short)
         allowed_sides = {"buy", "sell", "long", "short", "exercise", "expire"}
     elif product_type == "perp":
         allowed_sides = {"long", "short"}
@@ -2833,9 +2711,7 @@ def validate_event(event: dict) -> None:
             f"Must be one of: {allowed_sides}"
         )
 
-    # --------------------------------------------------
-    # 4ï¸âƒ£ Build allowed fields based on product type
-    # --------------------------------------------------
+    # Build allowed fields based on product type
     allowed_fields = BASE_REQUIRED_FIELDS | BASE_OPTIONAL_FIELDS
     
     if product_type == "option":
@@ -2846,9 +2722,7 @@ def validate_event(event: dict) -> None:
         schema = EVENT_TYPE_SCHEMAS[event_type]
         allowed_fields |= schema["required"] | schema["optional"]
 
-    # --------------------------------------------------
-    # 5ï¸âƒ£ Check for extra fields (schema drift)
-    # --------------------------------------------------
+    # Check for extra fields (schema drift)
     extra_fields = set(event.keys()) - allowed_fields
     if extra_fields:
         raise EventValidationError(
@@ -2856,9 +2730,7 @@ def validate_event(event: dict) -> None:
             f"Allowed for {product_type}/{event_type}: {allowed_fields}"
         )
 
-    # --------------------------------------------------
-    # 6ï¸âƒ£ Check event-type-specific required fields
-    # --------------------------------------------------
+    # Check event-type-specific required fields
     if event_type in EVENT_TYPE_SCHEMAS:
         schema = EVENT_TYPE_SCHEMAS[event_type]
         missing_required = schema["required"] - set(event.keys())
@@ -2867,9 +2739,7 @@ def validate_event(event: dict) -> None:
                 f"Event type '{event_type}' missing required fields: {missing_required}"
             )
 
-    # --------------------------------------------------
-    # 7ï¸âƒ£ Check option-specific required fields
-    # --------------------------------------------------
+    # Check option-specific required fields
     if product_type == "option":
         missing_option_required = OPTION_REQUIRED_FIELDS - set(event.keys())
         if missing_option_required:
@@ -2877,9 +2747,7 @@ def validate_event(event: dict) -> None:
                 f"Option product missing required fields: {missing_option_required}"
             )
 
-    # --------------------------------------------------
-    # 8ï¸âƒ£ Validate timestamp format
-    # --------------------------------------------------
+    # Validate timestamp format
     try:
         timestamp_str = event["timestamp"]
         if timestamp_str.endswith("Z"):
@@ -2888,9 +2756,7 @@ def validate_event(event: dict) -> None:
     except (ValueError, AttributeError, TypeError) as e:
         raise EventValidationError(f"Invalid timestamp format: {event.get('timestamp')} - {e}")
 
-    # --------------------------------------------------
-    # 9ï¸âƒ£ Validate numeric fields
-    # --------------------------------------------------
+    # Validate numeric fields
     numeric_fields = {"price", "size", "fee", "pnl", "strike", "delta", "gamma", 
                      "theta", "vega", "implied_vol", "underlying_price"}
     for field in numeric_fields & event.keys():
@@ -2900,9 +2766,7 @@ def validate_event(event: dict) -> None:
                 f"Field '{field}' must be numeric or null, got {type(value)}: {value}"
             )
 
-    # --------------------------------------------------
-    # ðŸ”Ÿ Validate option-specific values
-    # --------------------------------------------------
+    # Validate option-specific values
     if product_type == "option":
         # Validate option_type
         option_type = event.get("option_type")
