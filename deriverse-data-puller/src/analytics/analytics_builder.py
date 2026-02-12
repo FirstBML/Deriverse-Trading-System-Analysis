@@ -1,4 +1,4 @@
-# src/analytics/analytics_builder.py - FIXED VERSION
+# src/analytics/analytics_builder.py - WITH OPEN POSITIONS SUPPORT
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -11,9 +11,11 @@ logger = logging.getLogger(__name__)
 class AnalyticsBuilder:
     """Build all required analytics tables from canonical PnL engine outputs."""
     
-    def __init__(self, positions_df: pd.DataFrame, pnl_df: pd.DataFrame, output_dir: Path):
-        self.positions = positions_df.copy()
-        self.pnl = pnl_df.copy()
+    def __init__(self, positions_df: pd.DataFrame, pnl_df: pd.DataFrame, 
+                 open_positions_df: pd.DataFrame, output_dir: Path):
+        self.positions = positions_df.copy() if not positions_df.empty else pd.DataFrame()
+        self.pnl = pnl_df.copy() if not pnl_df.empty else pd.DataFrame()
+        self.open_positions = open_positions_df.copy() if not open_positions_df.empty else pd.DataFrame()
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
@@ -27,14 +29,15 @@ class AnalyticsBuilder:
     
     def build_all(self):
         """Generate all required analytics outputs."""
-        if self.positions.empty:
-            logger.warning("No positions data - generating empty outputs")
-            self._generate_empty_outputs()
-            return
-        
         logger.info("Building core truth tables...")
         self._build_positions()
         self._build_realized_pnl()
+        self._build_open_positions()  # ✅ NEW
+        
+        if self.positions.empty:
+            logger.warning("No closed positions - generating empty analytics")
+            self._generate_empty_outputs()
+            return
         
         logger.info("Building performance metrics...")
         self._build_equity_curve()
@@ -59,6 +62,10 @@ class AnalyticsBuilder:
     
     def _build_positions(self):
         """1. Core Truth: positions.csv"""
+        if self.positions.empty:
+            pd.DataFrame().to_csv(self.output_dir / 'positions.csv', index=False)
+            return
+            
         output = self.positions[[
             'position_id', 'trader_id', 'market_id', 'product_type', 'side',
             'open_time', 'close_time', 'duration_seconds',
@@ -68,6 +75,10 @@ class AnalyticsBuilder:
     
     def _build_realized_pnl(self):
         """2. Core Truth: realized_pnl.csv"""
+        if self.positions.empty:
+            pd.DataFrame().to_csv(self.output_dir / 'realized_pnl.csv', index=False)
+            return
+            
         output = self.positions[[
             'close_time', 'trader_id', 'market_id', 'realized_pnl', 'fees'
         ]].copy()
@@ -75,6 +86,21 @@ class AnalyticsBuilder:
         output['net_pnl'] = output['realized_pnl'] - output['fees']
         output = output[['timestamp', 'trader_id', 'market_id', 'realized_pnl', 'fees', 'net_pnl']]
         output.to_csv(self.output_dir / 'realized_pnl.csv', index=False)
+    
+    def _build_open_positions(self):
+        """✅ NEW: open_positions.csv - Currently active positions"""
+        if self.open_positions.empty:
+            pd.DataFrame().to_csv(self.output_dir / 'open_positions.csv', index=False)
+            logger.info("No open positions")
+            return
+        
+        output = self.open_positions[[
+            'position_id', 'trader_id', 'market_id', 'product_type', 'side',
+            'entry_price', 'size', 'fees_paid', 'open_time', 'time_held_seconds'
+        ]].copy()
+        
+        output.to_csv(self.output_dir / 'open_positions.csv', index=False)
+        logger.info(f"Saved {len(output)} open positions")
     
     def _build_equity_curve(self):
         """3. Performance: equity_curve.csv"""
@@ -110,7 +136,6 @@ class AnalyticsBuilder:
             winning = trader_pos[trader_pos['realized_pnl'] > 0]
             losing = trader_pos[trader_pos['realized_pnl'] < 0]
             
-            # Calculate metrics
             total_pnl = trader_pos['realized_pnl'].sum()
             total_fees = trader_pos['fees'].sum()
             trade_count = len(trader_pos)
@@ -121,32 +146,26 @@ class AnalyticsBuilder:
             worst_trade = trader_pos['realized_pnl'].min()
             avg_duration = trader_pos['duration_seconds'].mean()
             
-            # Directional bias
             long_trades = trader_pos[trader_pos['side'].isin(['long', 'buy'])]
             short_trades = trader_pos[trader_pos['side'].isin(['short', 'sell'])]
             long_ratio = len(long_trades) / trade_count if trade_count > 0 else 0
             short_ratio = len(short_trades) / trade_count if trade_count > 0 else 0
             
-            # Max drawdown
             trader_sorted = trader_pos.sort_values('close_time')
             cum_pnl = trader_sorted['realized_pnl'].cumsum()
             rolling_max = cum_pnl.cummax()
             drawdown = cum_pnl - rolling_max
             max_drawdown = drawdown.min()
             
-            # ✅ FIXED: Risk-adjusted metrics - use positions instead of pnl
             if len(trader_pos) > 1:
-                # Create daily aggregation from positions
                 trader_daily = trader_pos.copy()
                 trader_daily['date'] = trader_daily['close_time'].dt.date
                 daily_returns = trader_daily.groupby('date')['realized_pnl'].sum()
                 
-                # Sharpe Ratio
                 mean_return = daily_returns.mean()
                 std_return = daily_returns.std()
                 sharpe_ratio = mean_return / std_return if std_return > 0 else 0
                 
-                # Sortino Ratio
                 downside_returns = daily_returns[daily_returns < 0]
                 downside_std = downside_returns.std() if len(downside_returns) > 0 else std_return
                 sortino_ratio = mean_return / downside_std if downside_std > 0 else 0
@@ -218,7 +237,6 @@ class AnalyticsBuilder:
         for (date, trader), group in df.groupby(['date', 'trader_id']):
             daily_pnl = group['realized_pnl'].sum()
             
-            # Calculate cumulative PnL up to this date
             trader_data = df[df['trader_id'] == trader]
             trader_data = trader_data[trader_data['date'] <= date]
             cumulative_pnl = trader_data['realized_pnl'].sum()
@@ -277,11 +295,10 @@ class AnalyticsBuilder:
         """10. Behavioral: order_type_performance.csv"""
         df = self.positions.copy()
         
-        # Simple heuristic: classify by duration
         df['order_type'] = df['duration_seconds'].apply(lambda x:
-            'market' if x < 300 else  # < 5 min
-            'limit' if x < 3600 else   # < 1 hour
-            'stop'                      # > 1 hour
+            'market' if x < 300 else
+            'limit' if x < 3600 else
+            'stop'
         )
         
         result = []
@@ -312,7 +329,6 @@ class AnalyticsBuilder:
         for trader in options['trader_id'].unique():
             trader_opts = options[options['trader_id'] == trader]
             
-            # Simplified delta calculation
             net_delta = 0
             for _, opt in trader_opts.iterrows():
                 if opt['side'] in ['buy', 'long']:
@@ -335,10 +351,9 @@ class AnalyticsBuilder:
     def _generate_empty_outputs(self):
         """Generate empty CSV files when no data available."""
         empty_files = [
-            'positions.csv', 'realized_pnl.csv', 'equity_curve.csv',
-            'summary_metrics.csv', 'volume_by_market.csv', 'fees_breakdown.csv',
-            'pnl_by_day.csv', 'pnl_by_hour.csv', 'directional_bias.csv',
-            'order_type_performance.csv', 'greeks_exposure.csv'
+            'equity_curve.csv', 'summary_metrics.csv', 'volume_by_market.csv',
+            'fees_breakdown.csv', 'pnl_by_day.csv', 'pnl_by_hour.csv',
+            'directional_bias.csv', 'order_type_performance.csv', 'greeks_exposure.csv'
         ]
         
         for filename in empty_files:

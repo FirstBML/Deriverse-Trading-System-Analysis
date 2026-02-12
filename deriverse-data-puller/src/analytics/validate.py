@@ -1,4 +1,4 @@
-# src/analytics/validate.py
+# src/analytics/validate.py - WITH LIQUIDATION SUPPORT
 from typing import Dict, Any, Set
 from datetime import datetime
 
@@ -23,7 +23,7 @@ BASE_OPTIONAL_FIELDS = {
     "size",
     "fee",
     "pnl",
-    "order_type"  # ✅ ADDED: Allow order_type field
+    "order_type"
 }
 
 # --- Option-specific fields ---
@@ -50,11 +50,15 @@ EVENT_TYPE_SCHEMAS = {
     },
     "open": {
         "required": {"side", "price", "size", "fee"},
-        "optional": {"pnl", "order_type"}  # ✅ ADDED
+        "optional": {"pnl", "order_type"}
     },
     "close": {
         "required": {"side", "price", "size", "fee"},
-        "optional": {"pnl", "order_type"}  # ✅ ADDED
+        "optional": {"pnl", "order_type"}
+    },
+    "liquidation": {  # ✅ NEW: Liquidation event schema
+        "required": {"side", "price", "size", "fee"},
+        "optional": {"pnl", "order_type"}
     },
     "exercise": {
         "required": {"side", "size", "fee"},
@@ -77,26 +81,19 @@ def validate_event(event: dict) -> None:
     event_type = event.get("event_type")
     product_type = event.get("product_type")
 
-    # --------------------------------------------------
-    # 1️⃣ Trade events are informational only - skip position validation
-    # --------------------------------------------------
+    # Trade events are informational only - skip position validation
     if event_type == "trade":
         return
 
-    # --------------------------------------------------
-    # 2️⃣ Validate product type
-    # --------------------------------------------------
+    # Validate product type
     valid_products = {"spot", "perp", "option"}
     if product_type not in valid_products:
         raise EventValidationError(
             f"Invalid product_type: {product_type}. Allowed: {valid_products}"
         )
 
-    # --------------------------------------------------
-    # 3️⃣ Product-specific side validation
-    # --------------------------------------------------
+    # Product-specific side validation
     if product_type == "option":
-        # Options: Allow both trading terms (buy/sell) and position terms (long/short)
         allowed_sides = {"buy", "sell", "long", "short", "exercise", "expire"}
     elif product_type == "perp":
         allowed_sides = {"long", "short"}
@@ -110,9 +107,7 @@ def validate_event(event: dict) -> None:
             f"Must be one of: {allowed_sides}"
         )
 
-    # --------------------------------------------------
-    # 4️⃣ Build allowed fields based on product type
-    # --------------------------------------------------
+    # Build allowed fields based on product type
     allowed_fields = BASE_REQUIRED_FIELDS | BASE_OPTIONAL_FIELDS
     
     if product_type == "option":
@@ -123,9 +118,7 @@ def validate_event(event: dict) -> None:
         schema = EVENT_TYPE_SCHEMAS[event_type]
         allowed_fields |= schema["required"] | schema["optional"]
 
-    # --------------------------------------------------
-    # 5️⃣ Check for extra fields (schema drift)
-    # --------------------------------------------------
+    # Check for extra fields (schema drift)
     extra_fields = set(event.keys()) - allowed_fields
     if extra_fields:
         raise EventValidationError(
@@ -133,9 +126,7 @@ def validate_event(event: dict) -> None:
             f"Allowed for {product_type}/{event_type}: {allowed_fields}"
         )
 
-    # --------------------------------------------------
-    # 6️⃣ Check event-type-specific required fields
-    # --------------------------------------------------
+    # Check event-type-specific required fields
     if event_type in EVENT_TYPE_SCHEMAS:
         schema = EVENT_TYPE_SCHEMAS[event_type]
         missing_required = schema["required"] - set(event.keys())
@@ -144,9 +135,7 @@ def validate_event(event: dict) -> None:
                 f"Event type '{event_type}' missing required fields: {missing_required}"
             )
 
-    # --------------------------------------------------
-    # 7️⃣ Check option-specific required fields
-    # --------------------------------------------------
+    # Check option-specific required fields
     if product_type == "option":
         missing_option_required = OPTION_REQUIRED_FIELDS - set(event.keys())
         if missing_option_required:
@@ -154,9 +143,7 @@ def validate_event(event: dict) -> None:
                 f"Option product missing required fields: {missing_option_required}"
             )
 
-    # --------------------------------------------------
-    # 8️⃣ Validate timestamp format
-    # --------------------------------------------------
+    # Validate timestamp format
     try:
         timestamp_str = event["timestamp"]
         if timestamp_str.endswith("Z"):
@@ -165,9 +152,7 @@ def validate_event(event: dict) -> None:
     except (ValueError, AttributeError, TypeError) as e:
         raise EventValidationError(f"Invalid timestamp format: {event.get('timestamp')} - {e}")
 
-    # --------------------------------------------------
-    # 9️⃣ Validate numeric fields
-    # --------------------------------------------------
+    # Validate numeric fields
     numeric_fields = {"price", "size", "fee", "pnl", "strike", "delta", "gamma", 
                      "theta", "vega", "implied_vol", "underlying_price"}
     for field in numeric_fields & event.keys():
@@ -177,9 +162,7 @@ def validate_event(event: dict) -> None:
                 f"Field '{field}' must be numeric or null, got {type(value)}: {value}"
             )
 
-    # --------------------------------------------------
-    # 🔟 Validate option-specific values
-    # --------------------------------------------------
+    # Validate option-specific values
     if product_type == "option":
         # Validate option_type
         option_type = event.get("option_type")
