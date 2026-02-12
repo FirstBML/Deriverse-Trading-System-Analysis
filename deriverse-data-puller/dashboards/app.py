@@ -304,55 +304,163 @@ if not data['greeks'].empty:
         fig = px.bar(data['greeks'], x='trader_id', y='total_option_positions')
         st.plotly_chart(fig, width='stretch')
 
-# ✅ TRADE JOURNAL WITH ANNOTATIONS (REQUIRED FEATURE)
+# ✅ TRADE JOURNAL WITH ANNOTATIONS
 if not filtered_positions.empty:
     st.header("📝 Trade Journal with Annotations")
-    st.caption("✏️ Review closed trades and add notes for performance analysis")
+    st.caption("✏️ Document your trading decisions, lessons learned, and strategy insights")
+    
+    # Add explanatory info
+    with st.expander("ℹ️ What are trade annotations? Click to learn more..."):
+        st.markdown("""
+        **Trade annotations** are your personal trading journal entries where you document:
+        - 📊 **Market conditions** when you entered/exited
+        - 🎯 **Why you took the trade** (setup, strategy, conviction level)
+        - 🧠 **Emotional state** (FOMO, confident, fearful, disciplined)
+        - ✅ **What went right** (good entries, proper risk management)
+        - ❌ **What went wrong** (early exit, late entry, ignored signals)
+        - 📚 **Lessons learned** for future trades
+        
+        **Example notes:**
+        - "Entered too early before confirmation - wait for volume spike next time"
+        - "Perfect setup: broke resistance on high volume, followed plan exactly"
+        - "Emotional revenge trade after previous loss - took too much risk"
+        - "News-driven: Fed announcement caused spike - set tighter stops for news events"
+        
+        These notes help you identify patterns, improve your strategy, and become a better trader.
+        """)
     
     # Prepare journal
-    journal_df = filtered_positions[[
-        'close_time', 'market_id', 'product_type', 'side', 
-        'entry_price', 'exit_price', 'volume_usd', 'realized_pnl', 'fees', 'close_reason'
-    ]].copy()
+    available_cols = [
+        'close_time', 'trader_id', 'market_id', 'product_type', 'side',
+        'entry_price', 'exit_price', 'volume_usd', 'realized_pnl', 'fees'
+    ]
+    
+    # Add close_reason if it exists
+    if 'close_reason' in filtered_positions.columns:
+        available_cols.append('close_reason')
+    
+    journal_df = filtered_positions[available_cols].copy()
     journal_df = journal_df.sort_values('close_time', ascending=False)
+    
+    # Shorten trader IDs for display
+    journal_df['trader_short'] = journal_df['trader_id'].str[:8] + '...'
     
     # Initialize notes in session state
     if 'trade_notes' not in st.session_state:
         st.session_state.trade_notes = {}
     
     # Add notes column
-    journal_df['Notes'] = journal_df.index.map(lambda i: st.session_state.trade_notes.get(i, ""))
+    journal_df['trader_notes'] = journal_df.index.map(
+        lambda i: st.session_state.trade_notes.get(i, "")
+    )
     
-    # ✅ EDITABLE DATA TABLE (REQUIRED)
+    # Reorder columns for display
+    display_cols = [
+        'close_time', 'trader_short', 'market_id', 'product_type', 'side',
+        'entry_price', 'exit_price', 'volume_usd', 'realized_pnl', 'fees'
+    ]
+    
+    if 'close_reason' in journal_df.columns:
+        display_cols.append('close_reason')
+    
+    display_cols.append('trader_notes')
+    
+    # ✅ EDITABLE DATA TABLE
     edited_journal = st.data_editor(
-        journal_df,
+        journal_df[display_cols],
         column_config={
-            "close_time": st.column_config.DatetimeColumn("Closed At", format="DD/MM/YYYY HH:mm"),
+            "close_time": st.column_config.DatetimeColumn(
+                "Closed At",
+                format="DD/MM/YYYY HH:mm"
+            ),
+            "trader_short": st.column_config.TextColumn(
+                "Trader",
+                help="First 8 characters of wallet address",
+                disabled=True
+            ),
             "market_id": "Market",
             "product_type": "Type",
             "side": "Direction",
-            "entry_price": st.column_config.NumberColumn("Entry", format="$%.2f"),
-            "exit_price": st.column_config.NumberColumn("Exit", format="$%.2f"),
-            "volume_usd": st.column_config.NumberColumn("Volume (USD)", format="$%.2f"),
-            "realized_pnl": st.column_config.NumberColumn("PnL", format="$%.2f"),
-            "fees": st.column_config.NumberColumn("Fees", format="$%.2f"),
-            "close_reason": "Close Reason",
-            "Notes": st.column_config.TextColumn(
-                "Trader Notes",
-                help="Add your analysis and observations",
-                max_chars=200
+            "entry_price": st.column_config.NumberColumn(
+                "Entry",
+                format="$%.2f"
+            ),
+            "exit_price": st.column_config.NumberColumn(
+                "Exit",
+                format="$%.2f",
+                help="None for exercised/expired options (PnL calculated from intrinsic value)"
+            ),
+            "volume_usd": st.column_config.NumberColumn(
+                "Volume (USD)",
+                format="$%.0f"
+            ),
+            "realized_pnl": st.column_config.NumberColumn(
+                "PnL",
+                format="$%.2f"
+            ),
+            "fees": st.column_config.NumberColumn(
+                "Fees",
+                format="$%.2f"
+            ),
+            "close_reason": st.column_config.TextColumn(
+                "Close Type",
+                help="How position was closed: close (normal), liquidation, exercise, expire"
+            ),
+            "trader_notes": st.column_config.TextColumn(
+                "📝 Your Trading Notes",
+                help="Document your analysis: strategy, emotions, lessons learned, improvements for next time",
+                max_chars=500,
+                width="large"
             )
         },
         width='stretch',
         hide_index=True,
-        num_rows="fixed"
+        num_rows="fixed",
+        disabled=[col for col in display_cols if col != 'trader_notes']
     )
     
-    # Update session state
+    # Update session state with edited notes
     for idx, row in edited_journal.iterrows():
-        if row['Notes']:
-            st.session_state.trade_notes[idx] = row['Notes']
+        if pd.notna(row.get('trader_notes')) and row['trader_notes']:
+            st.session_state.trade_notes[idx] = row['trader_notes']
     
+    # Export functionality
+    st.markdown("---")
+    col1, col2, col3, col4 = st.columns([3, 1, 1, 1])
+    
+    with col1:
+        notes_count = len([n for n in st.session_state.trade_notes.values() if n])
+        if notes_count > 0:
+            st.success(f"✅ {notes_count} trade{'s' if notes_count != 1 else ''} annotated")
+        else:
+            st.info("💡 Click on the 'Your Trading Notes' column to add annotations")
+    
+    with col2:
+        # Export with full trader IDs
+        export_df = filtered_positions[available_cols].copy()
+        export_df['trader_notes'] = export_df.index.map(
+            lambda i: st.session_state.trade_notes.get(i, "")
+        )
+        
+        csv = export_df.to_csv(index=False)
+        st.download_button(
+            "📥 Export CSV",
+            csv,
+            "trading_journal_annotated.csv",
+            "text/csv",
+            use_container_width=True
+        )
+    
+    with col3:
+        if st.button("🗑️ Clear Notes", use_container_width=True):
+            if st.session_state.trade_notes:
+                st.session_state.trade_notes = {}
+                st.rerun()
+    
+    with col4:
+        if st.button("📊 Stats", use_container_width=True):
+            st.toast(f"Trades: {len(journal_df)} | Annotated: {notes_count}")
+
     # Download button
     csv = edited_journal.to_csv(index=False)
     st.download_button("📥 Download Annotated Journal", csv, "trading_journal_annotated.csv", "text/csv")
