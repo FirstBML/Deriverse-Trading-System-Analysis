@@ -1,9 +1,8 @@
-# scripts/run_analytics.py
+# scripts/run_analytics.py - WITH OPEN POSITIONS SUPPORT
 import pandas as pd
 from pathlib import Path
 import io
 import logging
-from datetime import datetime, UTC
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -11,10 +10,7 @@ from src.analytics.pnl_engine import compute_realized_pnl
 from src.analytics.summary import compute_executive_summary
 from src.analytics.analytics_builder import AnalyticsBuilder
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 NORMALIZED_EVENTS_PATH = Path("data/normalized/events.jsonl")
@@ -48,19 +44,16 @@ def load_events(path: Path) -> pd.DataFrame:
 def run_analytics(events_df, auto_summary=True):
     if events_df.empty:
         logger.error("No events to analyze")
-        return None, None
+        return None, None, None
     
     logger.info(f"Loaded {len(events_df)} events")
 
     logger.info("Computing realized PnL (truth engine)")
-    positions_df, pnl_df = compute_realized_pnl(events_df)
+    positions_df, pnl_df, open_positions_df = compute_realized_pnl(events_df)  # ✅ NOW RETURNS 3 VALUES
 
-    if positions_df.empty:
-        logger.warning("No closed positions found – creating empty analytics")
-    
     # Build all analytics outputs
     logger.info("Building comprehensive analytics tables...")
-    builder = AnalyticsBuilder(positions_df, pnl_df, ANALYTICS_OUTPUT_DIR)
+    builder = AnalyticsBuilder(positions_df, pnl_df, open_positions_df, ANALYTICS_OUTPUT_DIR)  # ✅ PASS OPEN POSITIONS
     builder.build_all()
 
     if not positions_df.empty and auto_summary:
@@ -82,16 +75,22 @@ def run_analytics(events_df, auto_summary=True):
         print(f"Short Ratio:         {summary['short_ratio']:.1%}")
         print(f"Max Drawdown:        ${summary['max_drawdown']:,.2f}")
         
-        # ✅ FIXED: Added risk-adjusted metrics to match summary.py
         if 'sharpe_ratio' in summary:
             print(f"Sharpe Ratio:        {summary['sharpe_ratio']:.2f}")
         if 'sortino_ratio' in summary:
             print(f"Sortino Ratio:       {summary['sortino_ratio']:.2f}")
         
         print("=" * 50 + "\n")
+    
+    # ✅ Show open positions summary
+    if not open_positions_df.empty:
+        print(f"📊 OPEN POSITIONS: {len(open_positions_df)} positions still active")
+        for _, pos in open_positions_df.iterrows():
+            trader_short = pos['trader_id'][:8] + "..." if len(pos['trader_id']) > 12 else pos['trader_id']
+            print(f"  • {trader_short} | {pos['market_id']:20} | {pos['side']:5} | ${pos['entry_price']:>8,.2f} × {pos['size']:.2f}")
 
     logger.info("Analytics run complete ✅")
-    return positions_df, pnl_df
+    return positions_df, pnl_df, open_positions_df
 
 
 def main():
