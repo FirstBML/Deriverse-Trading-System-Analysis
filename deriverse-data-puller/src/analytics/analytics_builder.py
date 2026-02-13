@@ -1,4 +1,4 @@
-# src/analytics/analytics_builder.py - WITH OPEN POSITIONS SUPPORT
+# src/analytics/analytics_builder.py - FIXED DELTA CALCULATIONS
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -32,7 +32,7 @@ class AnalyticsBuilder:
         logger.info("Building core truth tables...")
         self._build_positions()
         self._build_realized_pnl()
-        self._build_open_positions()  # ✅ NEW
+        self._build_open_positions()
         
         if self.positions.empty:
             logger.warning("No closed positions - generating empty analytics")
@@ -331,19 +331,48 @@ class AnalyticsBuilder:
             trader_opts = options[options['trader_id'] == trader]
             
             net_delta = 0
+            net_gamma = 0
+            net_theta = 0
+            
             for _, opt in trader_opts.iterrows():
+                # Position direction multiplier
                 if opt['side'] in ['buy', 'long']:
-                    delta_sign = 1
+                    direction = 1
+                else:  # sell/short
+                    direction = -1
+                
+                if 'delta' in opt and pd.notna(opt['delta']):
+                    # Use provided delta (already accounts for call/put sign)
+                    option_delta = opt['delta']
                 else:
-                    delta_sign = -1
-                net_delta += delta_sign * opt['size'] * 0.5
+                    # Fallback: estimate based on option type
+                    if 'option_type' in opt and pd.notna(opt['option_type']):
+                        if opt['option_type'] == 'call':
+                            option_delta = 0.5  # Assume ATM call (positive)
+                        else:  # put
+                            option_delta = -0.5  # Assume ATM put (negative)
+                    else:
+                        option_delta = 0.5  # Default fallback
+                
+                # Calculate position delta: direction × delta × size
+                # Example: Buy 10 calls with 0.65 delta = +1 × 0.65 × 10 = +6.5
+                # Example: Sell 15 puts with -0.25 delta = -1 × -0.25 × 15 = +3.75
+                position_delta = direction * option_delta * opt['size']
+                net_delta += position_delta
+                
+                # Other Greeks (whenever available in data)
+                if 'gamma' in opt and pd.notna(opt['gamma']):
+                    net_gamma += direction * opt['gamma'] * opt['size']
+                
+                if 'theta' in opt and pd.notna(opt['theta']):
+                    net_theta += direction * opt['theta'] * opt['size']
             
             result.append({
                 'trader_id': trader,
                 'total_option_positions': len(trader_opts),
-                'net_delta': net_delta,
-                'gamma_exposure': 0,
-                'theta_decay': 0
+                'net_delta': round(net_delta, 4),
+                'gamma_exposure': round(net_gamma, 4),
+                'theta_decay': round(net_theta, 4)
             })
         
         df = pd.DataFrame(result)
