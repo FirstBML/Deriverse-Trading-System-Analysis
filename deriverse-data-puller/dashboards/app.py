@@ -25,7 +25,6 @@ import hmac
 import os
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
 
 # ============================================================================
@@ -79,7 +78,6 @@ def simplify_symbol(market_id):
     if pd.isna(market_id):
         return market_id
     s = str(market_id)
-    # Handle different formats: BTC/USDC, SOL-PERP, ETH-CALL-2200
     return s.split('/')[0].split('-')[0]
 
 
@@ -94,7 +92,7 @@ def get_top_traders(positions_df, n=5, by='profit'):
         return trader_stats.nlargest(n, 'sum').index.tolist()
     elif by == 'loss':
         return trader_stats.nsmallest(n, 'sum').index.tolist()
-    else:  # activity
+    else:
         return trader_stats.nlargest(n, 'count').index.tolist()
 
 
@@ -170,58 +168,94 @@ st.markdown("""
         font-family: 'Inter', sans-serif;
     }
     
-    /* FIXED HEADERS - Never scroll */
-    .fixed-header {
+    .fixed-header-container {
         position: sticky;
         top: 0;
         background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        z-index: 999;
-        padding: 20px 0 10px 0;
-        border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        z-index: 1000;
+        padding: 15px 20px 10px 20px;
+        border-bottom: 2px solid rgba(99, 102, 241, 0.3);
         margin-bottom: 20px;
+        width: 100%;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
     
-    .section-header {
-        position: sticky;
-        top: 100px;
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        z-index: 998;
-        padding: 10px 0;
-        border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+    .header-title {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #f1f5f9;
+        margin: 0;
+        padding: 0;
+        letter-spacing: -0.02em;
     }
     
-    /* Navigation bar */
+    .header-subtitle {
+        color: #94a3b8;
+        font-size: 0.9rem;
+        margin-top: 4px;
+    }
+    
     .nav-bar {
         display: flex;
-        gap: 10px;
-        padding: 10px 0;
-        margin-bottom: 20px;
-        border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        gap: 8px;
+        margin-top: 15px;
         flex-wrap: wrap;
     }
     
     .nav-item {
-        background: rgba(30, 41, 59, 0.6);
-        color: var(--text-secondary);
         padding: 8px 16px;
         border-radius: 8px;
-        cursor: pointer;
-        font-size: 0.9rem;
+        background: rgba(30, 41, 59, 0.6);
+        color: #94a3b8;
         font-weight: 500;
+        cursor: pointer;
         transition: all 0.2s ease;
         border: 1px solid rgba(99, 102, 241, 0.1);
+        text-align: center;
+        flex: 1;
+        min-width: 80px;
     }
     
     .nav-item:hover {
         background: rgba(99, 102, 241, 0.2);
-        color: var(--text-primary);
-        border-color: var(--primary-color);
+        color: #f1f5f9;
+        border-color: #6366f1;
+        transform: translateY(-2px);
     }
     
     .nav-item-active {
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
         color: white;
         border: none;
+        box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
+    }
+    
+    .nav-item-active:hover {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: white;
+    }
+    
+    .profile-badge {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-block;
+        margin: 10px 0 5px 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .section-header {
+        position: sticky;
+        top: 180px;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        z-index: 998;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        margin-bottom: 15px;
     }
     
     h1, h2, h3 {
@@ -326,16 +360,6 @@ st.markdown("""
         margin-top: 4px;
     }
     
-    .profile-badge {
-        background: linear-gradient(135deg, #10b981, #059669);
-        color: white;
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-weight: 600;
-        display: inline-block;
-        margin-bottom: 16px;
-    }
-    
     .progress-bar-container {
         background: rgba(30, 41, 59, 0.4);
         border-radius: 8px;
@@ -430,10 +454,7 @@ def load_data():
 # ============================================================================
 
 def create_clean_equity_chart(equity_df, positions_df, authenticated_trader=None):
-    """
-    Create clean equity chart with PnL on top, drawdown below.
-    Never mixes traders and DD in same legend.
-    """
+    """Create clean equity chart with PnL on top, drawdown below."""
     
     fig = make_subplots(
         rows=2, cols=1,
@@ -444,14 +465,12 @@ def create_clean_equity_chart(equity_df, positions_df, authenticated_trader=None
     
     colors = px.colors.qualitative.Set2
     
-    # Get traders to show
     traders_to_show = equity_df['trader_id'].unique()
     if not authenticated_trader and len(traders_to_show) > 5:
         top_traders = get_top_traders(positions_df, n=5, by='activity')
         equity_df = equity_df[equity_df['trader_id'].isin(top_traders)]
         traders_to_show = equity_df['trader_id'].unique()
     
-    # TOP CHART: Only equity lines
     for i, trader in enumerate(traders_to_show):
         trader_data = equity_df[equity_df['trader_id'] == trader].sort_values('timestamp')
         
@@ -475,7 +494,6 @@ def create_clean_equity_chart(equity_df, positions_df, authenticated_trader=None
             row=1, col=1
         )
     
-    # BOTTOM CHART: Only drawdown (all traders)
     for i, trader in enumerate(traders_to_show):
         trader_data = equity_df[equity_df['trader_id'] == trader].sort_values('timestamp')
         
@@ -495,7 +513,6 @@ def create_clean_equity_chart(equity_df, positions_df, authenticated_trader=None
             row=2, col=1
         )
     
-    # Add max drawdown reference line
     all_drawdowns = equity_df['drawdown'].min()
     fig.add_hline(
         y=all_drawdowns, 
@@ -547,7 +564,6 @@ def create_trader_focus_chart(equity_df, positions_df, trader_id):
         row_heights=[0.5, 0.25, 0.25]
     )
     
-    # Equity with trade markers
     fig.add_trace(
         go.Scatter(
             x=trader_equity['timestamp'],
@@ -560,7 +576,6 @@ def create_trader_focus_chart(equity_df, positions_df, trader_id):
         row=1, col=1
     )
     
-    # Winning trades
     wins = trader_positions[trader_positions['realized_pnl'] > 0]
     if not wins.empty:
         fig.add_trace(
@@ -576,7 +591,6 @@ def create_trader_focus_chart(equity_df, positions_df, trader_id):
             row=1, col=1
         )
     
-    # Losing trades
     losses = trader_positions[trader_positions['realized_pnl'] < 0]
     if not losses.empty:
         fig.add_trace(
@@ -592,7 +606,6 @@ def create_trader_focus_chart(equity_df, positions_df, trader_id):
             row=1, col=1
         )
     
-    # Daily returns
     daily = trader_positions.groupby(
         trader_positions['close_time'].dt.date
     )['realized_pnl'].sum().reset_index()
@@ -609,7 +622,6 @@ def create_trader_focus_chart(equity_df, positions_df, trader_id):
         row=2, col=1
     )
     
-    # Drawdown
     fig.add_trace(
         go.Scatter(
             x=trader_equity['timestamp'],
@@ -692,7 +704,7 @@ def create_trader_summary_table(equity_df, positions_df):
     
     st.divider()
     
-    for t in traders:
+    for i, t in enumerate(traders):
         cols = st.columns([1.2, 1.5, 1, 1, 1, 2])
         
         cols[0].markdown(f"`{t['trader']}`")
@@ -712,7 +724,13 @@ def create_trader_summary_table(equity_df, positions_df):
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)'
         )
-        cols[1].plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+        
+        cols[1].plotly_chart(
+            fig, 
+            width='stretch',
+            config={'displayModeBar': False},
+            key=f"sparkline_{i}"
+        )
         
         pnl_color = "#10b981" if t['pnl'] > 0 else "#ef4444"
         cols[2].markdown(f"<span style='color:{pnl_color};font-weight:600;'>${t['pnl']:,.0f}</span>", unsafe_allow_html=True)
@@ -739,7 +757,7 @@ def display_equity_section(equity_df, positions_df, authenticated_trader=None):
         st.caption("Top panel: Cumulative PnL | Bottom panel: Drawdown")
         
         fig = create_clean_equity_chart(equity_df, positions_df, authenticated_trader)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
         
         col1, col2 = st.columns(2)
         with col1:
@@ -757,7 +775,7 @@ def display_equity_section(equity_df, positions_df, authenticated_trader=None):
     with tab2:
         if authenticated_trader:
             fig = create_trader_focus_chart(equity_df, positions_df, authenticated_trader)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
         else:
             traders = equity_df['trader_id'].unique()
             selected = st.selectbox(
@@ -767,7 +785,7 @@ def display_equity_section(equity_df, positions_df, authenticated_trader=None):
             )
             if selected:
                 fig = create_trader_focus_chart(equity_df, positions_df, selected)
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch')
     
     with tab3:
         create_trader_summary_table(equity_df, positions_df)
@@ -780,14 +798,18 @@ def display_liquidation_analytics(positions_df):
     st.header("⚠️ Liquidation Risk Monitoring")
     st.markdown('</div>', unsafe_allow_html=True)
     
-    if 'liquidation' not in positions_df['event_type'].values:
+    if 'close_reason' not in positions_df.columns:
+        st.info("ℹ️ Liquidation tracking not available for this data")
+        return
+    
+    liquidations = positions_df[positions_df['close_reason'] == 'liquidation'].copy()
+    
+    if liquidations.empty:
         st.success("✅ No liquidations in selected period - clean trading!")
         return
     
-    # 1. Key metrics at top
     col1, col2, col3 = st.columns(3)
     
-    liquidations = positions_df[positions_df['event_type'] == 'liquidation']
     total_liq = len(liquidations)
     unique_traders = liquidations['trader_id'].nunique()
     total_liq_loss = liquidations['realized_pnl'].sum()
@@ -799,15 +821,14 @@ def display_liquidation_analytics(positions_df):
     with col3:
         st.metric("Total Loss", f"${abs(total_liq_loss):,.0f}")
     
-    # 2. Liquidation Rate by Trader
     st.subheader("📊 Liquidation Rate by Trader")
     st.caption("Shows % of trades that ended in liquidation - lower is better")
     
     trader_stats = []
     for trader in positions_df['trader_id'].unique():
         trader_trades = positions_df[positions_df['trader_id'] == trader]
-        trader_liq = len(trader_trades[trader_trades['event_type'] == 'liquidation'])
-        total_closed = len(trader_trades[trader_trades['event_type'].isin(['close', 'liquidation'])])
+        trader_liq = len(trader_trades[trader_trades['close_reason'] == 'liquidation'])
+        total_closed = len(trader_trades[trader_trades['close_reason'].isin(['closed', 'liquidation'])])
         
         if total_closed > 0:
             liq_rate = (trader_liq / total_closed) * 100
@@ -848,9 +869,8 @@ def display_liquidation_analytics(positions_df):
             paper_bgcolor='rgba(15, 23, 42, 0.9)'
         )
         fig.update_xaxes(tickangle=-45)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch', key="liquidation_rate_chart")
     
-    # 3. Financial Impact
     st.subheader("💰 Financial Impact Analysis")
     
     col1, col2 = st.columns(2)
@@ -869,7 +889,7 @@ def display_liquidation_analytics(positions_df):
             color_continuous_scale='Reds'
         )
         fig.update_layout(height=300, template='plotly_dark')
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch', key="liquidation_by_market")
     
     with col2:
         liq_by_trader = liquidations.groupby('trader_id')['realized_pnl'].sum().abs().reset_index()
@@ -885,16 +905,14 @@ def display_liquidation_analytics(positions_df):
             color_continuous_scale='Reds'
         )
         fig.update_layout(height=300, template='plotly_dark')
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch', key="liquidation_by_trader")
     
-    # 4. Pattern detection
     with st.expander("🔍 Pattern Analysis"):
         
         col1, col2 = st.columns(2)
         
         with col1:
-            # Liquidation timeline
-            liquidations['hour'] = pd.to_datetime(liquidations['timestamp']).dt.hour
+            liquidations['hour'] = pd.to_datetime(liquidations['close_time']).dt.hour
             liq_by_hour = liquidations.groupby('hour').size().reset_index(name='count')
             
             fig = px.line(
@@ -905,27 +923,57 @@ def display_liquidation_analytics(positions_df):
                 markers=True
             )
             fig.update_layout(height=300, template='plotly_dark')
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch', key="liquidation_by_hour")
         
         with col2:
-            # Most common market
             top_market = liquidations['market_id'].mode()
             if not top_market.empty:
                 st.info(f"🔥 **Riskiest Market:** {simplify_symbol(top_market.iloc[0])}")
             
-            # Most common hour
-            liq_hours = pd.to_datetime(liquidations['timestamp']).dt.hour
+            liq_hours = pd.to_datetime(liquidations['close_time']).dt.hour
             top_hour = liq_hours.mode()
             if not top_hour.empty:
                 st.info(f"⏰ **Riskiest Hour:** {top_hour.iloc[0]}:00 UTC")
             
-            # Average loss per liquidation
             avg_loss = liquidations['realized_pnl'].mean()
             st.metric("Average Loss per Liquidation", f"${abs(avg_loss):,.2f}")
+            
+            with st.expander("📋 Liquidation History"):
+                liq_display = liquidations[['close_time', 'trader_id', 'market_id', 'side', 
+                                           'size', 'exit_price', 'realized_pnl', 'fees']].copy()
+                liq_display['trader'] = liq_display['trader_id'].apply(mask_trader_id)
+                liq_display['symbol'] = liq_display['market_id'].apply(simplify_symbol)
+                liq_display = liq_display.sort_values('close_time', ascending=False)
+                
+                st.dataframe(
+                    liq_display[['close_time', 'trader', 'symbol', 'side', 
+                                'size', 'exit_price', 'realized_pnl', 'fees']].style.format({
+                        'close_time': lambda x: x.strftime('%Y-%m-%d %H:%M'),
+                        'size': '{:.4f}',
+                        'exit_price': '${:.2f}',
+                        'realized_pnl': '${:.2f}',
+                        'fees': '${:.2f}'
+                    }).map(
+                        lambda x: 'color: #ef4444; font-weight: bold',
+                        subset=['realized_pnl']
+                    ),
+                    width='stretch',
+                    hide_index=True,
+                    column_config={
+                        "close_time": "Time",
+                        "trader": "Trader",
+                        "symbol": "Symbol",
+                        "side": "Side",
+                        "size": "Size",
+                        "exit_price": "Price",
+                        "realized_pnl": "Loss",
+                        "fees": "Fees"
+                    }
+                )
 
 
 def display_order_type_performance(order_perf_df, positions_df):
-    """Fixed order type chart with proper classification."""
+    """Order type chart with proper classification."""
     
     st.markdown('<div class="section-header">', unsafe_allow_html=True)
     st.header("📊 Order Type Performance")
@@ -935,16 +983,12 @@ def display_order_type_performance(order_perf_df, positions_df):
         st.info("No trade data available")
         return
     
-    # Get actual order types from data
     df = positions_df.copy()
     
-    # Try multiple methods to get order types
     if 'order_type' in df.columns and not df['order_type'].isna().all():
-        # Use actual order_type from events
         order_types = df['order_type'].value_counts()
         st.caption(f"📊 Based on {len(order_types)} order types from trade data")
     else:
-        # Fallback: derive from product type and duration
         df['order_type'] = df.apply(lambda row: 
             f"{row['product_type']}" if row['product_type'] in ['option'] else
             f"{row['product_type']}_market" if row['duration_seconds'] < 300 else
@@ -954,7 +998,6 @@ def display_order_type_performance(order_perf_df, positions_df):
         )
         st.caption("📊 Order types derived from product type and duration")
     
-    # Calculate metrics
     result = []
     for order_type, group in df.groupby('order_type'):
         trade_count = len(group)
@@ -974,10 +1017,8 @@ def display_order_type_performance(order_perf_df, positions_df):
     order_df = pd.DataFrame(result)
     order_df = order_df.sort_values('trade_count', ascending=False)
     
-    # Create dual-axis chart
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     
-    # Bar chart for Win Rate
     fig.add_trace(
         go.Bar(
             x=order_df['order_type'],
@@ -993,7 +1034,6 @@ def display_order_type_performance(order_perf_df, positions_df):
         secondary_y=False,
     )
     
-    # Line chart for Avg PnL
     colors = ['#10b981' if x > 0 else '#ef4444' for x in order_df['avg_pnl']]
     
     fig.add_trace(
@@ -1032,9 +1072,8 @@ def display_order_type_performance(order_perf_df, positions_df):
     fig.update_yaxes(title_text="Average PnL ($)", secondary_y=True)
     fig.add_hline(y=0, line_dash="dash", line_color="gray", opacity=0.5, secondary_y=True)
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
     
-    # Summary metrics
     col1, col2, col3 = st.columns(3)
     
     with col1:
@@ -1063,7 +1102,7 @@ def display_order_type_performance(order_perf_df, positions_df):
 
 
 def display_volume_analysis(positions_df):
-    """Enhanced volume analysis with product tabs and progress bars."""
+    """Volume analysis with product tabs and progress bars."""
     
     st.markdown('<div class="section-header">', unsafe_allow_html=True)
     st.header("📊 Trading Volume Analysis")
@@ -1075,17 +1114,15 @@ def display_volume_analysis(positions_df):
     
     positions_df = calculate_volume_usd(positions_df)
     
-    # Overview metrics
     col1, col2, col3, col4 = st.columns(4)
     
     total_volume = positions_df['volume_usd'].sum()
     total_fees = positions_df['fees'].sum()
     unique_symbols = positions_df['market_id'].apply(simplify_symbol).nunique()
     
-    # Calculate concentration (HHI)
     symbol_vol = positions_df.groupby(positions_df['market_id'].apply(simplify_symbol))['volume_usd'].sum()
     vol_shares = symbol_vol / total_volume if total_volume > 0 else pd.Series([0])
-    hhi = (vol_shares ** 2).sum() * 10000  # Normalized to 0-10000
+    hhi = (vol_shares ** 2).sum() * 10000
     
     with col1:
         st.metric("Total Volume", f"${total_volume:,.0f}")
@@ -1097,7 +1134,6 @@ def display_volume_analysis(positions_df):
         concentration = "Low" if hhi < 1500 else "Medium" if hhi < 2500 else "High"
         st.metric("Concentration", f"{hhi:.0f} ({concentration})")
     
-    # Product type tabs
     product_tabs = st.tabs(["📈 All Products", "📍 Spot", "⚡ Perpetual", "🎯 Options"])
     
     products = {
@@ -1107,7 +1143,7 @@ def display_volume_analysis(positions_df):
         "🎯 Options": positions_df[positions_df['product_type'] == 'option']
     }
     
-    for tab, (tab_name, product_df) in zip(product_tabs, products.items()):
+    for tab_idx, (tab, (tab_name, product_df)) in enumerate(zip(product_tabs, products.items())):
         with tab:
             if product_df.empty:
                 st.info(f"No {tab_name} trades in selected period")
@@ -1118,7 +1154,6 @@ def display_volume_analysis(positions_df):
             with col1:
                 st.markdown(f"#### Volume by Symbol - Top 5")
                 
-                # Volume by symbol (progress bars)
                 symbol_vol = product_df.groupby(product_df['market_id'].apply(simplify_symbol)).agg({
                     'volume_usd': 'sum',
                     'realized_pnl': 'sum',
@@ -1152,7 +1187,6 @@ def display_volume_analysis(positions_df):
                     </div>
                     """, unsafe_allow_html=True)
                 
-                # Fee generation
                 st.markdown("#### Fee Generation")
                 fee_by_symbol = product_df.groupby(product_df['market_id'].apply(simplify_symbol))['fees'].sum().sort_values(ascending=False).head(5)
                 
@@ -1165,14 +1199,12 @@ def display_volume_analysis(positions_df):
                     color_continuous_scale='Reds'
                 )
                 fig.update_layout(height=250, template='plotly_dark')
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch', key=f"fee_chart_{tab_idx}")
             
             with col2:
                 st.markdown(f"#### Long vs Short Distribution")
                 
-                # Long/Short by volume
-                if tab_name == "🎯 Options":
-                    # For options, show Calls vs Puts
+                if tab_name == "🎯 Options" and 'option_type' in product_df.columns:
                     calls = product_df[product_df['option_type'] == 'call']['volume_usd'].sum()
                     puts = product_df[product_df['option_type'] == 'put']['volume_usd'].sum()
                     
@@ -1183,9 +1215,8 @@ def display_volume_analysis(positions_df):
                         marker_colors=['#10b981', '#f59e0b']
                     )])
                     fig.update_layout(height=300, template='plotly_dark')
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, width='stretch', key=f"options_pie_{tab_idx}")
                     
-                    # Option-specific metrics
                     col1, col2 = st.columns(2)
                     with col1:
                         avg_premium = product_df['exit_price'].mean()
@@ -1193,9 +1224,8 @@ def display_volume_analysis(positions_df):
                     with col2:
                         total_options = len(product_df)
                         st.metric("Option Trades", total_options)
-                    
+                
                 else:
-                    # For spot/perp, show Long vs Short
                     long_vol = product_df[product_df['side'].isin(['long', 'buy'])]['volume_usd'].sum()
                     short_vol = product_df[product_df['side'].isin(['short', 'sell'])]['volume_usd'].sum()
                     
@@ -1206,13 +1236,11 @@ def display_volume_analysis(positions_df):
                         marker_colors=['#10b981', '#ef4444']
                     )])
                     fig.update_layout(height=300, template='plotly_dark')
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, width='stretch', key=f"long_short_pie_{tab_idx}")
                     
-                    # Calculate ratio
                     ratio = (long_vol / short_vol) if short_vol > 0 else float('inf')
                     st.metric("Long/Short Ratio", f"{ratio:.2f}x")
                 
-                # Average trade size
                 st.markdown("#### Average Trade Size")
                 avg_size = product_df['volume_usd'].mean()
                 median_size = product_df['volume_usd'].median()
@@ -1225,7 +1253,7 @@ def display_volume_analysis(positions_df):
                     marker_color='#6366f1'
                 ))
                 fig.update_layout(height=200, template='plotly_dark', showlegend=False)
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch', key=f"box_chart_{tab_idx}")
                 
                 col1, col2 = st.columns(2)
                 with col1:
@@ -1287,7 +1315,6 @@ def display_greeks_analysis(greeks_df):
             </div>
         """, unsafe_allow_html=True)
     
-    # Delta by trader
     st.subheader("📊 Delta Exposure by Trader")
     
     display_df = greeks_df.copy()
@@ -1310,9 +1337,8 @@ def display_greeks_analysis(greeks_df):
         paper_bgcolor='rgba(15, 23, 42, 0.9)'
     )
     fig.update_xaxes(tickangle=-45)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
     
-    # Greeks table
     st.subheader("📋 Greeks Breakdown")
     
     st.dataframe(
@@ -1334,6 +1360,7 @@ def display_greeks_analysis(greeks_df):
         }
     )
 
+
 # ============================================================================
 # DATA LOADING
 # ============================================================================
@@ -1350,7 +1377,7 @@ if data is None or (data['positions'].empty and data['open_positions'].empty):
 # SIDEBAR
 # ============================================================================
 
-logo_url = "https://deriverse.gitbook.io/deriverse-v1/~gitbook/image?url=https%3A%2F%2F378873821-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJOrW2GdKwWAH2NMyLuwI%252Fuploads%252FYPcne0os80IiohJCe8TZ%252FScreenshot%25202026-01-13%2520at%252017.27.51.png%3Falt%3Dmedia%26token%3D5fc0293a-c66b-408e-ac94-fb6d0c431e52&width=768&dpr=1&quality=100&sign=1afb00d&sv=2"
+logo_url = "https://deriverse.gitbook.io/deriverse-v1/~gitbook/image?url=https%3A%2F%2F3705106568-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Forganizations%252FVbKUpgicSXo9QHWM7uzI%252Fsites%252Fsite_oPxtF%252Ficon%252FNsfAUtLJH778Cn5Dd7zK%252Ffavicon.ico%3Falt%3Dmedia%26token%3D4099bf73-ccd6-4d9f-8bbb-01cdc664ddb0&width=32&dpr=3&quality=100&sign=13d31bb2&sv=2"
 
 logo_bytes = load_logo(logo_url)
 if logo_bytes:
@@ -1362,26 +1389,16 @@ st.sidebar.markdown("---")
 st.sidebar.success("🔒 **Secure & Private**\nRead-only • Local-first")
 st.sidebar.markdown("---")
 
-# ============================================================================
-# ADMIN AUTHENTICATION
-# ============================================================================
-
 st.sidebar.header("🔐 Access Control")
 is_admin = check_admin_password()
 
-
-# ============================================================================
-# TRADER AUTHENTICATION
-# ============================================================================
-
 st.sidebar.header("👤 Trader Access")
-# Get all available traders 
+
 all_traders = sorted(pd.concat([
     data['positions']['trader_id'] if not data['positions'].empty else pd.Series([]),
     data['open_positions']['trader_id'] if not data['open_positions'].empty else pd.Series([])
 ]).unique())
 
-# Determine current mode
 if "view_mode" not in st.session_state:
     st.session_state.view_mode = "all_traders"
 
@@ -1405,7 +1422,7 @@ if st.session_state.view_mode == "all_traders":
         else:
             st.sidebar.warning("⚠️ Please enter a valid wallet address")
 
-else:  # personal mode
+else:
     if "authenticated_trader" in st.session_state:
         trader = st.session_state.authenticated_trader
         st.sidebar.success(f"✅ **Personal Mode:** {mask_trader_id(trader)}")
@@ -1416,33 +1433,29 @@ else:  # personal mode
 
 st.sidebar.markdown("---")
 
-
-# ============================================================================
-# FILTERS
-# ============================================================================
-
 st.sidebar.header("🎛️ Filters")
-
-# Date range filter - Default to last 30 days
 st.sidebar.markdown("**📅 Date Range**")
 
 if is_admin:
     date_option = st.sidebar.radio(
         "Range (Admin)",
         ["Last 7 Days", "Last 30 Days", "All Time", "Custom"],
-        index=1,  # Default to Last 30 Days
+        index=1,
         horizontal=True,
         label_visibility="collapsed"
     )
 else:
     date_option = st.sidebar.radio(
         "Range",
-        ["Last 7 Days", "Last 30 Days", "Custom"],
-        index=1,  # Default to Last 30 Days
+        ["Last 7 Days", "Last 30 Days", "Custom (Admin Only)"],
+        index=1,
         horizontal=True,
         label_visibility="collapsed"
     )
-    st.sidebar.caption("🔒 All Time requires admin")
+    
+    if date_option == "Custom (Admin Only)":
+        st.sidebar.warning("🔐 Custom date range requires admin authentication")
+        date_option = "Last 30 Days"
 
 if data and not data['positions'].empty:
     min_date = data['positions']['close_time'].min().date()
@@ -1454,23 +1467,22 @@ if data and not data['positions'].empty:
     elif date_option == "Last 30 Days":
         start_date = max_date - timedelta(days=30)
         end_date = max_date
-    elif date_option == "Custom":
-        col1, col2 = st.sidebar.columns(2)
-        with col1:
-            start_date = st.date_input("From", min_date, min_value=min_date, max_value=max_date)
-        with col2:
-            end_date = st.date_input("To", max_date, min_value=min_date, max_value=max_date)
-    else:  # All Time
+    elif date_option == "Custom" or date_option == "Custom (Admin Only)":
+        if is_admin:
+            col1, col2 = st.sidebar.columns(2)
+            with col1:
+                start_date = st.date_input("From", min_date, min_value=min_date, max_value=max_date)
+            with col2:
+                end_date = st.date_input("To", max_date, min_value=min_date, max_value=max_date)
+        else:
+            start_date = max_date - timedelta(days=30)
+            end_date = max_date
+    else:
         start_date = min_date
         end_date = max_date
-else:
-    start_date = datetime.now().date()
-    end_date = datetime.now().date()
 
-# Symbol/Market filter - DEDUPLICATED
 if data and not data['positions'].empty:
     all_markets = sorted(data['positions']['market_id'].unique())
-    # Extract unique symbols for display
     symbol_map = {m: simplify_symbol(m) for m in all_markets}
     unique_symbols = sorted(set(symbol_map.values()))
     
@@ -1481,7 +1493,6 @@ if data and not data['positions'].empty:
         help="Select symbols to analyze (empty = all symbols)"
     )
     
-    # Map back to market_ids if symbols selected
     if selected_symbols:
         selected_markets = [m for m in all_markets if simplify_symbol(m) in selected_symbols]
     else:
@@ -1493,73 +1504,62 @@ st.sidebar.markdown("---")
 
 
 # ============================================================================
-# NAVIGATION BAR
+# FIXED HEADER & NAVIGATION - NEVER SCROLLS
 # ============================================================================
-
-nav_col1, nav_col2, nav_col3, nav_col4, nav_col5, nav_col6, nav_col7 = st.columns(7)
-
-with nav_col1:
-    if st.button("📊 Overview", use_container_width=True):
-        st.session_state.nav = "overview"
-with nav_col2:
-    if st.button("📈 Performance", use_container_width=True):
-        st.session_state.nav = "performance"
-with nav_col3:
-    if st.button("⚠️ Risk", use_container_width=True):
-        st.session_state.nav = "risk"
-with nav_col4:
-    if st.button("📊 Volume", use_container_width=True):
-        st.session_state.nav = "volume"
-with nav_col5:
-    if st.button("📋 Orders", use_container_width=True):
-        st.session_state.nav = "orders"
-with nav_col6:
-    if st.button("🔬 Greeks", use_container_width=True):
-        st.session_state.nav = "greeks"
-with nav_col7:
-    if st.button("📝 Journal", use_container_width=True):
-        st.session_state.nav = "journal"
 
 if "nav" not in st.session_state:
     st.session_state.nav = "overview"
 
-st.markdown("---")
-
-
-# ============================================================================
-# MAIN DASHBOARD
-# ============================================================================
-
-# FIXED HEADER
-st.markdown('<div class="fixed-header">', unsafe_allow_html=True)
-
-if logo_bytes:
-    col1, col2 = st.columns([1, 5])
+with st.container():
+    st.markdown('<div class="fixed-header-container">', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns([1, 8])
+    
     with col1:
-        st.image(logo_bytes, width=80)
+        if logo_bytes:
+            st.image(logo_bytes, width=60)
+        else:
+            st.markdown("### 🔷")
+    
     with col2:
-        st.markdown("# **Deriverse Trading Analytics**")
-else:
-    st.markdown("# 🔷 **Deriverse Trading Analytics**")
+        st.markdown('<div class="header-title">Deriverse Trading Analytics</div>', unsafe_allow_html=True)
+        st.markdown('<div class="header-subtitle">Real-time performance insights • Local-first security</div>', unsafe_allow_html=True)
+    
+    if st.session_state.view_mode == "personal" and "authenticated_trader" in st.session_state:
+        st.markdown(f"""
+            <div class='profile-badge'>
+                🔐 {mask_trader_id(st.session_state.authenticated_trader)}
+            </div>
+        """, unsafe_allow_html=True)
+    
+    nav_items = [
+        ("📊 Overview", "overview"),
+        ("📈 Performance", "performance"),
+        ("⚠️ Risk", "risk"),
+        ("📊 Volume", "volume"),
+        ("📋 Orders", "orders"),
+        ("🔬 Greeks", "greeks"),
+        ("📝 Journal", "journal")
+    ]
+    
+    nav_cols = st.columns(len(nav_items))
+    
+    for idx, (col, (label, nav_key)) in enumerate(zip(nav_cols, nav_items)):
+        with col:
+            is_active = (st.session_state.nav == nav_key)
+            if st.button(
+                label,
+                key=f"nav_{nav_key}",
+                use_container_width=True,
+                type="primary" if is_active else "secondary"
+            ):
+                st.session_state.nav = nav_key
+                st.rerun()
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
-st.caption("Real-time performance insights • Local-first security")
+st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
-# Profile indicator
-if st.session_state.view_mode == "personal" and "authenticated_trader" in st.session_state:
-    st.markdown(f"""
-        <div class='profile-badge'>
-            🔐 Personal Dashboard: {mask_trader_id(st.session_state.authenticated_trader)}
-        </div>
-    """, unsafe_allow_html=True)
-
-st.markdown("""
-    <div style='display: flex; align-items: center; gap: 8px; margin-bottom: 24px;'>
-        <span class='status-live'></span>
-        <span style='color: #10b981; font-size: 14px; font-weight: 600;'>LIVE ANALYTICS</span>
-    </div>
-""", unsafe_allow_html=True)
-
-st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================================================
 # APPLY FILTERS
@@ -1568,7 +1568,6 @@ st.markdown('</div>', unsafe_allow_html=True)
 filtered_positions = data['positions'].copy() if not data['positions'].empty else pd.DataFrame()
 filtered_open = data['open_positions'].copy() if not data['open_positions'].empty else pd.DataFrame()
 
-# Apply trader filter based on mode
 if st.session_state.view_mode == "personal" and "authenticated_trader" in st.session_state:
     selected_trader = st.session_state.authenticated_trader
     if not filtered_positions.empty:
@@ -1578,24 +1577,20 @@ if st.session_state.view_mode == "personal" and "authenticated_trader" in st.ses
 else:
     selected_trader = None
 
-# Apply date filter
 if not filtered_positions.empty:
     filtered_positions = filtered_positions[
         (filtered_positions['close_time'].dt.date >= start_date) &
         (filtered_positions['close_time'].dt.date <= end_date)
     ]
 
-# Apply symbol filter
 if selected_markets and not filtered_positions.empty:
     filtered_positions = filtered_positions[filtered_positions['market_id'].isin(selected_markets)]
 if selected_markets and not filtered_open.empty:
     filtered_open = filtered_open[filtered_open['market_id'].isin(selected_markets)]
 
-# Calculate volume
 if not filtered_positions.empty:
     filtered_positions = calculate_volume_usd(filtered_positions)
 
-# Prepare equity data
 if not data['equity'].empty:
     filtered_equity = data['equity'].copy()
     if selected_trader:
@@ -1609,14 +1604,64 @@ else:
 
 
 # ============================================================================
-# OVERVIEW SECTION (KPI + Top Performers)
+# OPEN POSITIONS TABLE
 # ============================================================================
 
-if st.session_state.nav == "overview" or st.session_state.nav == "all":
+if not filtered_open.empty:
+    st.warning(f"⚠️ **{len(filtered_open)} Open Positions** - Unrealized PnL not included")
     
-    st.markdown('<div class="section-header">', unsafe_allow_html=True)
+    open_display = filtered_open.copy()
+    
+    if 'time_held_seconds' in open_display.columns:
+        open_display['time_held'] = (open_display['time_held_seconds'] / 3600).round(1)
+    elif 'open_time' in open_display.columns:
+        open_display['time_held'] = ((pd.Timestamp.now() - pd.to_datetime(open_display['open_time'])).dt.total_seconds() / 3600).round(1)
+    else:
+        open_display['time_held'] = 0
+    
+    open_display['trader_display'] = open_display['trader_id'].apply(
+        lambda x: f"{x[:8]}...{x[-8:]}" if selected_trader and x == selected_trader else mask_trader_id(x)
+    )
+    open_display['symbol'] = open_display['market_id'].apply(simplify_symbol)
+    
+    display_cols = ['trader_display', 'symbol', 'product_type', 'side', 'entry_price', 'size']
+    
+    if 'fees_paid' in open_display.columns:
+        display_cols.append('fees_paid')
+    elif 'fees' in open_display.columns:
+        open_display['fees_paid'] = open_display['fees']
+        display_cols.append('fees_paid')
+    
+    display_cols.append('time_held')
+    
+    st.dataframe(
+        open_display[display_cols].rename(columns={
+            'trader_display': 'Trader',
+            'symbol': 'Symbol',
+            'product_type': 'Type',
+            'side': 'Direction',
+            'entry_price': 'Entry Price',
+            'size': 'Size',
+            'fees_paid': 'Fees Paid',
+            'time_held': 'Hours Held'
+        }).style.format({
+            'Entry Price': '${:,.2f}',
+            'Fees Paid': '${:,.2f}',
+            'Size': '{:,.4f}',
+            'Hours Held': '{:.1f}h'
+        }),
+        width='stretch',
+        hide_index=True
+    )
+
+
+# ============================================================================
+# SECTION RENDERING BASED ON NAVIGATION
+# ============================================================================
+
+if st.session_state.nav == "overview":
+    
     st.markdown("## 📈 Performance Overview")
-    st.markdown('</div>', unsafe_allow_html=True)
     
     col1, col2, col3, col4 = st.columns(4)
     
@@ -1634,11 +1679,6 @@ if st.session_state.nav == "overview" or st.session_state.nav == "all":
     col3.metric("Total Closed Trades", trade_count)
     col4.metric("Fees Paid", f"${total_fees:,.2f}")
     
-    # Open positions if any
-    if not filtered_open.empty:
-        st.warning(f"⚠️ **{len(filtered_open)} Open Positions** - Unrealized PnL not included")
-    
-    # Risk metrics
     st.markdown("## ⚖️ Risk Analysis")
     col1, col2, col3, col4 = st.columns(4)
     
@@ -1665,7 +1705,6 @@ if st.session_state.nav == "overview" or st.session_state.nav == "all":
     col3.metric("Profit Factor", f"{profit_factor:.2f}x")
     col4.metric("Sharpe Ratio", f"{sharpe:.2f}")
     
-    # Top Performers (only in All Traders mode)
     if not filtered_positions.empty and not selected_trader:
         st.markdown("## 🏆 Top Performers Analysis")
         
@@ -1688,7 +1727,6 @@ if st.session_state.nav == "overview" or st.session_state.nav == "all":
                 
                 winner_df = pd.DataFrame(winner_stats)
                 
-                # Add mini bar chart
                 fig = px.bar(
                     winner_df,
                     x='Trader',
@@ -1699,7 +1737,7 @@ if st.session_state.nav == "overview" or st.session_state.nav == "all":
                 )
                 fig.update_traces(texttemplate='$%{text:.0f}', textposition='outside')
                 fig.update_layout(height=200, showlegend=False, template='plotly_dark')
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch')
                 
                 st.dataframe(
                     winner_df.style.format({
@@ -1727,7 +1765,6 @@ if st.session_state.nav == "overview" or st.session_state.nav == "all":
                 
                 loser_df = pd.DataFrame(loser_stats)
                 
-                # Add mini bar chart
                 fig = px.bar(
                     loser_df,
                     x='Trader',
@@ -1738,7 +1775,7 @@ if st.session_state.nav == "overview" or st.session_state.nav == "all":
                 )
                 fig.update_traces(texttemplate='$%{text:.0f}', textposition='outside')
                 fig.update_layout(height=200, showlegend=False, template='plotly_dark')
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch')
                 
                 st.dataframe(
                     loser_df.style.format({
@@ -1749,57 +1786,32 @@ if st.session_state.nav == "overview" or st.session_state.nav == "all":
                     hide_index=True
                 )
 
-
-# ============================================================================
-# PERFORMANCE SECTION (Equity Curve)
-# ============================================================================
-
-if st.session_state.nav == "performance":
+elif st.session_state.nav == "performance":
     if not filtered_positions.empty and not filtered_equity.empty:
         display_equity_section(filtered_equity, filtered_positions, 
                               st.session_state.authenticated_trader if st.session_state.view_mode == "personal" else None)
     else:
         st.info("No performance data for selected filters")
 
-
-# ============================================================================
-# RISK SECTION (Liquidations)
-# ============================================================================
-
-if st.session_state.nav == "risk":
+elif st.session_state.nav == "risk":
     if not filtered_positions.empty:
         display_liquidation_analytics(filtered_positions)
     else:
         st.info("No risk data for selected filters")
 
-
-# ============================================================================
-# VOLUME SECTION
-# ============================================================================
-
-if st.session_state.nav == "volume":
+elif st.session_state.nav == "volume":
     if not filtered_positions.empty:
         display_volume_analysis(filtered_positions)
     else:
         st.info("No volume data for selected filters")
 
-
-# ============================================================================
-# ORDERS SECTION
-# ============================================================================
-
-if st.session_state.nav == "orders":
+elif st.session_state.nav == "orders":
     if not data['order_perf'].empty:
         display_order_type_performance(data['order_perf'], filtered_positions)
     else:
         st.info("No order type data available")
 
-
-# ============================================================================
-# GREEKS SECTION
-# ============================================================================
-
-if st.session_state.nav == "greeks":
+elif st.session_state.nav == "greeks":
     if not data['greeks'].empty:
         greeks_filtered = data['greeks'].copy()
         if selected_trader:
@@ -1812,12 +1824,7 @@ if st.session_state.nav == "greeks":
     else:
         st.info("No Greeks data available")
 
-
-# ============================================================================
-# JOURNAL SECTION (with notes)
-# ============================================================================
-
-if st.session_state.nav == "journal":
+elif st.session_state.nav == "journal":
     
     st.markdown('<div class="section-header">', unsafe_allow_html=True)
     st.header("📝 Trade Journal with Annotations")
@@ -1845,7 +1852,6 @@ if st.session_state.nav == "journal":
         journal_df['symbol'] = journal_df['market_id'].apply(simplify_symbol)
         journal_df['notes'] = journal_df['position_id'].map(lambda pid: trader_notes.get(str(pid), ""))
         
-        # Count notes correctly
         notes_count = len([n for n in journal_df['notes'] if n and str(n).strip()])
         st.info(f"📝 You have {notes_count} annotated trade{'s' if notes_count != 1 else ''}")
         
@@ -1877,7 +1883,6 @@ if st.session_state.nav == "journal":
             disabled=[col for col in available_cols if col != 'notes']
         )
         
-        # Save notes
         updated_notes = {}
         for idx, row in edited_journal.iterrows():
             pid = journal_df.loc[idx, 'position_id']
@@ -1889,7 +1894,6 @@ if st.session_state.nav == "journal":
             save_trader_notes(trader, updated_notes)
             st.success("✅ Notes saved!")
         
-        # Export
         col1, col2, col3 = st.columns([3, 1, 1])
         
         with col2:
@@ -1900,11 +1904,11 @@ if st.session_state.nav == "journal":
                 csv,
                 f"journal_{trader[:8]}.csv",
                 "text/csv",
-                use_container_width=True
+                width='stretch'
             )
         
         with col3:
-            if st.button("🗑️ Clear All Notes", use_container_width=True):
+            if st.button("🗑️ Clear All Notes", width='stretch'):
                 save_trader_notes(trader, {})
                 st.rerun()
     
