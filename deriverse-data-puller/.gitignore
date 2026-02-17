@@ -1,1 +1,38 @@
- 
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# Data
+data/
+*.csv
+*.jsonl
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Configs (but keep examples)
+configs/*.yaml
+!configs/*.example.yaml
+configs/*.yml
+!configs/*.example.yml
+
+# Temp files
+temp.txt
+full_code_review.txt
+*.bak
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+Archive_TS/
+.Deriverse/
+.Archive_TS/
