@@ -1,4 +1,9 @@
-# src/analytics/validate.py - WITH LIQUIDATION SUPPORT
+# src/analytics/validate.py
+"""
+Event validation with support for enhanced mock data fields.
+Validates position_id, tx_hash, entry_price, and fee_usd.
+"""
+
 from typing import Dict, Any, Set
 from datetime import datetime
 
@@ -6,7 +11,6 @@ class EventValidationError(Exception):
     """Raised when event fails validation."""
     pass
 
-# --- Base required fields for ALL events ---
 BASE_REQUIRED_FIELDS = {
     "event_id",
     "event_type",
@@ -16,17 +20,18 @@ BASE_REQUIRED_FIELDS = {
     "product_type"
 }
 
-# --- Base optional fields for ALL events ---
 BASE_OPTIONAL_FIELDS = {
     "side",
     "price",
     "size",
-    "fee",
+    "fee_usd",
     "pnl",
-    "order_type"
+    "order_type",
+    "position_id",
+    "tx_hash",
+    "entry_price"
 }
 
-# --- Option-specific fields ---
 OPTION_REQUIRED_FIELDS = {
     "option_type",
     "strike",
@@ -42,31 +47,30 @@ OPTION_OPTIONAL_FIELDS = {
     "underlying_price"
 }
 
-# --- Event type schemas ---
 EVENT_TYPE_SCHEMAS = {
     "trade": {
-        "required": {"side", "price", "size", "fee"},
-        "optional": {"pnl"}
+        "required": {"side", "price", "size"},
+        "optional": {"fee_usd", "pnl", "tx_hash"}
     },
     "open": {
-        "required": {"side", "price", "size", "fee"},
-        "optional": {"pnl", "order_type"}
+        "required": {"side", "price", "size"},
+        "optional": {"fee_usd", "pnl", "order_type", "position_id", "tx_hash"}
     },
     "close": {
-        "required": {"side", "price", "size", "fee"},
-        "optional": {"pnl", "order_type"}
+        "required": {"side", "price", "size"},
+        "optional": {"fee_usd", "pnl", "order_type", "position_id", "entry_price", "tx_hash"}
     },
-    "liquidation": {  # ✅ NEW: Liquidation event schema
-        "required": {"side", "price", "size", "fee"},
-        "optional": {"pnl", "order_type"}
+    "liquidation": {
+        "required": {"side", "price", "size"},
+        "optional": {"fee_usd", "pnl", "order_type", "position_id", "entry_price", "tx_hash"}
     },
     "exercise": {
-        "required": {"side", "size", "fee"},
-        "optional": {"price", "pnl", "underlying_price"}
+        "required": {"side", "size"},
+        "optional": {"price", "fee_usd", "pnl", "underlying_price", "position_id", "entry_price", "tx_hash"}
     },
     "expire": {
         "required": {"side", "size"},
-        "optional": {"price", "fee", "pnl", "underlying_price"}
+        "optional": {"price", "fee_usd", "pnl", "underlying_price", "position_id", "entry_price", "tx_hash"}
     }
 }
 
@@ -81,18 +85,15 @@ def validate_event(event: dict) -> None:
     event_type = event.get("event_type")
     product_type = event.get("product_type")
 
-    # Trade events are informational only - skip position validation
     if event_type == "trade":
         return
 
-    # Validate product type
     valid_products = {"spot", "perp", "option"}
     if product_type not in valid_products:
         raise EventValidationError(
             f"Invalid product_type: {product_type}. Allowed: {valid_products}"
         )
 
-    # Product-specific side validation
     if product_type == "option":
         allowed_sides = {"buy", "sell", "long", "short", "exercise", "expire"}
     elif product_type == "perp":
@@ -107,18 +108,15 @@ def validate_event(event: dict) -> None:
             f"Must be one of: {allowed_sides}"
         )
 
-    # Build allowed fields based on product type
     allowed_fields = BASE_REQUIRED_FIELDS | BASE_OPTIONAL_FIELDS
     
     if product_type == "option":
         allowed_fields |= OPTION_REQUIRED_FIELDS | OPTION_OPTIONAL_FIELDS
     
-    # Add event-specific fields
     if event_type in EVENT_TYPE_SCHEMAS:
         schema = EVENT_TYPE_SCHEMAS[event_type]
         allowed_fields |= schema["required"] | schema["optional"]
 
-    # Check for extra fields (schema drift)
     extra_fields = set(event.keys()) - allowed_fields
     if extra_fields:
         raise EventValidationError(
@@ -126,7 +124,6 @@ def validate_event(event: dict) -> None:
             f"Allowed for {product_type}/{event_type}: {allowed_fields}"
         )
 
-    # Check event-type-specific required fields
     if event_type in EVENT_TYPE_SCHEMAS:
         schema = EVENT_TYPE_SCHEMAS[event_type]
         missing_required = schema["required"] - set(event.keys())
@@ -135,7 +132,6 @@ def validate_event(event: dict) -> None:
                 f"Event type '{event_type}' missing required fields: {missing_required}"
             )
 
-    # Check option-specific required fields
     if product_type == "option":
         missing_option_required = OPTION_REQUIRED_FIELDS - set(event.keys())
         if missing_option_required:
@@ -143,7 +139,6 @@ def validate_event(event: dict) -> None:
                 f"Option product missing required fields: {missing_option_required}"
             )
 
-    # Validate timestamp format
     try:
         timestamp_str = event["timestamp"]
         if timestamp_str.endswith("Z"):
@@ -152,9 +147,8 @@ def validate_event(event: dict) -> None:
     except (ValueError, AttributeError, TypeError) as e:
         raise EventValidationError(f"Invalid timestamp format: {event.get('timestamp')} - {e}")
 
-    # Validate numeric fields
-    numeric_fields = {"price", "size", "fee", "pnl", "strike", "delta", "gamma", 
-                     "theta", "vega", "implied_vol", "underlying_price"}
+    numeric_fields = {"price", "size", "fee_usd", "pnl", "strike", "delta", "gamma", 
+                     "theta", "vega", "implied_vol", "underlying_price", "entry_price"}
     for field in numeric_fields & event.keys():
         value = event[field]
         if value is not None and not isinstance(value, (int, float)):
@@ -162,14 +156,11 @@ def validate_event(event: dict) -> None:
                 f"Field '{field}' must be numeric or null, got {type(value)}: {value}"
             )
 
-    # Validate option-specific values
     if product_type == "option":
-        # Validate option_type
         option_type = event.get("option_type")
         if option_type not in {"call", "put"}:
             raise EventValidationError(f"Invalid option_type: {option_type}. Must be 'call' or 'put'")
         
-        # Validate expiry format
         expiry = event.get("expiry")
         if expiry:
             try:

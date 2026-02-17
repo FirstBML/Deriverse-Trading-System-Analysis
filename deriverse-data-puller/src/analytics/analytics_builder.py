@@ -1,4 +1,9 @@
-# src/analytics/analytics_builder.py - FIXED DELTA CALCULATIONS
+# src/analytics/analytics_builder.py
+"""
+Analytics builder for generating comprehensive trading reports.
+Builds all required analytics tables from canonical PnL engine outputs.
+"""
+
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -19,7 +24,6 @@ class AnalyticsBuilder:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
-        # Ensure timestamps are datetime
         if not self.positions.empty:
             self.positions['open_time'] = pd.to_datetime(self.positions['open_time'])
             self.positions['close_time'] = pd.to_datetime(self.positions['close_time'])
@@ -61,21 +65,30 @@ class AnalyticsBuilder:
         logger.info(f"✅ All analytics saved to {self.output_dir}")
     
     def _build_positions(self):
-        """1. Core Truth: positions.csv"""
+        """Core truth table: positions.csv with transaction tracking."""
         if self.positions.empty:
             pd.DataFrame().to_csv(self.output_dir / 'positions.csv', index=False)
             return
         
-        output = self.positions[[
+        output_cols = [
             'position_id', 'trader_id', 'market_id', 'product_type', 'side',
             'open_time', 'close_time', 'duration_seconds',
             'entry_price', 'exit_price', 'size', 'gross_pnl', 'fees', 'realized_pnl',
-            'close_reason' 
-        ]].copy()
+            'close_reason'
+        ]
+        
+        if 'open_tx_hash' in self.positions.columns:
+            output_cols.insert(output_cols.index('open_time'), 'open_tx_hash')
+        
+        if 'close_tx_hash' in self.positions.columns:
+            output_cols.insert(output_cols.index('close_time'), 'close_tx_hash')
+        
+        available_cols = [col for col in output_cols if col in self.positions.columns]
+        output = self.positions[available_cols].copy()
         output.to_csv(self.output_dir / 'positions.csv', index=False)
     
     def _build_realized_pnl(self):
-        """2. Core Truth: realized_pnl.csv"""
+        """Core truth table: realized_pnl.csv."""
         if self.positions.empty:
             pd.DataFrame().to_csv(self.output_dir / 'realized_pnl.csv', index=False)
             return
@@ -89,7 +102,7 @@ class AnalyticsBuilder:
         output.to_csv(self.output_dir / 'realized_pnl.csv', index=False)
     
     def _build_open_positions(self):
-        """✅ NEW: open_positions.csv - Currently active positions"""
+        """Active positions table: open_positions.csv."""
         if self.open_positions.empty:
             pd.DataFrame().to_csv(self.output_dir / 'open_positions.csv', index=False)
             logger.info("No open positions")
@@ -104,7 +117,7 @@ class AnalyticsBuilder:
         logger.info(f"Saved {len(output)} open positions")
     
     def _build_equity_curve(self):
-        """3. Performance: equity_curve.csv"""
+        """Performance table: equity_curve.csv."""
         equity = self.positions.copy()
         equity = equity.sort_values('close_time')
         
@@ -128,7 +141,7 @@ class AnalyticsBuilder:
         df.to_csv(self.output_dir / 'equity_curve.csv', index=False)
     
     def _build_summary_metrics(self):
-        """4. Performance: summary_metrics.csv"""
+        """Performance summary: summary_metrics.csv."""
         result = []
         
         for trader in self.positions['trader_id'].unique():
@@ -196,7 +209,7 @@ class AnalyticsBuilder:
         df.to_csv(self.output_dir / 'summary_metrics.csv', index=False)
     
     def _build_volume_by_market(self):
-        """5. Volume: volume_by_market.csv"""
+        """Volume analytics: volume_by_market.csv."""
         result = []
         
         for (market, product), group in self.positions.groupby(['market_id', 'product_type']):
@@ -214,7 +227,7 @@ class AnalyticsBuilder:
         df.to_csv(self.output_dir / 'volume_by_market.csv', index=False)
     
     def _build_fees_breakdown(self):
-        """6. Fees: fees_breakdown.csv"""
+        """Fees analytics: fees_breakdown.csv."""
         result = []
         
         for (trader, product), group in self.positions.groupby(['trader_id', 'product_type']):
@@ -230,7 +243,7 @@ class AnalyticsBuilder:
         df.to_csv(self.output_dir / 'fees_breakdown.csv', index=False)
     
     def _build_pnl_by_day(self):
-        """7. Time Analytics: pnl_by_day.csv"""
+        """Time analytics: pnl_by_day.csv."""
         df = self.positions.copy()
         df['date'] = df['close_time'].dt.date
         
@@ -253,7 +266,7 @@ class AnalyticsBuilder:
         output.to_csv(self.output_dir / 'pnl_by_day.csv', index=False)
     
     def _build_pnl_by_hour(self):
-        """8. Time Analytics: pnl_by_hour.csv"""
+        """Time analytics: pnl_by_hour.csv."""
         df = self.positions.copy()
         df['hour_of_day'] = df['close_time'].dt.hour
         
@@ -273,7 +286,7 @@ class AnalyticsBuilder:
         output.to_csv(self.output_dir / 'pnl_by_hour.csv', index=False)
     
     def _build_directional_bias(self):
-        """9. Behavioral: directional_bias.csv"""
+        """Behavioral analytics: directional_bias.csv."""
         result = []
         
         for trader, group in self.positions.groupby('trader_id'):
@@ -293,7 +306,7 @@ class AnalyticsBuilder:
         df.to_csv(self.output_dir / 'directional_bias.csv', index=False)
     
     def _build_order_type_performance(self):
-        """10. Behavioral: order_type_performance.csv"""
+        """Behavioral analytics: order_type_performance.csv."""
         df = self.positions.copy()
         
         df['order_type'] = df['duration_seconds'].apply(lambda x:
@@ -319,7 +332,7 @@ class AnalyticsBuilder:
         output.to_csv(self.output_dir / 'order_type_performance.csv', index=False)
     
     def _build_greeks_exposure(self):
-        """11. Greeks: greeks_exposure.csv (options only)"""
+        """Options analytics: greeks_exposure.csv."""
         options = self.positions[self.positions['product_type'] == 'option'].copy()
         
         if options.empty:
@@ -335,32 +348,25 @@ class AnalyticsBuilder:
             net_theta = 0
             
             for _, opt in trader_opts.iterrows():
-                # Position direction multiplier
                 if opt['side'] in ['buy', 'long']:
                     direction = 1
-                else:  # sell/short
+                else:
                     direction = -1
                 
                 if 'delta' in opt and pd.notna(opt['delta']):
-                    # Use provided delta (already accounts for call/put sign)
                     option_delta = opt['delta']
                 else:
-                    # Fallback: estimate based on option type
                     if 'option_type' in opt and pd.notna(opt['option_type']):
                         if opt['option_type'] == 'call':
-                            option_delta = 0.5  # Assume ATM call (positive)
-                        else:  # put
-                            option_delta = -0.5  # Assume ATM put (negative)
+                            option_delta = 0.5
+                        else:
+                            option_delta = -0.5
                     else:
-                        option_delta = 0.5  # Default fallback
+                        option_delta = 0.5
                 
-                # Calculate position delta: direction × delta × size
-                # Example: Buy 10 calls with 0.65 delta = +1 × 0.65 × 10 = +6.5
-                # Example: Sell 15 puts with -0.25 delta = -1 × -0.25 × 15 = +3.75
                 position_delta = direction * option_delta * opt['size']
                 net_delta += position_delta
                 
-                # Other Greeks (whenever available in data)
                 if 'gamma' in opt and pd.notna(opt['gamma']):
                     net_gamma += direction * opt['gamma'] * opt['size']
                 

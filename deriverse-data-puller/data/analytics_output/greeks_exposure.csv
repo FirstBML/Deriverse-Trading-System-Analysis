@@ -1,6 +1,6 @@
 trader_id,total_option_positions,net_delta,gamma_exposure,theta_decay
-8QtN2xWy5lR7mV9uT6hK3eM4pG1fJ8nB7zL4wVcDxSeF,2,10.0,0,0
-3HsJ7yVz4nQ6oW8tS5gL2fN9rH1eK6mC8xM5vBdEwRuG,2,-15.0,0,0
+8QtN2xWy5lR7mV9uT6hK3eM4pG1fJ8nB7zL4wVcDxSeF,1,5.0,0,0
+3HsJ7yVz4nQ6oW8tS5gL2fN9rH1eK6mC8xM5vBdEwRuG,1,-7.5,0,0
 2PrM8xUz6oT5nY7vR4jL3gP1sH9eN4mD6zK8wCfGxQuH,1,2.5,0,0
 7KNXqvHu2QWvDq8cGPGvKZhFvYnz3kQ5mL8xRt2Bp9uV,2,10.0,0,0
 5TpQ9yXz7mS6oV8uR3kM2hN4rJ1fL5nE7xP6wDgHySvI,1,0.5,0,0

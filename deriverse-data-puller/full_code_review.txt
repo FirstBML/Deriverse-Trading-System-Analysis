@@ -1,6 +1,6 @@
 ﻿
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\.vscode\settings.json =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\.vscode\settings.json =====
 
 {
     "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
@@ -11,7 +11,7 @@
 }
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\configs\ingestion.yaml =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\configs\ingestion.yaml =====
 
 # configs/ingestion.yaml
 
@@ -33,7 +33,7 @@ traders: []
 max_events_per_run: null
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\configs\loader.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\configs\loader.py =====
 
 # configs/loader.py
 
@@ -48,962 +48,2669 @@ def load_config(path: str) -> dict:
         return yaml.safe_load(f)
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\configs\mock_data.json =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\configs\mock_data.json =====
 
 [
   {
     "event_type": "open",
-    "timestamp": "2026-02-12T10:57:14.265052Z",
+    "timestamp": "2026-01-17T19:59:51.195759Z",
     "trader_id": "7KNXqvHu2QWvDq8cGPGvKZhFvYnz3kQ5mL8xRt2Bp9uV",
     "market_id": "SOL/USDC",
     "product_type": "spot",
     "side": "buy",
     "price": 100,
     "size": 10,
-    "fee": 0.5,
-    "event_id": "ddb3089c78aca56cb1a67aeb47c9f6f28375454250914a8e3d268780e28808cc",
+    "fee_usd": 0.5,
+    "event_id": "acb3fde9cfc316fb87622167fbb5c04f3d1999ebd4b359eb354048aa72782727",
+    "tx_hash": "2hN2FJSjfSiHBGZ2ysEBHyoZtVfC8AoT5W9inQxCMUsv8MYsjP4KgsXhr3ziDtANtp2trkLjJHCxhnpryUbTJRQb",
+    "position_id": "7KNXqvHu_SOL/USDC_1768679991195",
     "order_type": "stop"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-12T12:57:14.265052Z",
+    "timestamp": "2026-01-17T21:59:51.195759Z",
     "trader_id": "7KNXqvHu2QWvDq8cGPGvKZhFvYnz3kQ5mL8xRt2Bp9uV",
     "market_id": "SOL/USDC",
     "product_type": "spot",
     "side": "sell",
     "price": 110,
     "size": 10,
-    "fee": 0.5,
-    "event_id": "8a8f431db222dc77749fb743baf5aeb131c8571908ea35b09230cf030036f719",
+    "fee_usd": 0.5,
+    "event_id": "2b2b25be205e32ab7e3bd359b2ccdceb7ee90db6a05126807df898fbc6233fdd",
+    "tx_hash": "rEHwDEehF2ssQ2RGuTTmyZstA1P7rWg17GWdrbtXK9D5xEwiZRxxVd4K3R56hZFp8kwHodqZBvjXDFpKZxmYwsV",
+    "position_id": "7KNXqvHu_SOL/USDC_1768679991195",
+    "entry_price": 100,
     "order_type": "market"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-12T11:07:14.265052Z",
+    "timestamp": "2026-01-19T20:09:51.195759Z",
     "trader_id": "5FxM2nQwP4vYkL9mT3xRd8eJbWp7sN6gH2cKt9uVfXyZ",
     "market_id": "ETH/USDC",
     "product_type": "spot",
     "side": "buy",
     "price": 2000,
     "size": 5,
-    "fee": 1.0,
-    "event_id": "8b3c6b9a981e2f4bb8448ea0484cde78c4922c629030b224e1dcc594b7034607",
+    "fee_usd": 1.0,
+    "event_id": "9bf70df1b0dbee7ad83c193c4434ec7bf5c72ca8f62c8750801a1edd5beedcc2",
+    "tx_hash": "3EnvVNrvCBtiifnZgxHnCxNhBepvudHru3JXt1hMjUoJzLULMyb97BCxjvoN3cLc62Waw6xzt7AWKeiKPsb6JKWo",
+    "position_id": "5FxM2nQw_ETH/USDC_1768853391195",
     "order_type": "market"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-12T13:57:14.265052Z",
+    "timestamp": "2026-01-19T22:59:51.195759Z",
     "trader_id": "5FxM2nQwP4vYkL9mT3xRd8eJbWp7sN6gH2cKt9uVfXyZ",
     "market_id": "ETH/USDC",
     "product_type": "spot",
     "side": "sell",
     "price": 1950,
     "size": 5,
-    "fee": 1.0,
-    "event_id": "f38a2874102b6b24f6afa8c79cf759482bd9701567b9b3333f5cb0050101ac53",
+    "fee_usd": 1.0,
+    "event_id": "a16e1faa9dd2351bc3c404419d5fcaed10756cf7d5df798d427a51e155772f8a",
+    "tx_hash": "33HsnYpT9Rjueckxwqi6b8pbpFq1Pyrrk2QW9g3eVY5YbD5oB9TThtiyV9fSjrn1cNGwwtrbyCwVGAiNT7tMWPD9",
+    "position_id": "5FxM2nQw_ETH/USDC_1768853391195",
+    "entry_price": 2000,
     "order_type": "stop"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-12T11:17:14.265052Z",
+    "timestamp": "2026-01-21T20:19:51.195759Z",
     "trader_id": "9DpT3vHx5kN2qL8mR7wYfJ6bP4sE1cG9nZ5tK3uVwXyA",
     "market_id": "SOL-PERP",
     "product_type": "perp",
     "side": "long",
     "price": 100,
     "size": 10,
-    "fee": 0.5,
-    "event_id": "6d12e0bb2cfcb0d90e9991838c7419198884592d03b9517ee2810a55c70831f6",
+    "fee_usd": 0.5,
+    "event_id": "16303edcd53d2e2c7830063ee019ff2e7e9740a4cc6a7d509821d74b355fe139",
+    "tx_hash": "2wjS9p1T89xFHsNhxbJwnkPxzmq749rC9KwGmGgwL5MTNNoCQgu2tt9pcqfhbDTwe5uwaVmqEx4HBZi1ANtDUziT",
+    "position_id": "9DpT3vHx_SOL-PERP_1769026791195",
     "order_type": "limit"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-12T14:57:14.265052Z",
+    "timestamp": "2026-01-21T23:59:51.195759Z",
     "trader_id": "9DpT3vHx5kN2qL8mR7wYfJ6bP4sE1cG9nZ5tK3uVwXyA",
     "market_id": "SOL-PERP",
     "product_type": "perp",
     "side": "long",
     "price": 120,
     "size": 10,
-    "fee": 0.5,
-    "event_id": "3ce3f79ca07e8b79e99c081f10592d9d01856290f111ca86fd88c37fdfc691cc",
+    "fee_usd": 0.5,
+    "event_id": "02cfb3d5692fdd421eafd6dc9e15b41130ffdc0ca9d4e760f1505dd0ce0a83ed",
+    "tx_hash": "4u38uczFdePa1azvieWieKcu6ujGAaMedLPwLmwm3t5rCNJEQsu4oNePZHPefatsmFUjpK4oVn886gbHLGPCiyY3",
+    "position_id": "9DpT3vHx_SOL-PERP_1769026791195",
+    "entry_price": 100,
     "order_type": "market"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-12T11:27:14.265052Z",
+    "timestamp": "2026-01-23T20:29:51.195759Z",
     "trader_id": "4MqL8vYx2kP9nT7wR5fH3bJ6sE1cG4nZ8tK2uVwXyBpQ",
     "market_id": "BTC-PERP",
     "product_type": "perp",
     "side": "short",
     "price": 50000,
     "size": 1,
-    "fee": 5.0,
-    "event_id": "3b4e54dab79cef25a5ee2e820d6440c90084f60cf89ed3e5291d9d62e8b4f255",
+    "fee_usd": 5.0,
+    "event_id": "b7c2497f648b9817f48ad5b3512d41f96546c26a5a0bb1b395ddcf5bab99b7b0",
+    "tx_hash": "5KL1eVmxCmx3Y6Eg7kGiRftjk7LpwD84BaMLhcR3GLNp2tc1VfX6Wkcg43mP8pHyvKT1NRgK2wXftQS3MNzbgAtP",
+    "position_id": "4MqL8vYx_BTC-PERP_1769200191195",
     "order_type": "market"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-12T15:57:14.265052Z",
+    "timestamp": "2026-01-24T00:59:51.195759Z",
     "trader_id": "4MqL8vYx2kP9nT7wR5fH3bJ6sE1cG4nZ8tK2uVwXyBpQ",
     "market_id": "BTC-PERP",
     "product_type": "perp",
     "side": "short",
     "price": 48000,
     "size": 1,
-    "fee": 5.0,
-    "event_id": "48409e4c5e22297fb40677a22431ecfa97e3422351cca94d8bc2822f07e9de66",
+    "fee_usd": 5.0,
+    "event_id": "cb6ce2fa083ea0d7d29f0b89b421c0487650e64a7d433b8c5a28d96d7996c3fe",
+    "tx_hash": "2KgFSDqtwr9jF7ZiiCypUDRCRcoLiKpYqecNGMLr9mDYMfNDMfDGSvWPUSAeLrr3TTsFZZfokxuihU3GvS5yZFhy",
+    "position_id": "4MqL8vYx_BTC-PERP_1769200191195",
+    "entry_price": 50000,
     "order_type": "market"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-12T11:37:14.265052Z",
+    "timestamp": "2026-01-24T20:39:51.195759Z",
     "trader_id": "6NrK9wZx3mQ8pU7vS4gI2dL5tF1eH7oA9yM3xVbCwRtE",
     "market_id": "ETH-PERP",
     "product_type": "perp",
     "side": "long",
     "price": 2100,
     "size": 5,
-    "fee": 2.0,
-    "event_id": "3086ca3f32ef4df06f6c99fad0d8ed1032024a78a5e4a8f81eb15a418b21dfff",
+    "fee_usd": 2.0,
+    "event_id": "b653c6cd4ca7260eda01880c036124bdd4adbbcb7fa351466828739f30d57052",
+    "tx_hash": "4KhRPZYuX2CGpgAkBfkAvr5APxHZmGtW44FNg2T2mEB2DkUqyiyVvxB44RGA3XHapvjgfCaAoFgoELQakZFBpSB1",
+    "position_id": "6NrK9wZx_ETH-PERP_1769287191195",
     "order_type": "stop"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-12T16:57:14.265052Z",
+    "timestamp": "2026-01-25T01:59:51.195759Z",
     "trader_id": "6NrK9wZx3mQ8pU7vS4gI2dL5tF1eH7oA9yM3xVbCwRtE",
     "market_id": "ETH-PERP",
     "product_type": "perp",
     "side": "long",
     "price": 2050,
     "size": 5,
-    "fee": 2.0,
-    "event_id": "4344d0d3fb90688ac351b5481c155cdd617e3aab3798316e28130cd38fd66ec5",
+    "fee_usd": 2.0,
+    "event_id": "a120f336e296eda9f4ac5fb5d42724fb762cd41630b3acee3176200070d54526",
+    "tx_hash": "52UGzLjhr6jAUuiWqGC3w9U9TnUUvphAdCKZ7p5TekoLV6UBcEGDS7tcWkbMggh7YqMMYqLpy2QMUYHjT93F6FAP",
+    "position_id": "6NrK9wZx_ETH-PERP_1769287191195",
+    "entry_price": 2100,
     "order_type": "market"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-12T11:57:14.265052Z",
+    "timestamp": "2026-01-26T20:59:51.195759Z",
     "trader_id": "4MqL8vYx2kP9nT7wR5fH3bJ6sE1cG4nZ8tK2uVwXyBpQ",
     "market_id": "SOL-PERP",
     "product_type": "perp",
     "side": "long",
     "price": 105,
     "size": 50,
-    "fee": 5.0,
-    "event_id": "ecf09dd653367662d6e72804f0164a8708e5cf51ac701b696c65ce170917e4ce",
+    "fee_usd": 5.0,
+    "event_id": "084fff011144eccbbdf110b13dd6a1255607aa788eb501f1bcc5942b27ab120d",
+    "tx_hash": "2P6TKhLvHaiYffVX6RjWpWWP9G21aiyMLLgBbbhaTZ3ANmTo1H3GoKmhGDUWzmUtnz2MzsY7me2UovcirbNF2mMZ",
+    "position_id": "4MqL8vYx_SOL-PERP_1769461191195",
     "order_type": "market"
   },
   {
     "event_type": "liquidation",
-    "timestamp": "2026-02-12T12:57:14.265052Z",
+    "timestamp": "2026-01-26T21:59:51.195759Z",
     "trader_id": "4MqL8vYx2kP9nT7wR5fH3bJ6sE1cG4nZ8tK2uVwXyBpQ",
     "market_id": "SOL-PERP",
     "product_type": "perp",
     "side": "long",
     "price": 88,
     "size": 50,
-    "fee": 25.0,
-    "event_id": "8ec6cdc5d3fbfe57fe54acc8bbba82ad9de24b7e8ba25a8f6b9ae29a0fafbc32",
+    "fee_usd": 25.0,
+    "event_id": "b9ff06e24ead38893fa5974bb665c0e8c148b0bfb91141d4f76714f6bcdfb116",
+    "tx_hash": "5bAybSYXEUpqYuDs7F7ndQmwTm3XofZzxSDpd5efWY7i1NVhMQbnSS2dijdBmDqMWX5SPVS6PsRJHSJpu3MhwnSK",
+    "position_id": "4MqL8vYx_SOL-PERP_1769461191195",
+    "entry_price": 105,
     "order_type": "liquidation"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-12T11:57:14.265052Z",
+    "timestamp": "2026-01-28T22:59:51.195759Z",
+    "trader_id": "5FxM2nQwP4vYkL9mT3xRd8eJbWp7sN6gH2cKt9uVfXyZ",
+    "market_id": "ETH-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 2200,
+    "size": 10,
+    "fee_usd": 3.0,
+    "event_id": "34282bbff789cfb973b6abce8035661c97d01780fe9770911f3402abf63f5da2",
+    "tx_hash": "5xuAuYoiDQhwdFgHcEfNLnKsJgUvJpytbczceHnDonxDkam9gjRZ1QHUM5KLtpoRsSyxXTuxGxCwsvvSo2DvWS4w",
+    "position_id": "5FxM2nQw_ETH-PERP_1769641191195",
+    "order_type": "market"
+  },
+  {
+    "event_type": "liquidation",
+    "timestamp": "2026-01-29T03:59:51.195759Z",
+    "trader_id": "5FxM2nQwP4vYkL9mT3xRd8eJbWp7sN6gH2cKt9uVfXyZ",
+    "market_id": "ETH-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 2050,
+    "size": 10,
+    "fee_usd": 20.0,
+    "event_id": "9f0ce6416b69ae21ed15ec7eacd42f3a9cd4667554119d1479885ab8e9af8f3c",
+    "tx_hash": "WQR7cqC4EQC4fw5NU7cp1Cyc7su1StgVBWZopKan4mTWQeYyc7vHxtZdQUqGrC6FPgYnTahXdyp3BKfW9mMqaRm",
+    "position_id": "5FxM2nQw_ETH-PERP_1769641191195",
+    "entry_price": 2200,
+    "order_type": "liquidation"
+  },
+  {
+    "event_type": "open",
+    "timestamp": "2026-01-31T21:59:51.195759Z",
+    "trader_id": "6NrK9wZx3mQ8pU7vS4gI2dL5tF1eH7oA9yM3xVbCwRtE",
+    "market_id": "BTC-PERP",
+    "product_type": "perp",
+    "side": "short",
+    "price": 49000,
+    "size": 2,
+    "fee_usd": 8.0,
+    "event_id": "3acba55e7b779b38c33e3f171e4723c65d9e1729f9fa01a49ccb37473e6815cd",
+    "tx_hash": "2aGffyu7z4GaExYQEV4jVy6hSZzJBtJksikyMqsJRduC49ht93jBnpCR1Ldo6YDKeJjZztwgNUVHiWDV1RxtSeUw",
+    "position_id": "6NrK9wZx_BTC-PERP_1769896791195",
+    "order_type": "limit"
+  },
+  {
+    "event_type": "liquidation",
+    "timestamp": "2026-02-01T07:59:51.195759Z",
+    "trader_id": "6NrK9wZx3mQ8pU7vS4gI2dL5tF1eH7oA9yM3xVbCwRtE",
+    "market_id": "BTC-PERP",
+    "product_type": "perp",
+    "side": "short",
+    "price": 50250,
+    "size": 2,
+    "fee_usd": 30.0,
+    "event_id": "01af60c0ed577bea7020aea051e615a6b67e046123f842fe589a181210707a93",
+    "tx_hash": "5YNLvqmZ4ex5SnvfSCdDKTjapkg1Cty5jKhhYRjs6Ysk1wALhW7FPWRDKTam44fB6DqWrkZyvtELUaS8r8FG3MXd",
+    "position_id": "6NrK9wZx_BTC-PERP_1769896791195",
+    "entry_price": 49000,
+    "order_type": "liquidation"
+  },
+  {
+    "event_type": "open",
+    "timestamp": "2026-02-04T00:59:51.195759Z",
+    "trader_id": "9DpT3vHx5kN2qL8mR7wYfJ6bP4sE1cG9nZ5tK3uVwXyA",
+    "market_id": "AVAX-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 38.5,
+    "size": 100,
+    "fee_usd": 4.0,
+    "event_id": "8789e428bd0e03e8b114c72436a1058e46af890170fda43efd6e297cb0331dbb",
+    "tx_hash": "2cxXnPMkyWbHL1gUdFQMMsj48jazp5N3T4mdD2AnxzcwXLXdiydu7y2vU2TrzYwmPZWPARpUpyAH8shFpdeYFcL7",
+    "position_id": "9DpT3vHx_AVAX-PERP_1770166791195",
+    "order_type": "market"
+  },
+  {
+    "event_type": "liquidation",
+    "timestamp": "2026-02-04T09:59:51.195759Z",
+    "trader_id": "9DpT3vHx5kN2qL8mR7wYfJ6bP4sE1cG9nZ5tK3uVwXyA",
+    "market_id": "AVAX-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 35.2,
+    "size": 100,
+    "fee_usd": 12.0,
+    "event_id": "74d5cd6ab5dec5af043daea05af09fd17019fbcd1cdcf99c594b57cab22bcbbb",
+    "tx_hash": "5dnVy93zdhvQKJVaybohpvMTFTGg1FP6JiYqEPTvPkHp2pxtpYSeXDPRz9R654g4tR95LYuXDHVVLAaKgxJbq7MZ",
+    "position_id": "9DpT3vHx_AVAX-PERP_1770166791195",
+    "entry_price": 38.5,
+    "order_type": "liquidation"
+  },
+  {
+    "event_type": "open",
+    "timestamp": "2026-02-05T23:59:51.195759Z",
+    "trader_id": "7KNXqvHu2QWvDq8cGPGvKZhFvYnz3kQ5mL8xRt2Bp9uV",
+    "market_id": "SOL-PERP",
+    "product_type": "perp",
+    "side": "short",
+    "price": 115,
+    "size": 30,
+    "fee_usd": 3.5,
+    "event_id": "3851f526267d7acd26773f8cf61338aa59be4fd4d12897ed30569dfac2abf057",
+    "tx_hash": "3SaxpigyM4PEZoYZ6MVYxoSAYFnt1FQ6FtN4s9a965UouZDWKK4jEn9ok6vLKumUcsXW58B8TjytMnYULaYjxoYj",
+    "position_id": "7KNXqvHu_SOL-PERP_1770335991195",
+    "order_type": "stop"
+  },
+  {
+    "event_type": "liquidation",
+    "timestamp": "2026-02-06T04:59:51.195759Z",
+    "trader_id": "7KNXqvHu2QWvDq8cGPGvKZhFvYnz3kQ5mL8xRt2Bp9uV",
+    "market_id": "SOL-PERP",
+    "product_type": "perp",
+    "side": "short",
+    "price": 135,
+    "size": 30,
+    "fee_usd": 18.0,
+    "event_id": "a7d2e34d6b0b647fc93ccb70bbc613ec7f9c1ccc7519f684cf4d43e132fbe917",
+    "tx_hash": "3vQTmqvbESy7teVeRWxxNx3MWmxtA8N3QXEKjP64YxiNbZSmNGo9jTFcQBdNj492vnL4Q4FGByiq3Ds5rtUuNVBd",
+    "position_id": "7KNXqvHu_SOL-PERP_1770335991195",
+    "entry_price": 115,
+    "order_type": "liquidation"
+  },
+  {
+    "event_type": "open",
+    "timestamp": "2026-02-06T20:59:51.195759Z",
     "trader_id": "8QtN2xWy5lR7mV9uT6hK3eM4pG1fJ8nB7zL4wVcDxSeF",
-    "market_id": "SOL-CALL-120-FEB28",
+    "market_id": "SOL-CALL-120-JAN15",
     "product_type": "option",
     "option_type": "call",
     "strike": 120,
-    "expiry": "2026-03-02T10:57:14.265052Z",
+    "expiry": "2026-02-24T19:59:51.195759Z",
     "side": "buy",
     "price": 5.0,
     "size": 10,
-    "fee": 0.5,
+    "fee_usd": 0.5,
     "delta": 0.65,
     "implied_vol": 0.45,
-    "event_id": "f9cafab3cad628916eea5fc6684cad9405de4d23139d9edd6f4f25008bdba1e9",
+    "event_id": "2c9d6b171e1481a279d26884dd414d9d2c70d44e28e813ee60b7819bd298e32e",
+    "tx_hash": "8vrT4RfGq5u4rncVQYLA3XUSpTTyRJeHPNKhVv6ndrvUxNePYe5wQ8B3PtDg3bL7Jw5aSLCMtQ99E4hm8mn5SbR",
+    "position_id": "8QtN2xWy_SOL-CALL-120-JAN15_1770411591195",
     "order_type": "stop"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-13T10:57:14.265052Z",
+    "timestamp": "2026-02-07T19:59:51.195759Z",
     "trader_id": "8QtN2xWy5lR7mV9uT6hK3eM4pG1fJ8nB7zL4wVcDxSeF",
-    "market_id": "SOL-CALL-120-FEB28",
+    "market_id": "SOL-CALL-120-JAN15",
     "product_type": "option",
     "option_type": "call",
     "strike": 120,
-    "expiry": "2026-03-02T10:57:14.265052Z",
+    "expiry": "2026-02-24T19:59:51.195759Z",
     "side": "sell",
     "price": 8.0,
     "size": 10,
-    "fee": 0.5,
+    "fee_usd": 0.5,
     "delta": 0.85,
     "implied_vol": 0.5,
-    "event_id": "dd859392bdceb6122f901cf898d46a654fbe4538d0bc0e7330ce49766f10fe2b",
+    "event_id": "bb75055ec1b3e4d48670bb1b80dd429c0b0e9251c5957f1872ef2208af9bfb1c",
+    "tx_hash": "3a5SugbXnmP2bmh9T5SD84WwHPhoLvaeNasETPdkFrD3AGYWG8zRpHNnpMo3AvXz7h2oGGBxtmEMto6NkUJ6Zk8o",
+    "position_id": "8QtN2xWy_SOL-CALL-120-JAN15_1770411591195",
+    "entry_price": 5.0,
     "order_type": "stop"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-12T12:27:14.265052Z",
+    "timestamp": "2026-02-07T21:29:51.195759Z",
     "trader_id": "3HsJ7yVz4nQ6oW8tS5gL2fN9rH1eK6mC8xM5vBdEwRuG",
-    "market_id": "SOL-PUT-90-FEB28",
+    "market_id": "SOL-PUT-90-JAN15",
     "product_type": "option",
     "option_type": "put",
     "strike": 90,
-    "expiry": "2026-03-02T10:57:14.265052Z",
+    "expiry": "2026-02-24T19:59:51.195759Z",
     "side": "sell",
     "price": 4.0,
     "size": 15,
-    "fee": 0.7,
+    "fee_usd": 0.7,
     "delta": -0.25,
     "implied_vol": 0.4,
-    "event_id": "21231bd6588b624e48f8ad1db92a0322becedf1807cc84ae5287eb274511b498",
+    "event_id": "88c83c73f24e1ca0113790450990c8d57cdb50e4f8579bf9511d295d4dcc0d06",
+    "tx_hash": "5Xv5WxZZGMGAkET8RJafz4SkUVY4Du7dhCxiEgpqVEn8QqM55aRJvNgTdYPKS4b92CEowVnd4ESpgh5qewNX7Yb1",
+    "position_id": "3HsJ7yVz_SOL-PUT-90-JAN15_1770499791195",
     "order_type": "stop"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-13T22:57:14.265052Z",
+    "timestamp": "2026-02-09T07:59:51.195759Z",
     "trader_id": "3HsJ7yVz4nQ6oW8tS5gL2fN9rH1eK6mC8xM5vBdEwRuG",
-    "market_id": "SOL-PUT-90-FEB28",
+    "market_id": "SOL-PUT-90-JAN15",
     "product_type": "option",
     "option_type": "put",
     "strike": 90,
-    "expiry": "2026-03-02T10:57:14.265052Z",
+    "expiry": "2026-02-24T19:59:51.195759Z",
     "side": "buy",
     "price": 1.5,
     "size": 15,
-    "fee": 0.7,
+    "fee_usd": 0.7,
     "delta": -0.1,
     "implied_vol": 0.3,
-    "event_id": "85b450ec23106ab1109d77a18fbfa0e6334a948c1806c4f017e60baeb9f47a21",
+    "event_id": "77b1a07f6a3949ccbb8e8567f462ffb65c10b716b4c03dc5e3d35ece23349863",
+    "tx_hash": "2V449ub5kQj2hjHhq2CSpNzbfxcPLEA4NVkygPspeYLatqa4xmDV6Ruqe153hY1e8CtirZLmcZwJfnsjYie9XpQX",
+    "position_id": "3HsJ7yVz_SOL-PUT-90-JAN15_1770499791195",
+    "entry_price": 4.0,
     "order_type": "market"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-12T12:57:14.265052Z",
+    "timestamp": "2026-02-08T21:59:51.195759Z",
     "trader_id": "2PrM8xUz6oT5nY7vR4jL3gP1sH9eN4mD6zK8wCfGxQuH",
-    "market_id": "ETH-PUT-1900-FEB28",
+    "market_id": "ETH-PUT-1900-JAN15",
     "product_type": "option",
     "option_type": "put",
     "strike": 1900,
-    "expiry": "2026-03-02T10:57:14.265052Z",
+    "expiry": "2026-02-24T19:59:51.195759Z",
     "side": "buy",
     "price": 45.0,
     "size": 5,
-    "fee": 1.0,
+    "fee_usd": 1.0,
     "delta": -0.35,
     "implied_vol": 0.55,
-    "event_id": "710234138f5aa3d036315a4c2b4690660cd43cd4b57d98c62b057ffccfc9aa36",
+    "event_id": "a01fdd37063abb9368751e77bb04da0892e69d02063f34b1d8c81f3491c0ba7a",
+    "tx_hash": "3yAP3yd41ABK7gpCXaekAkVg9CT58iB4nrwLA7sJduzkzoTjyUghHmx7N7VFLXpcZ9Mun888jMg5HuvfEfynSW1u",
+    "position_id": "2PrM8xUz_ETH-PUT-1900-JAN15_1770587991195",
     "order_type": "stop"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-14T10:57:14.265052Z",
+    "timestamp": "2026-02-10T19:59:51.195759Z",
     "trader_id": "2PrM8xUz6oT5nY7vR4jL3gP1sH9eN4mD6zK8wCfGxQuH",
-    "market_id": "ETH-PUT-1900-FEB28",
+    "market_id": "ETH-PUT-1900-JAN15",
     "product_type": "option",
     "option_type": "put",
     "strike": 1900,
-    "expiry": "2026-03-02T10:57:14.265052Z",
+    "expiry": "2026-02-24T19:59:51.195759Z",
     "side": "sell",
     "price": 20.0,
     "size": 5,
-    "fee": 1.0,
+    "fee_usd": 1.0,
     "delta": -0.15,
     "implied_vol": 0.4,
-    "event_id": "95cec10ee1728c61fcf1b10055c479d230a2fbca29fb0e28144452e4f7df4b09",
+    "event_id": "f9793e76486d1d46bd925710bd36d513108c1221888a6bef0c9f7dc919946611",
+    "tx_hash": "jHLGbd63BHbJysq37dwDsC9FT3FgvtY6ZKLHCXwBrQ1Zfc9uBiUHfFVR8TyWkjJr5k2vaktkCK3oBybM2FDtTWF",
+    "position_id": "2PrM8xUz_ETH-PUT-1900-JAN15_1770587991195",
+    "entry_price": 45.0,
     "order_type": "limit"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-12T13:57:14.265052Z",
+    "timestamp": "2026-02-10T22:59:51.195759Z",
     "trader_id": "5TpQ9yXz7mS6oV8uR3kM2hN4rJ1fL5nE7xP6wDgHySvI",
-    "market_id": "BTC-CALL-50000-FEB28",
+    "market_id": "BTC-CALL-50000-JAN15",
     "product_type": "option",
     "option_type": "call",
     "strike": 50000,
-    "expiry": "2026-03-02T10:57:14.265052Z",
+    "expiry": "2026-02-24T19:59:51.195759Z",
     "side": "buy",
     "price": 2000.0,
     "size": 1,
-    "fee": 10.0,
-    "event_id": "88cd81e3873647d1371b1868dbf71e3de16709b14b02ecf5d1f9097e99da168f",
+    "fee_usd": 10.0,
+    "event_id": "c141c68ca6941f24d4d020879153f2e642b82a11476c74853436d18ce0945b7f",
+    "tx_hash": "juueA9jcWqYuso7F5FpkX5S8Wj7mZxfttkMRKMQvxHXQboBafDxdnM2oPNWtbaDkHod8Bqfvu2uW9YZjQdKnL55",
+    "position_id": "5TpQ9yXz_BTC-CALL-50000-JAN15_1770764391195",
     "order_type": "market"
   },
   {
     "event_type": "exercise",
-    "timestamp": "2026-03-01T10:57:14.265052Z",
+    "timestamp": "2026-02-23T19:59:51.195759Z",
     "trader_id": "5TpQ9yXz7mS6oV8uR3kM2hN4rJ1fL5nE7xP6wDgHySvI",
-    "market_id": "BTC-CALL-50000-FEB28",
+    "market_id": "BTC-CALL-50000-JAN15",
     "product_type": "option",
     "option_type": "call",
     "strike": 50000,
-    "expiry": "2026-03-02T10:57:14.265052Z",
+    "expiry": "2026-02-24T19:59:51.195759Z",
     "side": "exercise",
     "size": 1,
-    "fee": 10.0,
+    "fee_usd": 10.0,
     "underlying_price": 55000,
-    "event_id": "8f574fa03c5960fd11d8db6e044913a1cfab8bf34c2191d1932aebecf9f8cfd9"
+    "event_id": "b3a5b749088134a1405a2bc29f82aa65150ce7ece783845272d486edf45fe202",
+    "tx_hash": "3SP9zudscgfq8uT1iaUFqc7An3yRGyJyp9bLMmcgkRm4FQ98erCUhC6Tbv3tBwrkXiCcWCmaHsHmj9qPExj5Lou9",
+    "position_id": "5TpQ9yXz_BTC-CALL-50000-JAN15_1770764391195",
+    "entry_price": 2000.0
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-12T14:57:14.265052Z",
+    "timestamp": "2026-02-11T23:59:51.195759Z",
     "trader_id": "4WqP8zYx5nT7mU9tS2lN6jM3rK1gH4oC8yL5vEfJxRwK",
-    "market_id": "SOL-PUT-80-FEB28",
+    "market_id": "SOL-PUT-80-JAN15",
     "product_type": "option",
     "option_type": "put",
     "strike": 80,
-    "expiry": "2026-03-02T10:57:14.265052Z",
+    "expiry": "2026-02-24T19:59:51.195759Z",
     "side": "buy",
     "price": 3.0,
     "size": 20,
-    "fee": 0.2,
-    "event_id": "533c16e94b273f50853a97c2a1a5045c634cf1c1fde7aa29698b9346c1c2f459",
+    "fee_usd": 0.2,
+    "event_id": "57e1137664eacaabbd568190320bf417fddc0761b77b3e383bf4c9efdcb72ade",
+    "tx_hash": "2YXbyVhoVqUFum4YahoZyNyCBPMJMuiCgZCXNV9Fwsa5ij4gxv822eMQ7N7syXwcgqdHi1GGTsuemL1fPDpMfc3H",
+    "position_id": "4WqP8zYx_SOL-PUT-80-JAN15_1770854391195",
     "order_type": "market"
   },
   {
     "event_type": "expire",
-    "timestamp": "2026-03-02T10:57:14.265052Z",
+    "timestamp": "2026-02-24T19:59:51.195759Z",
     "trader_id": "4WqP8zYx5nT7mU9tS2lN6jM3rK1gH4oC8yL5vEfJxRwK",
-    "market_id": "SOL-PUT-80-FEB28",
+    "market_id": "SOL-PUT-80-JAN15",
     "product_type": "option",
     "option_type": "put",
     "strike": 80,
-    "expiry": "2026-03-02T10:57:14.265052Z",
+    "expiry": "2026-02-24T19:59:51.195759Z",
     "side": "expire",
     "price": 0.0,
     "size": 20,
-    "fee": 0.0,
+    "fee_usd": 0.0,
     "underlying_price": 95,
-    "event_id": "663bb985ce364533b866dba2aac02f7312185e7a552a28cede776f29fb785bb2"
+    "event_id": "916fe62a46ba546a84b4a034785dc517f68d85f39a5145c5a78ef47273797e86",
+    "tx_hash": "3XPMYmxdr6W6H52BQr57heT8LT4FPBwhrvrGT9DbxpZYc1EwMYb97NbxuYjJM2AMd4uJpSdLqxiNBehFASHsZ1YT",
+    "position_id": "4WqP8zYx_SOL-PUT-80-JAN15_1770854391195",
+    "entry_price": 3.0
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-12T15:57:14.265052Z",
+    "timestamp": "2026-02-13T00:59:51.195759Z",
     "trader_id": "7KNXqvHu2QWvDq8cGPGvKZhFvYnz3kQ5mL8xRt2Bp9uV",
-    "market_id": "SOL-CALL-110-FEB28",
+    "market_id": "SOL-CALL-110-JAN15",
     "product_type": "option",
     "option_type": "call",
     "strike": 110,
-    "expiry": "2026-03-02T10:57:14.265052Z",
+    "expiry": "2026-02-24T19:59:51.195759Z",
     "side": "buy",
     "price": 8.0,
     "size": 20,
-    "fee": 1.0,
-    "event_id": "6f34145730b8358d282ce24c0cc2025fcc781622ac10448eb1ea8cdcd704314d",
+    "fee_usd": 1.0,
+    "event_id": "25a1c82dde1d8fd23ec5f6be39cea7ade9174c2b3f2dd5a6c5515743db0573e8",
+    "tx_hash": "2ZNSNQTbXUUxs3um9GkBEYBU188RQXTcf3ybbL4VGvquqKomWtMoB2PKPC5xXaSNzxVHLkEajURjTwER7CdsrGuM",
+    "position_id": "7KNXqvHu_SOL-CALL-110-JAN15_1770944391195",
     "order_type": "market"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-13T12:57:14.265052Z",
+    "timestamp": "2026-02-13T21:59:51.195759Z",
     "trader_id": "7KNXqvHu2QWvDq8cGPGvKZhFvYnz3kQ5mL8xRt2Bp9uV",
-    "market_id": "SOL-CALL-110-FEB28",
+    "market_id": "SOL-CALL-110-JAN15",
     "product_type": "option",
     "option_type": "call",
     "strike": 110,
-    "expiry": "2026-03-02T10:57:14.265052Z",
+    "expiry": "2026-02-24T19:59:51.195759Z",
     "side": "sell",
     "price": 12.0,
     "size": 10,
-    "fee": 0.5,
-    "event_id": "4cd54646509022bbae87dcc7cc667a7fbabbd30a333e02dbba8e7d7a69dd325a",
+    "fee_usd": 0.5,
+    "event_id": "c34d819dc9248206690dc5989e0b3ca1faccc5898275b491e259fa11a6c6570b",
+    "tx_hash": "21vLR5J7FcHEMEcUtkPubuwypYJR2LamYesTiUkoFEjug1K6Nr2KXumYtaQgTgaXR4SNK5iHJ3NJ6k5jwAArPTE7",
+    "position_id": "7KNXqvHu_SOL-CALL-110-JAN15_1770944391195",
+    "entry_price": 8.0,
     "order_type": "market"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-14T12:57:14.265052Z",
+    "timestamp": "2026-02-14T21:59:51.195759Z",
     "trader_id": "7KNXqvHu2QWvDq8cGPGvKZhFvYnz3kQ5mL8xRt2Bp9uV",
-    "market_id": "SOL-CALL-110-FEB28",
+    "market_id": "SOL-CALL-110-JAN15",
     "product_type": "option",
     "option_type": "call",
     "strike": 110,
-    "expiry": "2026-03-02T10:57:14.265052Z",
+    "expiry": "2026-02-24T19:59:51.195759Z",
     "side": "sell",
     "price": 15.0,
     "size": 10,
-    "fee": 0.5,
-    "event_id": "5ed06055b8f03df9c44db05a5672807bf88db38448d228574843845efe62ea87",
+    "fee_usd": 0.5,
+    "event_id": "c3d3f7a8f39197c8dd58d50e5877f011cfbf98539c05c03b78eb7ed5644cb3a7",
+    "tx_hash": "5NQxVjai5GvjTwVzgSdehxoxKFZBAw5LkwMh2XisxjmLmyPsu4jp3EZeNxZfWAT7XUuWKaHhzefgYExxHYJdpL2b",
     "order_type": "market"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-12T17:57:14.265052Z",
+    "timestamp": "2026-02-14T12:59:51.195759Z",
     "trader_id": "7KNXqvHu2QWvDq8cGPGvKZhFvYnz3kQ5mL8xRt2Bp9uV",
     "market_id": "BTC/USDC",
     "product_type": "spot",
     "side": "buy",
     "price": 51000,
     "size": 0.5,
-    "fee": 5.0,
-    "event_id": "222abbf413d4c09d5231dc0393225e053b6d4b128b7330fdf8cd5c04c63ade8b",
+    "fee_usd": 5.0,
+    "event_id": "72766e912a36f149a5c84c08dda39c54fbc280207f6cf211621c7816678a92d0",
+    "tx_hash": "j7axxAiAe47cNAkcDv1wZx9N8nJyUQtCs1orGRRacVPReSdvLBLrk7ZtxK4M1XrdbBybEps7megtrgE4FD9GZ67",
+    "position_id": "7KNXqvHu_BTC/USDC_1771073991195",
     "order_type": "market"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-12T18:57:14.265052Z",
+    "timestamp": "2026-02-15T11:59:51.195759Z",
     "trader_id": "5FxM2nQwP4vYkL9mT3xRd8eJbWp7sN6gH2cKt9uVfXyZ",
     "market_id": "AVAX-PERP",
     "product_type": "perp",
     "side": "long",
     "price": 35.5,
     "size": 100,
-    "fee": 1.5,
-    "event_id": "8b919117414cfec16b736a3ae485160617c3b10ea6572517eb79005c78c5e78b",
+    "fee_usd": 1.5,
+    "event_id": "0ea284eb0e9abfe3765538e5e8add01d49c098af2b2e21c45224eae8b1046331",
+    "tx_hash": "kvTx36BbMxfaKTGbagAfngtSHuVXhCAf3vAEaYnEPQNYAdeJjymvmJTKsM3pkg4RA7JYhLmUKe2wPrgjePow9M9",
+    "position_id": "5FxM2nQw_AVAX-PERP_1771156791195",
     "order_type": "limit"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-12T19:57:14.265052Z",
+    "timestamp": "2026-02-16T07:59:51.195759Z",
     "trader_id": "9DpT3vHx5kN2qL8mR7wYfJ6bP4sE1cG9nZ5tK3uVwXyA",
-    "market_id": "ETH-CALL-2200-MAR15",
+    "market_id": "ETH-CALL-2200-FEB13",
     "product_type": "option",
     "option_type": "call",
     "strike": 2200,
-    "expiry": "2026-03-14T10:57:14.265052Z",
+    "expiry": "2026-03-03T19:59:51.195759Z",
     "side": "buy",
     "price": 85.0,
     "size": 3,
-    "fee": 0.5,
-    "event_id": "67dd2cce31994b1d07c70b0609dc99da7a601a2e89fbcd039f1b67043cf3df8f",
+    "fee_usd": 0.5,
+    "event_id": "6f09d31cfc764d43ce091c7f789b9830736c9a17ec60feefdc6c3a6bb2fb5c00",
+    "tx_hash": "4Qm9rR2uYxEHKFjUdr4JCH49Hx3DDkY9A8fhK5B9xZjnT5Y1YZDnQGYht9dJNA8JrBdxpmeBdrtSdrWFgHVYHxX9",
+    "position_id": "9DpT3vHx_ETH-CALL-2200-FEB13_1771228791195",
     "order_type": "limit"
   },
   {
     "event_type": "open",
-    "timestamp": "2026-02-12T11:57:14.265052Z",
+    "timestamp": "2026-01-22T20:59:51.195759Z",
     "trader_id": "7KNXqvHu2QWvDq8cGPGvKZhFvYnz3kQ5mL8xRt2Bp9uV",
     "market_id": "SOL/USDC",
     "product_type": "spot",
     "side": "buy",
     "price": 105,
     "size": 5,
-    "fee": 0.3,
-    "event_id": "67c1115bdaa6af8ea041f882d0aa8c48c301a512dc810fbcf4756a4e005eaa7d",
+    "fee_usd": 0.3,
+    "event_id": "b1fc95d3b292e88a262622f2ffd252475b8f08d1911afc02e8de849f47eeafa2",
+    "tx_hash": "4SQGEikHqgDosziY5WX3eaTtt4wJv93jtwpN9qq2VquVTqFSJqkiGrTNGuwzCuEcrGUqM5bgbMpkZbw2Gtva6yDq",
+    "position_id": "7KNXqvHu_SOL/USDC_1769115591195",
     "order_type": "stop"
   },
   {
     "event_type": "close",
-    "timestamp": "2026-02-12T20:57:14.265052Z",
+    "timestamp": "2026-01-28T05:59:51.195759Z",
     "trader_id": "GhostWallet1111111111111111111111111111",
     "market_id": "GHOST-PERP",
     "product_type": "perp",
     "side": "long",
     "price": 999,
     "size": 1,
-    "fee": 0.1,
-    "event_id": "3480bd711935d28d9bf9fb7fbdc6e77e0df97677cfb47ee23aa7b4d7b38372f7",
+    "fee_usd": 0.1,
+    "event_id": "c4d722f6da718fe49321aa6b94f92ad6d872a09aa534519bcdba3783e5f4e65f",
+    "tx_hash": "37U8oEest8Xk51ouBUCFacAMccAFh4dWowYmD8kebjFbxqPvSRvfUtrXL3romtiHjnmwgp2HFYjTFRvDPRqrAGVM",
     "order_type": "stop"
   },
   {
     "event_type": "trade",
-    "timestamp": "2026-02-12T11:12:14.265052Z",
+    "timestamp": "2026-01-20T20:14:51.195759Z",
     "trader_id": "MarketMaker1111111111111111111111111",
     "market_id": "SOL/USDC",
     "product_type": "spot",
     "side": "buy",
     "price": 101,
     "size": 100,
-    "fee": 1.0,
-    "event_id": "9cf9883b4843754c0a834d45bac8a0d5866da8deb71d228a01dea6ad2d59d2b3"
+    "fee_usd": 1.0,
+    "event_id": "6ddda0c8ace27c3bbd7def6ca2b8195a0499f8758b1b5104c76892f76eaf1ed3",
+    "tx_hash": "3eDpn8AXfWMRtvZdrze2nZUHx8iaCZdWWuk9eyuP1Vkf9Zp7aGq2FDan91vvxPoQo5nUkYE3qsAykEjhqhxyWqbd"
   },
   {
     "event_type": "trade",
-    "timestamp": "2026-02-12T11:42:14.265052Z",
+    "timestamp": "2026-01-25T20:44:51.195759Z",
     "trader_id": "MarketMaker1111111111111111111111111",
     "market_id": "ETH-PERP",
     "product_type": "perp",
     "side": "sell",
     "price": 2105,
     "size": 50,
-    "fee": 5.0,
-    "event_id": "6d575a153e23b9f0faef3e0d3c30af4479335bf94a9a972321e2a26467b8f80d"
+    "fee_usd": 5.0,
+    "event_id": "0607bbad93d56cf36e7f1b91801a157b74471059b9a35ab7024f13c9269c449b",
+    "tx_hash": "2frEfpryopTiBjXZtaDisbBb5XZNMdbbxJRAUzKwjgfeKyFsTPp6yKSnVGQD2if1MXzG8s3aD4Ln2Mv6eeuxiJC7"
   }
 ]
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\configs\__init__.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\configs\__init__.py =====
 
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\dashboards\app.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\dashboards\app.py =====
 
-# dashboards/app.py - PRODUCTION READY v3.0
+# dashboards/app.py
+"""
+Deriverse Trading Analytics Dashboard - Enhanced v6.0
+Features:
+- Privacy-aware trader masking
+- Authenticated profile mode
+- Adaptive visualizations across all sections
+- Enhanced filtering (date range, symbols)
+- Top performers analysis with charts
+- Persistent trade notes (JSON storage)
+- Admin controls for full data access
+- Navigation bar for section jumping
+"""
+
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
+from plotly.subplots import make_subplots
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
+import requests
+import json
+import hmac
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# ============================================================================
+# CONFIGURATION & CONSTANTS
+# ============================================================================
 
 DATA_DIR = Path("data/analytics_output")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "ADMIN_PASSWORD")  
 
-st.set_page_config(page_title="Deriverse Trading Analytics", layout="wide")
+st.set_page_config(
+    page_title="Deriverse Trading Analytics",
+    page_icon="ðŸ“Š",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+
+# ============================================================================
+# HELPER FUNCTIONS
+# ============================================================================
+
+def check_admin_password():
+    """Verify admin password for all-time access."""
+    if "admin_authenticated" not in st.session_state:
+        st.session_state.admin_authenticated = False
+    
+    if not st.session_state.admin_authenticated:
+        with st.sidebar.expander("ðŸ” Admin Access"):
+            password = st.text_input("Password", type="password")
+            if st.button("Authenticate"):
+                if password == ADMIN_PASSWORD:
+                    st.session_state.admin_authenticated = True
+                    st.success("âœ… Admin access granted")
+                    st.rerun()
+                else:
+                    st.error("âŒ Invalid password")
+    
+    return st.session_state.admin_authenticated
+
+
+def mask_trader_id(trader_id):
+    """Format trader wallet address for privacy."""
+    if pd.isna(trader_id):
+        return "Unknown"
+    s = str(trader_id)
+    return f"{s[:4]}..{s[-4:]}" if len(s) > 8 else s
+
+
+def simplify_symbol(market_id):
+    """Extract base symbol from market identifier."""
+    if pd.isna(market_id):
+        return market_id
+    s = str(market_id)
+    return s.split('/')[0].split('-')[0]
+
+
+def get_top_traders(positions_df, n=5, by='profit'):
+    """Get top N traders by specified criteria."""
+    if positions_df.empty:
+        return []
+    
+    trader_stats = positions_df.groupby('trader_id')['realized_pnl'].agg(['sum', 'count'])
+    
+    if by == 'profit':
+        return trader_stats.nlargest(n, 'sum').index.tolist()
+    elif by == 'loss':
+        return trader_stats.nsmallest(n, 'sum').index.tolist()
+    else:
+        return trader_stats.nlargest(n, 'count').index.tolist()
+
+
+def load_trader_notes(trader_id):
+    """Load trade notes from JSON file for specific trader."""
+    notes_dir = Path("data/trader_notes")
+    notes_dir.mkdir(parents=True, exist_ok=True)
+    
+    notes_file = notes_dir / f"{trader_id}.json"
+    
+    if notes_file.exists():
+        with open(notes_file, 'r') as f:
+            return json.load(f)
+    return {}
+
+
+def save_trader_notes(trader_id, notes):
+    """Save trade notes to JSON file for specific trader."""
+    notes_dir = Path("data/trader_notes")
+    notes_dir.mkdir(parents=True, exist_ok=True)
+    
+    notes_file = notes_dir / f"{trader_id}.json"
+    
+    with open(notes_file, 'w') as f:
+        json.dump(notes, f, indent=2)
+
+
+def get_trade_density(filtered_positions):
+    """Classify data density for adaptive visualization selection."""
+    trade_count = len(filtered_positions)
+    
+    if trade_count == 0:
+        return "empty"
+    elif trade_count == 1:
+        return "single"
+    elif trade_count < 5:
+        return "sparse"
+    elif trade_count < 15:
+        return "moderate"
+    else:
+        return "dense"
+
+
+def calculate_volume_usd(df):
+    """Calculate USD volume from price and size."""
+    df = df.copy()
+    df['volume_usd'] = df['exit_price'] * df['size']
+    return df
+
+
+# ============================================================================
+# STYLING & CSS
+# ============================================================================
 
 st.markdown("""
     <style>
-    .stMetric { background: #f0f2f6; padding: 15px; border-radius: 8px; }
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@300;400;600;700&display=swap');
+    
+    :root {
+        --primary-color: #6366f1;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+        --bg-dark: #0f172a;
+        --bg-card: #1e293b;
+        --text-primary: #f1f5f9;
+        --text-secondary: #94a3b8;
+    }
+    
+    .main {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .fixed-header-container {
+        position: sticky;
+        top: 0;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        z-index: 1000;
+        padding: 15px 20px 10px 20px;
+        border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+        margin-bottom: 20px;
+        width: 100%;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header-title {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #f1f5f9;
+        margin: 0;
+        padding: 0;
+        letter-spacing: -0.02em;
+    }
+    
+    .header-subtitle {
+        color: #94a3b8;
+        font-size: 0.9rem;
+        margin-top: 4px;
+    }
+    
+    .nav-bar {
+        display: flex;
+        gap: 8px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .nav-item {
+        padding: 8px 16px;
+        border-radius: 8px;
+        background: rgba(30, 41, 59, 0.6);
+        color: #94a3b8;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid rgba(99, 102, 241, 0.1);
+        text-align: center;
+        flex: 1;
+        min-width: 80px;
+    }
+    
+    .nav-item:hover {
+        background: rgba(99, 102, 241, 0.2);
+        color: #f1f5f9;
+        border-color: #6366f1;
+        transform: translateY(-2px);
+    }
+    
+    .nav-item-active {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
+    }
+    
+    .nav-item-active:hover {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: white;
+    }
+    
+    .profile-badge {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-block;
+        margin: 10px 0 5px 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .section-header {
+        position: sticky;
+        top: 180px;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        z-index: 998;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        margin-bottom: 15px;
+    }
+    
+    h1, h2, h3 {
+        font-family: 'IBM Plex Mono', monospace;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+    }
+    
+    .stMetric {
+        background: linear-gradient(135deg, var(--bg-card) 0%, #334155 100%);
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid rgba(99, 102, 241, 0.1);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .stMetric:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 12px -1px rgba(99, 102, 241, 0.2);
+        border-color: rgba(99, 102, 241, 0.3);
+    }
+    
+    .stMetric label {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .stMetric [data-testid="stMetricValue"] {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+    
+    .stButton>button {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
+    }
+    
+    .stButton>button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+    }
+    
+    [data-testid="stSidebar"] {
+        background: var(--bg-card);
+        border-right: 1px solid rgba(99, 102, 241, 0.1);
+    }
+    
+    .status-live {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: var(--success-color);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    
+    .greeks-metric {
+        background: rgba(30, 41, 59, 0.4);
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: 1px solid rgba(100, 116, 139, 0.2);
+        text-align: center;
+    }
+    
+    .greeks-metric-label {
+        color: #94a3b8;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+    }
+    
+    .greeks-metric-value {
+        color: #e2e8f0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        font-family: 'IBM Plex Mono', monospace;
+    }
+    
+    .greeks-metric-help {
+        color: #64748b;
+        font-size: 0.7rem;
+        margin-top: 4px;
+    }
+    
+    .progress-bar-container {
+        background: rgba(30, 41, 59, 0.4);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 8px;
+    }
+    
+    .progress-bar-label {
+        color: #94a3b8;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 6px;
+    }
+    
+    .progress-bar-value {
+        color: #f1f5f9;
+        font-size: 1rem;
+        font-weight: 600;
+        font-family: 'IBM Plex Mono', monospace;
+    }
+    
+    .coming-soon {
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px dashed #f59e0b;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        color: #f59e0b;
+        font-weight: 600;
+    }
+    
+    .note-instruction {
+        background: rgba(99, 102, 241, 0.1);
+        border-left: 4px solid var(--primary-color);
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        color: #e2e8f0;
+        font-size: 0.95rem;
+    }
+    
+    .note-instruction code {
+        background: #1e293b;
+        padding: 4px 8px;
+        border-radius: 4px;
+        color: var(--primary-color);
+    }
     </style>
 """, unsafe_allow_html=True)
 
-st.title("ðŸ“Š Deriverse Trading Analytics Dashboard")
+
+# ============================================================================
+# DATA LOADING
+# ============================================================================
+
+@st.cache_data
+def load_logo(url):
+    """Load Deriverse logo with error handling."""
+    try:
+        response = requests.get(url, timeout=5)
+        if response.status_code == 200:
+            return response.content
+        return None
+    except Exception:
+        return None
+
 
 @st.cache_data
 def load_data():
+    """Load analytics data with error handling."""
     try:
-        equity = pd.read_csv(DATA_DIR / "equity_curve.csv", parse_dates=["timestamp"])
-        positions = pd.read_csv(DATA_DIR / "positions.csv", parse_dates=["open_time", "close_time"])
-        summary = pd.read_csv(DATA_DIR / "summary_metrics.csv")
-        fees = pd.read_csv(DATA_DIR / "fees_breakdown.csv")
-        volume = pd.read_csv(DATA_DIR / "volume_by_market.csv")
-        pnl_day = pd.read_csv(DATA_DIR / "pnl_by_day.csv", parse_dates=["date"])
-        pnl_hour = pd.read_csv(DATA_DIR / "pnl_by_hour.csv")
-        directional = pd.read_csv(DATA_DIR / "directional_bias.csv")
-        order_perf = pd.read_csv(DATA_DIR / "order_type_performance.csv")
-        greeks = pd.read_csv(DATA_DIR / "greeks_exposure.csv")
-        open_pos = pd.read_csv(DATA_DIR / "open_positions.csv", parse_dates=["open_time"])  # âœ… NEW
-        
         return {
-            'equity': equity, 'positions': positions, 'summary': summary,
-            'fees': fees, 'volume': volume, 'pnl_day': pnl_day,
-            'pnl_hour': pnl_hour, 'directional': directional, 
-            'order_perf': order_perf, 'greeks': greeks,
-            'open_positions': open_pos  # âœ… NEW
+            'equity': pd.read_csv(DATA_DIR / "equity_curve.csv", parse_dates=["timestamp"]),
+            'positions': pd.read_csv(DATA_DIR / "positions.csv", parse_dates=["open_time", "close_time"]),
+            'summary': pd.read_csv(DATA_DIR / "summary_metrics.csv"),
+            'fees': pd.read_csv(DATA_DIR / "fees_breakdown.csv"),
+            'volume': pd.read_csv(DATA_DIR / "volume_by_market.csv"),
+            'pnl_day': pd.read_csv(DATA_DIR / "pnl_by_day.csv", parse_dates=["date"]),
+            'pnl_hour': pd.read_csv(DATA_DIR / "pnl_by_hour.csv"),
+            'directional': pd.read_csv(DATA_DIR / "directional_bias.csv"),
+            'order_perf': pd.read_csv(DATA_DIR / "order_type_performance.csv"),
+            'greeks': pd.read_csv(DATA_DIR / "greeks_exposure.csv"),
+            'open_positions': pd.read_csv(DATA_DIR / "open_positions.csv", parse_dates=["open_time"])
         }
-    except FileNotFoundError:
-        st.error("Analytics files not found. Run: python -m scripts.run_analytics")
+    except FileNotFoundError as e:
+        st.error(f"âŒ Data files not found: {e}")
         return None
 
-data = load_data()
+
+# ============================================================================
+# ADAPTIVE CHART FUNCTIONS
+# ============================================================================
+
+def create_clean_equity_chart(equity_df, positions_df, authenticated_trader=None):
+    """Create clean equity chart with PnL on top, drawdown below."""
+    
+    fig = make_subplots(
+        rows=2, cols=1,
+        subplot_titles=("ðŸ“ˆ Cumulative PnL by Trader", "ðŸ“‰ Drawdown Analysis"),
+        vertical_spacing=0.12,
+        row_heights=[0.7, 0.3]
+    )
+    
+    colors = px.colors.qualitative.Set2
+    
+    traders_to_show = equity_df['trader_id'].unique()
+    if not authenticated_trader and len(traders_to_show) > 5:
+        top_traders = get_top_traders(positions_df, n=5, by='activity')
+        equity_df = equity_df[equity_df['trader_id'].isin(top_traders)]
+        traders_to_show = equity_df['trader_id'].unique()
+    
+    for i, trader in enumerate(traders_to_show):
+        trader_data = equity_df[equity_df['trader_id'] == trader].sort_values('timestamp')
+        
+        if authenticated_trader and trader == authenticated_trader:
+            display_name = f"{trader[:8]}...{trader[-8:]}"
+        else:
+            display_name = mask_trader_id(trader)
+        
+        fig.add_trace(
+            go.Scatter(
+                x=trader_data['timestamp'],
+                y=trader_data['cumulative_pnl'],
+                name=display_name,
+                line=dict(width=2, color=colors[i % len(colors)]),
+                legendgroup=f"trader_{i}",
+                hovertemplate="<b>%{fullData.name}</b><br>" +
+                            "Date: %{x}<br>" +
+                            "PnL: $%{y:,.2f}<br>" +
+                            "<extra></extra>"
+            ),
+            row=1, col=1
+        )
+    
+    for i, trader in enumerate(traders_to_show):
+        trader_data = equity_df[equity_df['trader_id'] == trader].sort_values('timestamp')
+        
+        fig.add_trace(
+            go.Scatter(
+                x=trader_data['timestamp'],
+                y=trader_data['drawdown'],
+                name=f"DD",
+                line=dict(width=1.5, dash='dot', color=colors[i % len(colors)]),
+                legendgroup=f"trader_{i}",
+                showlegend=False,
+                hovertemplate="<b>Drawdown</b><br>" +
+                            "Date: %{x}<br>" +
+                            "Drawdown: $%{y:,.2f}<br>" +
+                            "<extra></extra>"
+            ),
+            row=2, col=1
+        )
+    
+    all_drawdowns = equity_df['drawdown'].min()
+    fig.add_hline(
+        y=all_drawdowns, 
+        line_dash="dash", 
+        line_color="red",
+        annotation_text=f"Max System Drawdown: ${all_drawdowns:,.0f}",
+        annotation_position="bottom right",
+        row=2, col=1
+    )
+    
+    fig.update_layout(
+        height=600,
+        hovermode='x unified',
+        template='plotly_dark',
+        plot_bgcolor='rgba(15, 23, 42, 0.9)',
+        paper_bgcolor='rgba(15, 23, 42, 0.9)',
+        legend=dict(
+            title="Traders",
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        )
+    )
+    
+    fig.update_xaxes(title_text="", row=1, col=1)
+    fig.update_xaxes(title_text="Date", row=2, col=1)
+    fig.update_yaxes(title_text="Cumulative PnL ($)", row=1, col=1)
+    fig.update_yaxes(title_text="Drawdown ($)", row=2, col=1)
+    
+    return fig
+
+
+def create_trader_focus_chart(equity_df, positions_df, trader_id):
+    """Create detailed view for a single trader."""
+    
+    trader_equity = equity_df[equity_df['trader_id'] == trader_id].sort_values('timestamp')
+    trader_positions = positions_df[positions_df['trader_id'] == trader_id]
+    
+    fig = make_subplots(
+        rows=3, cols=1,
+        subplot_titles=(
+            f"Cumulative PnL - {mask_trader_id(trader_id)}",
+            "Daily Returns",
+            "Drawdown from Peak"
+        ),
+        vertical_spacing=0.1,
+        row_heights=[0.5, 0.25, 0.25]
+    )
+    
+    fig.add_trace(
+        go.Scatter(
+            x=trader_equity['timestamp'],
+            y=trader_equity['cumulative_pnl'],
+            name="Equity",
+            line=dict(color='#6366f1', width=3),
+            fill='tozeroy',
+            fillcolor='rgba(99, 102, 241, 0.1)'
+        ),
+        row=1, col=1
+    )
+    
+    wins = trader_positions[trader_positions['realized_pnl'] > 0]
+    if not wins.empty:
+        fig.add_trace(
+            go.Scatter(
+                x=wins['close_time'],
+                y=[trader_equity[trader_equity['timestamp'] == t]['cumulative_pnl'].iloc[0] 
+                   if any(trader_equity['timestamp'] == t) else None 
+                   for t in wins['close_time']],
+                mode='markers',
+                name='Wins',
+                marker=dict(color='#10b981', size=8, symbol='triangle-up')
+            ),
+            row=1, col=1
+        )
+    
+    losses = trader_positions[trader_positions['realized_pnl'] < 0]
+    if not losses.empty:
+        fig.add_trace(
+            go.Scatter(
+                x=losses['close_time'],
+                y=[trader_equity[trader_equity['timestamp'] == t]['cumulative_pnl'].iloc[0] 
+                   if any(trader_equity['timestamp'] == t) else None 
+                   for t in losses['close_time']],
+                mode='markers',
+                name='Losses',
+                marker=dict(color='#ef4444', size=8, symbol='triangle-down')
+            ),
+            row=1, col=1
+        )
+    
+    daily = trader_positions.groupby(
+        trader_positions['close_time'].dt.date
+    )['realized_pnl'].sum().reset_index()
+    
+    colors = ['#10b981' if x > 0 else '#ef4444' for x in daily['realized_pnl']]
+    
+    fig.add_trace(
+        go.Bar(
+            x=daily['close_time'],
+            y=daily['realized_pnl'],
+            marker_color=colors,
+            showlegend=False
+        ),
+        row=2, col=1
+    )
+    
+    fig.add_trace(
+        go.Scatter(
+            x=trader_equity['timestamp'],
+            y=trader_equity['drawdown'],
+            name='Drawdown',
+            line=dict(color='#ef4444', width=2),
+            fill='tozeroy',
+            fillcolor='rgba(239, 68, 68, 0.1)'
+        ),
+        row=3, col=1
+    )
+    
+    max_dd = trader_equity['drawdown'].min()
+    fig.add_hline(
+        y=max_dd,
+        line_dash="dash",
+        line_color="#ef4444",
+        annotation_text=f"Max DD: ${max_dd:,.0f}",
+        row=3, col=1
+    )
+    
+    fig.update_layout(
+        height=800,
+        hovermode='x unified',
+        template='plotly_dark',
+        plot_bgcolor='rgba(15, 23, 42, 0.9)',
+        paper_bgcolor='rgba(15, 23, 42, 0.9)',
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        )
+    )
+    
+    return fig
+
+
+def create_trader_summary_table(equity_df, positions_df):
+    """Create summary table with mini sparklines."""
+    
+    st.markdown("### ðŸ“‹ Trader Performance Summary")
+    
+    traders = []
+    for trader in equity_df['trader_id'].unique()[:10]:
+        trader_equity = equity_df[equity_df['trader_id'] == trader].sort_values('timestamp')
+        trader_positions = positions_df[positions_df['trader_id'] == trader]
+        
+        total_pnl = trader_positions['realized_pnl'].sum()
+        win_rate = (trader_positions['realized_pnl'] > 0).mean() * 100
+        max_dd = trader_equity['drawdown'].min()
+        trades = len(trader_positions)
+        
+        sparkline = trader_equity['cumulative_pnl'].values
+        if len(sparkline) > 1:
+            normalized = (sparkline - sparkline.min()) / (sparkline.max() - sparkline.min() + 1)
+        else:
+            normalized = [0.5]
+        
+        traders.append({
+            'trader': mask_trader_id(trader),
+            'pnl': total_pnl,
+            'win_rate': win_rate,
+            'max_dd': max_dd,
+            'trades': trades,
+            'sparkline': normalized[-20:],
+            'trend': 'ðŸ“ˆ' if total_pnl > 0 and len(sparkline) > 1 and sparkline[-1] > sparkline[0] else 'ðŸ“‰'
+        })
+    
+    traders.sort(key=lambda x: x['pnl'], reverse=True)
+    
+    cols = st.columns([1.2, 1.5, 1, 1, 1, 2])
+    cols[0].markdown("**Trader**")
+    cols[1].markdown("**Equity Trend**")
+    cols[2].markdown("**PnL**")
+    cols[3].markdown("**Win Rate**")
+    cols[4].markdown("**Max DD**")
+    cols[5].markdown("**Activity**")
+    
+    st.divider()
+    
+    for i, t in enumerate(traders):
+        cols = st.columns([1.2, 1.5, 1, 1, 1, 2])
+        
+        cols[0].markdown(f"`{t['trader']}`")
+        
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            y=t['sparkline'],
+            mode='lines',
+            line=dict(color='#10b981' if t['pnl'] > 0 else '#ef4444', width=2),
+            showlegend=False
+        ))
+        fig.update_layout(
+            height=40,
+            margin=dict(l=0, r=0, t=0, b=0),
+            xaxis=dict(showticklabels=False, showgrid=False),
+            yaxis=dict(showticklabels=False, showgrid=False),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)'
+        )
+        
+        cols[1].plotly_chart(
+            fig, 
+            width='stretch',
+            config={'displayModeBar': False},
+            key=f"sparkline_{i}"
+        )
+        
+        pnl_color = "#10b981" if t['pnl'] > 0 else "#ef4444"
+        cols[2].markdown(f"<span style='color:{pnl_color};font-weight:600;'>${t['pnl']:,.0f}</span>", unsafe_allow_html=True)
+        cols[3].markdown(f"{t['win_rate']:.0f}%")
+        cols[4].markdown(f"${abs(t['max_dd']):,.0f}")
+        cols[5].markdown(f"{t['trades']} trades {t['trend']}")
+
+
+def display_equity_section(equity_df, positions_df, authenticated_trader=None):
+    """Complete equity analysis section with tabs."""
+    
+    st.markdown('<div class="section-header">', unsafe_allow_html=True)
+    st.header("ðŸ“ˆ Performance Analysis")
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    tab1, tab2, tab3 = st.tabs([
+        "ðŸ“Š Overview Comparison", 
+        "ðŸ‘¤ Individual Analysis", 
+        "ðŸ“‹ Summary Table"
+    ])
+    
+    with tab1:
+        st.subheader("Multi-Trader Performance")
+        st.caption("Top panel: Cumulative PnL | Bottom panel: Drawdown")
+        
+        fig = create_clean_equity_chart(equity_df, positions_df, authenticated_trader)
+        st.plotly_chart(fig, width='stretch')
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            if not equity_df.empty:
+                best_trader = equity_df.groupby('trader_id')['cumulative_pnl'].last().idxmax()
+                best_pnl = equity_df.groupby('trader_id')['cumulative_pnl'].last().max()
+                st.info(f"ðŸ† **Best Performer:** {mask_trader_id(best_trader)} (${best_pnl:,.2f})")
+        
+        with col2:
+            if not equity_df.empty:
+                worst_dd_trader = equity_df.groupby('trader_id')['drawdown'].min().idxmin()
+                worst_dd = equity_df.groupby('trader_id')['drawdown'].min().min()
+                st.warning(f"âš ï¸ **Highest Risk:** {mask_trader_id(worst_dd_trader)} (Max DD: ${worst_dd:,.2f})")
+    
+    with tab2:
+        if authenticated_trader:
+            fig = create_trader_focus_chart(equity_df, positions_df, authenticated_trader)
+            st.plotly_chart(fig, width='stretch')
+        else:
+            traders = equity_df['trader_id'].unique()
+            selected = st.selectbox(
+                "Select Trader to Analyze",
+                traders,
+                format_func=mask_trader_id
+            )
+            if selected:
+                fig = create_trader_focus_chart(equity_df, positions_df, selected)
+                st.plotly_chart(fig, width='stretch')
+    
+    with tab3:
+        create_trader_summary_table(equity_df, positions_df)
+
+
+def display_liquidation_analytics(positions_df):
+    """Complete liquidation analysis with risk dashboard."""
+    
+    st.markdown('<div class="section-header">', unsafe_allow_html=True)
+    st.header("âš ï¸ Liquidation Risk Monitoring")
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    if 'close_reason' not in positions_df.columns:
+        st.info("â„¹ï¸ Liquidation tracking not available for this data")
+        return
+    
+    liquidations = positions_df[positions_df['close_reason'] == 'liquidation'].copy()
+    
+    if liquidations.empty:
+        st.success("âœ… No liquidations in selected period - clean trading!")
+        return
+    
+    col1, col2, col3 = st.columns(3)
+    
+    total_liq = len(liquidations)
+    unique_traders = liquidations['trader_id'].nunique()
+    total_liq_loss = liquidations['realized_pnl'].sum()
+    
+    with col1:
+        st.metric("Total Liquidations", total_liq)
+    with col2:
+        st.metric("Affected Traders", unique_traders)
+    with col3:
+        st.metric("Total Loss", f"${abs(total_liq_loss):,.0f}")
+    
+    st.subheader("ðŸ“Š Liquidation Rate by Trader")
+    st.caption("Shows % of trades that ended in liquidation - lower is better")
+    
+    trader_stats = []
+    for trader in positions_df['trader_id'].unique():
+        trader_trades = positions_df[positions_df['trader_id'] == trader]
+        trader_liq = len(trader_trades[trader_trades['close_reason'] == 'liquidation'])
+        total_closed = len(trader_trades[trader_trades['close_reason'].isin(['closed', 'liquidation'])])
+        
+        if total_closed > 0:
+            liq_rate = (trader_liq / total_closed) * 100
+            trader_stats.append({
+                'trader': mask_trader_id(trader),
+                'liq_rate': liq_rate,
+                'liq_count': trader_liq,
+                'total_trades': total_closed
+            })
+    
+    if trader_stats:
+        df = pd.DataFrame(trader_stats).sort_values('liq_rate', ascending=False)
+        
+        colors = ['#10b981' if x < 2 else '#f59e0b' if x < 5 else '#ef4444' 
+                  for x in df['liq_rate']]
+        
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            x=df['trader'],
+            y=df['liq_rate'],
+            marker_color=colors,
+            text=[f"{rate:.1f}%<br>({liq}/{total})" 
+                  for rate, liq, total in zip(df['liq_rate'], df['liq_count'], df['total_trades'])],
+            textposition='outside'
+        ))
+        
+        fig.add_hline(y=2, line_dash="dash", line_color="#10b981", 
+                      annotation_text="Low Risk", annotation_position="bottom right")
+        fig.add_hline(y=5, line_dash="dash", line_color="#f59e0b",
+                      annotation_text="Medium Risk", annotation_position="bottom right")
+        
+        fig.update_layout(
+            height=400,
+            xaxis_title="Trader",
+            yaxis_title="Liquidation Rate (%)",
+            template='plotly_dark',
+            plot_bgcolor='rgba(15, 23, 42, 0.9)',
+            paper_bgcolor='rgba(15, 23, 42, 0.9)'
+        )
+        fig.update_xaxes(tickangle=-45)
+        st.plotly_chart(fig, width='stretch', key="liquidation_rate_chart")
+    
+    st.subheader("ðŸ’° Financial Impact Analysis")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        liq_by_market = liquidations.groupby('market_id')['realized_pnl'].sum().abs().reset_index()
+        liq_by_market['symbol'] = liq_by_market['market_id'].apply(simplify_symbol)
+        liq_by_market = liq_by_market.sort_values('realized_pnl', ascending=False).head(5)
+        
+        fig = px.bar(
+            liq_by_market,
+            x='symbol',
+            y='realized_pnl',
+            title='Top 5 Markets by Liquidation Loss',
+            color='realized_pnl',
+            color_continuous_scale='Reds'
+        )
+        fig.update_layout(height=300, template='plotly_dark')
+        st.plotly_chart(fig, width='stretch', key="liquidation_by_market")
+    
+    with col2:
+        liq_by_trader = liquidations.groupby('trader_id')['realized_pnl'].sum().abs().reset_index()
+        liq_by_trader['trader'] = liq_by_trader['trader_id'].apply(mask_trader_id)
+        liq_by_trader = liq_by_trader.sort_values('realized_pnl', ascending=False).head(5)
+        
+        fig = px.bar(
+            liq_by_trader,
+            x='trader',
+            y='realized_pnl',
+            title='Top 5 Traders by Liquidation Loss',
+            color='realized_pnl',
+            color_continuous_scale='Reds'
+        )
+        fig.update_layout(height=300, template='plotly_dark')
+        st.plotly_chart(fig, width='stretch', key="liquidation_by_trader")
+    
+    with st.expander("ðŸ” Pattern Analysis"):
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            liquidations['hour'] = pd.to_datetime(liquidations['close_time']).dt.hour
+            liq_by_hour = liquidations.groupby('hour').size().reset_index(name='count')
+            
+            fig = px.line(
+                liq_by_hour,
+                x='hour',
+                y='count',
+                title='Liquidations by Hour of Day',
+                markers=True
+            )
+            fig.update_layout(height=300, template='plotly_dark')
+            st.plotly_chart(fig, width='stretch', key="liquidation_by_hour")
+        
+        with col2:
+            top_market = liquidations['market_id'].mode()
+            if not top_market.empty:
+                st.info(f"ðŸ”¥ **Riskiest Market:** {simplify_symbol(top_market.iloc[0])}")
+            
+            liq_hours = pd.to_datetime(liquidations['close_time']).dt.hour
+            top_hour = liq_hours.mode()
+            if not top_hour.empty:
+                st.info(f"â° **Riskiest Hour:** {top_hour.iloc[0]}:00 UTC")
+            
+            avg_loss = liquidations['realized_pnl'].mean()
+            st.metric("Average Loss per Liquidation", f"${abs(avg_loss):,.2f}")
+            
+            with st.expander("ðŸ“‹ Liquidation History"):
+                liq_display = liquidations[['close_time', 'trader_id', 'market_id', 'side', 
+                                           'size', 'exit_price', 'realized_pnl', 'fees']].copy()
+                liq_display['trader'] = liq_display['trader_id'].apply(mask_trader_id)
+                liq_display['symbol'] = liq_display['market_id'].apply(simplify_symbol)
+                liq_display = liq_display.sort_values('close_time', ascending=False)
+                
+                st.dataframe(
+                    liq_display[['close_time', 'trader', 'symbol', 'side', 
+                                'size', 'exit_price', 'realized_pnl', 'fees']].style.format({
+                        'close_time': lambda x: x.strftime('%Y-%m-%d %H:%M'),
+                        'size': '{:.4f}',
+                        'exit_price': '${:.2f}',
+                        'realized_pnl': '${:.2f}',
+                        'fees': '${:.2f}'
+                    }).map(
+                        lambda x: 'color: #ef4444; font-weight: bold',
+                        subset=['realized_pnl']
+                    ),
+                    width='stretch',
+                    hide_index=True,
+                    column_config={
+                        "close_time": "Time",
+                        "trader": "Trader",
+                        "symbol": "Symbol",
+                        "side": "Side",
+                        "size": "Size",
+                        "exit_price": "Price",
+                        "realized_pnl": "Loss",
+                        "fees": "Fees"
+                    }
+                )
+
+
+def display_order_type_performance(order_perf_df, positions_df):
+    """Order type chart with proper classification."""
+    
+    st.markdown('<div class="section-header">', unsafe_allow_html=True)
+    st.header("ðŸ“Š Order Type Performance")
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    if positions_df.empty:
+        st.info("No trade data available")
+        return
+    
+    df = positions_df.copy()
+    
+    if 'order_type' in df.columns and not df['order_type'].isna().all():
+        order_types = df['order_type'].value_counts()
+        st.caption(f"ðŸ“Š Based on {len(order_types)} order types from trade data")
+    else:
+        df['order_type'] = df.apply(lambda row: 
+            f"{row['product_type']}" if row['product_type'] in ['option'] else
+            f"{row['product_type']}_market" if row['duration_seconds'] < 300 else
+            f"{row['product_type']}_limit" if row['duration_seconds'] < 3600 else
+            f"{row['product_type']}_stop",
+            axis=1
+        )
+        st.caption("ðŸ“Š Order types derived from product type and duration")
+    
+    result = []
+    for order_type, group in df.groupby('order_type'):
+        trade_count = len(group)
+        if trade_count > 0:
+            result.append({
+                'order_type': order_type,
+                'trade_count': trade_count,
+                'avg_pnl': group['realized_pnl'].mean(),
+                'win_rate': (group['realized_pnl'] > 0).mean(),
+                'total_pnl': group['realized_pnl'].sum()
+            })
+    
+    if not result:
+        st.warning("Insufficient data for order type analysis")
+        return
+    
+    order_df = pd.DataFrame(result)
+    order_df = order_df.sort_values('trade_count', ascending=False)
+    
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    
+    fig.add_trace(
+        go.Bar(
+            x=order_df['order_type'],
+            y=order_df['win_rate'] * 100,
+            name='Win Rate',
+            marker_color='#6366f1',
+            text=[f"{w:.1f}%" for w in order_df['win_rate'] * 100],
+            textposition='inside',
+            textfont=dict(color='white'),
+            hovertemplate='<b>%{x}</b><br>Win Rate: %{y:.1f}%<br>Trades: %{customdata}<extra></extra>',
+            customdata=order_df['trade_count']
+        ),
+        secondary_y=False,
+    )
+    
+    colors = ['#10b981' if x > 0 else '#ef4444' for x in order_df['avg_pnl']]
+    
+    fig.add_trace(
+        go.Scatter(
+            x=order_df['order_type'],
+            y=order_df['avg_pnl'],
+            name='Avg PnL',
+            mode='lines+markers',
+            line=dict(color='#f1f5f9', width=3),
+            marker=dict(size=10, color=colors),
+            text=[f"${x:,.0f}" for x in order_df['avg_pnl']],
+            textposition='top center',
+            hovertemplate='<b>%{x}</b><br>Avg PnL: $%{y:,.2f}<extra></extra>'
+        ),
+        secondary_y=True,
+    )
+    
+    fig.update_layout(
+        title="Order Type Performance: Win Rate vs Average PnL",
+        xaxis_title="Order Type",
+        hovermode='x unified',
+        height=500,
+        template='plotly_dark',
+        plot_bgcolor='rgba(15, 23, 42, 0.9)',
+        paper_bgcolor='rgba(15, 23, 42, 0.9)',
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        )
+    )
+    
+    fig.update_yaxes(title_text="Win Rate (%)", secondary_y=False, range=[0, 100])
+    fig.update_yaxes(title_text="Average PnL ($)", secondary_y=True)
+    fig.add_hline(y=0, line_dash="dash", line_color="gray", opacity=0.5, secondary_y=True)
+    
+    st.plotly_chart(fig, width='stretch')
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        best_win = order_df.loc[order_df['win_rate'].idxmax()]
+        st.metric(
+            "ðŸ† Best Win Rate",
+            f"{best_win['win_rate']*100:.1f}%",
+            f"{best_win['order_type']}"
+        )
+    
+    with col2:
+        best_pnl = order_df.loc[order_df['avg_pnl'].idxmax()]
+        st.metric(
+            "ðŸ’° Best Avg PnL",
+            f"${best_pnl['avg_pnl']:,.2f}",
+            f"{best_pnl['order_type']}"
+        )
+    
+    with col3:
+        most_used = order_df.loc[order_df['trade_count'].idxmax()]
+        st.metric(
+            "ðŸ“Š Most Used",
+            f"{most_used['trade_count']} trades",
+            f"{most_used['order_type']}"
+        )
+
+
+def display_volume_analysis(positions_df):
+    """Volume analysis with product tabs and progress bars."""
+    
+    st.markdown('<div class="section-header">', unsafe_allow_html=True)
+    st.header("ðŸ“Š Trading Volume Analysis")
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    if positions_df.empty:
+        st.info("No volume data available")
+        return
+    
+    positions_df = calculate_volume_usd(positions_df)
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    total_volume = positions_df['volume_usd'].sum()
+    total_fees = positions_df['fees'].sum()
+    unique_symbols = positions_df['market_id'].apply(simplify_symbol).nunique()
+    
+    symbol_vol = positions_df.groupby(positions_df['market_id'].apply(simplify_symbol))['volume_usd'].sum()
+    vol_shares = symbol_vol / total_volume if total_volume > 0 else pd.Series([0])
+    hhi = (vol_shares ** 2).sum() * 10000
+    
+    with col1:
+        st.metric("Total Volume", f"${total_volume:,.0f}")
+    with col2:
+        st.metric("Total Fees", f"${total_fees:,.0f}")
+    with col3:
+        st.metric("Active Symbols", unique_symbols)
+    with col4:
+        concentration = "Low" if hhi < 1500 else "Medium" if hhi < 2500 else "High"
+        st.metric("Concentration", f"{hhi:.0f} ({concentration})")
+    
+    product_tabs = st.tabs(["ðŸ“ˆ All Products", "ðŸ“ Spot", "âš¡ Perpetual", "ðŸŽ¯ Options"])
+    
+    products = {
+        "ðŸ“ˆ All Products": positions_df,
+        "ðŸ“ Spot": positions_df[positions_df['product_type'] == 'spot'],
+        "âš¡ Perpetual": positions_df[positions_df['product_type'] == 'perp'],
+        "ðŸŽ¯ Options": positions_df[positions_df['product_type'] == 'option']
+    }
+    
+    for tab_idx, (tab, (tab_name, product_df)) in enumerate(zip(product_tabs, products.items())):
+        with tab:
+            if product_df.empty:
+                st.info(f"No {tab_name} trades in selected period")
+                continue
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown(f"#### Volume by Symbol - Top 5")
+                
+                symbol_vol = product_df.groupby(product_df['market_id'].apply(simplify_symbol)).agg({
+                    'volume_usd': 'sum',
+                    'realized_pnl': 'sum',
+                    'fees': 'sum'
+                }).sort_values('volume_usd', ascending=False).head(5)
+                
+                total = symbol_vol['volume_usd'].sum()
+                
+                for symbol, row in symbol_vol.iterrows():
+                    pct = (row['volume_usd'] / total * 100) if total > 0 else 0
+                    pnl_color = "#10b981" if row['realized_pnl'] > 0 else "#ef4444"
+                    
+                    st.markdown(f"""
+                    <div class='progress-bar-container'>
+                        <div style='display: flex; justify-content: space-between; margin-bottom: 6px;'>
+                            <span class='progress-bar-label'>{symbol}</span>
+                            <span class='progress-bar-value'>
+                                ${row['volume_usd']:,.0f} ({pct:.1f}%) 
+                                <span style='color:{pnl_color};'>${row['realized_pnl']:,.0f}</span>
+                            </span>
+                        </div>
+                        <div style='background: rgba(100, 116, 139, 0.3); border-radius: 4px; height: 8px;'>
+                            <div style='
+                                background: #6366f1;
+                                width: {pct}%;
+                                height: 100%;
+                                border-radius: 4px;
+                                transition: width 0.3s ease;
+                            '></div>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                st.markdown("#### Fee Generation")
+                fee_by_symbol = product_df.groupby(product_df['market_id'].apply(simplify_symbol))['fees'].sum().sort_values(ascending=False).head(5)
+                
+                fig = px.bar(
+                    x=fee_by_symbol.values,
+                    y=fee_by_symbol.index,
+                    orientation='h',
+                    title='Top 5 Symbols by Fees',
+                    color=fee_by_symbol.values,
+                    color_continuous_scale='Reds'
+                )
+                fig.update_layout(height=250, template='plotly_dark')
+                st.plotly_chart(fig, width='stretch', key=f"fee_chart_{tab_idx}")
+            
+            with col2:
+                st.markdown(f"#### Long vs Short Distribution")
+                
+                if tab_name == "ðŸŽ¯ Options" and 'option_type' in product_df.columns:
+                    calls = product_df[product_df['option_type'] == 'call']['volume_usd'].sum()
+                    puts = product_df[product_df['option_type'] == 'put']['volume_usd'].sum()
+                    
+                    fig = go.Figure(data=[go.Pie(
+                        labels=['Calls', 'Puts'],
+                        values=[calls, puts],
+                        hole=0.4,
+                        marker_colors=['#10b981', '#f59e0b']
+                    )])
+                    fig.update_layout(height=300, template='plotly_dark')
+                    st.plotly_chart(fig, width='stretch', key=f"options_pie_{tab_idx}")
+                    
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        avg_premium = product_df['exit_price'].mean()
+                        st.metric("Avg Premium", f"${avg_premium:,.2f}")
+                    with col2:
+                        total_options = len(product_df)
+                        st.metric("Option Trades", total_options)
+                
+                else:
+                    long_vol = product_df[product_df['side'].isin(['long', 'buy'])]['volume_usd'].sum()
+                    short_vol = product_df[product_df['side'].isin(['short', 'sell'])]['volume_usd'].sum()
+                    
+                    fig = go.Figure(data=[go.Pie(
+                        labels=['Long', 'Short'],
+                        values=[long_vol, short_vol],
+                        hole=0.4,
+                        marker_colors=['#10b981', '#ef4444']
+                    )])
+                    fig.update_layout(height=300, template='plotly_dark')
+                    st.plotly_chart(fig, width='stretch', key=f"long_short_pie_{tab_idx}")
+                    
+                    ratio = (long_vol / short_vol) if short_vol > 0 else float('inf')
+                    st.metric("Long/Short Ratio", f"{ratio:.2f}x")
+                
+                st.markdown("#### Average Trade Size")
+                avg_size = product_df['volume_usd'].mean()
+                median_size = product_df['volume_usd'].median()
+                
+                fig = go.Figure()
+                fig.add_trace(go.Box(
+                    y=product_df['volume_usd'],
+                    name='Trade Size Distribution',
+                    boxmean='sd',
+                    marker_color='#6366f1'
+                ))
+                fig.update_layout(height=200, template='plotly_dark', showlegend=False)
+                st.plotly_chart(fig, width='stretch', key=f"box_chart_{tab_idx}")
+                
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.metric("Average", f"${avg_size:,.0f}")
+                with col2:
+                    st.metric("Median", f"${median_size:,.0f}")
+
+
+def display_greeks_analysis(greeks_df):
+    """Greeks analysis with 'Available Soon' for missing metrics."""
+    
+    st.markdown('<div class="section-header">', unsafe_allow_html=True)
+    st.header("ðŸ”¬ Options Greeks Exposure")
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    if greeks_df.empty:
+        st.info("No options Greeks data available")
+        return
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    total_delta = greeks_df['net_delta'].sum()
+    delta_color = "#10b981" if total_delta > 0 else "#ef4444"
+    
+    with col1:
+        st.markdown(f"""
+            <div class='greeks-metric'>
+                <div class='greeks-metric-label'>Net Delta</div>
+                <div class='greeks-metric-value' style='color: {delta_color}'>{total_delta:,.2f}</div>
+                <div class='greeks-metric-help'>Directional exposure</div>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown(f"""
+            <div class='greeks-metric'>
+                <div class='greeks-metric-label'>Gamma</div>
+                <div class='greeks-metric-value'>ðŸ”œ Available Soon</div>
+                <div class='greeks-metric-help'>Delta sensitivity</div>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown(f"""
+            <div class='greeks-metric'>
+                <div class='greeks-metric-label'>Theta</div>
+                <div class='greeks-metric-value'>ðŸ”œ Available Soon</div>
+                <div class='greeks-metric-help'>Time decay/day</div>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    with col4:
+        total_positions = greeks_df['total_option_positions'].sum()
+        st.markdown(f"""
+            <div class='greeks-metric'>
+                <div class='greeks-metric-label'>Positions</div>
+                <div class='greeks-metric-value'>{int(total_positions)}</div>
+                <div class='greeks-metric-help'>Active contracts</div>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    st.subheader("ðŸ“Š Delta Exposure by Trader")
+    
+    display_df = greeks_df.copy()
+    display_df['trader'] = display_df['trader_id'].apply(mask_trader_id)
+    display_df = display_df.sort_values('net_delta', ascending=False)
+    
+    fig = px.bar(
+        display_df,
+        x='trader',
+        y='net_delta',
+        color='net_delta',
+        color_continuous_scale='RdBu',
+        color_continuous_midpoint=0,
+        title='Net Delta by Trader'
+    )
+    fig.update_layout(
+        height=400,
+        template='plotly_dark',
+        plot_bgcolor='rgba(15, 23, 42, 0.9)',
+        paper_bgcolor='rgba(15, 23, 42, 0.9)'
+    )
+    fig.update_xaxes(tickangle=-45)
+    st.plotly_chart(fig, width='stretch')
+    
+    st.subheader("ðŸ“‹ Greeks Breakdown")
+    
+    st.dataframe(
+        display_df[['trader', 'total_option_positions', 'net_delta']].style.format({
+            'net_delta': '{:,.2f}',
+            'total_option_positions': '{:.0f}'
+        }).background_gradient(
+            subset=['net_delta'],
+            cmap='RdYlGn',
+            vmin=-100,
+            vmax=100
+        ),
+        width='stretch',
+        hide_index=True,
+        column_config={
+            "trader": "Trader",
+            "total_option_positions": "Positions",
+            "net_delta": "Delta"
+        }
+    )
+
+
+# ============================================================================
+# DATA LOADING
+# ============================================================================
+
+with st.spinner('ðŸ”„ Loading analytics...'):
+    data = load_data()
 
 if data is None or (data['positions'].empty and data['open_positions'].empty):
-    st.warning("No trading data available.")
+    st.error("âŒ **No analytics data found**")
+    st.info("ðŸ’¡ Run: `python -m scripts.run_analytics`")
     st.stop()
 
-# Calculate volume in USD
-if not data['positions'].empty:
-    data['positions']['volume_usd'] = data['positions']['exit_price'] * data['positions']['size']
+# ============================================================================
+# SIDEBAR
+# ============================================================================
 
-# Sidebar Filters
-st.sidebar.header("ðŸŽ›ï¸ Filters")
-traders = sorted(pd.concat([
+logo_url = "https://deriverse.gitbook.io/deriverse-v1/~gitbook/image?url=https%3A%2F%2F3705106568-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Forganizations%252FVbKUpgicSXo9QHWM7uzI%252Fsites%252Fsite_oPxtF%252Ficon%252FNsfAUtLJH778Cn5Dd7zK%252Ffavicon.ico%3Falt%3Dmedia%26token%3D4099bf73-ccd6-4d9f-8bbb-01cdc664ddb0&width=32&dpr=3&quality=100&sign=13d31bb2&sv=2"
+
+logo_bytes = load_logo(logo_url)
+if logo_bytes:
+    st.sidebar.image(logo_bytes, width=220)
+else:
+    st.sidebar.markdown("### ðŸ”· **Deriverse Analytics**")
+
+st.sidebar.markdown("---")
+st.sidebar.success("ðŸ”’ **Secure & Private**\nRead-only â€¢ Local-first")
+st.sidebar.markdown("---")
+
+st.sidebar.header("ðŸ” Access Control")
+is_admin = check_admin_password()
+
+st.sidebar.header("ðŸ‘¤ Trader Access")
+
+all_traders = sorted(pd.concat([
     data['positions']['trader_id'] if not data['positions'].empty else pd.Series([]),
     data['open_positions']['trader_id'] if not data['open_positions'].empty else pd.Series([])
 ]).unique())
-selected_trader = st.sidebar.selectbox("Trader Account", ["All"] + list(traders))
 
-# Filter Data
+if "view_mode" not in st.session_state:
+    st.session_state.view_mode = "all_traders"
+
+if st.session_state.view_mode == "all_traders":
+    st.sidebar.info("ðŸŒ **Mode:** All Traders View")
+    
+    wallet_input = st.sidebar.text_input(
+        "Enter Your Wallet Address",
+        placeholder="7KNXqvHu2QWvDq8cGPGvKZhFvYnz...",
+        help="Enter your wallet to access personal dashboard"
+    )
+    
+    if st.sidebar.button("ðŸ”‘ Enter Personal Dashboard"):
+        if wallet_input and len(wallet_input) > 32:
+            if wallet_input in all_traders:
+                st.session_state.authenticated_trader = wallet_input
+                st.session_state.view_mode = "personal"
+                st.rerun()
+            else:
+                st.sidebar.error("âŒ Wallet not found in trading data")
+        else:
+            st.sidebar.warning("âš ï¸ Please enter a valid wallet address")
+
+else:
+    if "authenticated_trader" in st.session_state:
+        trader = st.session_state.authenticated_trader
+        st.sidebar.success(f"âœ… **Personal Mode:** {mask_trader_id(trader)}")
+        
+        if st.sidebar.button("ðŸ‘¥ Return to All Traders View"):
+            st.session_state.view_mode = "all_traders"
+            st.rerun()
+
+st.sidebar.markdown("---")
+
+st.sidebar.header("ðŸŽ›ï¸ Filters")
+st.sidebar.markdown("**ðŸ“… Date Range**")
+
+if is_admin:
+    date_option = st.sidebar.radio(
+        "Range (Admin)",
+        ["Last 7 Days", "Last 30 Days", "All Time", "Custom"],
+        index=1,
+        horizontal=True,
+        label_visibility="collapsed"
+    )
+else:
+    date_option = st.sidebar.radio(
+        "Range",
+        ["Last 7 Days", "Last 30 Days", "Custom (Admin Only)"],
+        index=1,
+        horizontal=True,
+        label_visibility="collapsed"
+    )
+    
+    if date_option == "Custom (Admin Only)":
+        st.sidebar.warning("ðŸ” Custom date range requires admin authentication")
+        date_option = "Last 30 Days"
+
+if data and not data['positions'].empty:
+    min_date = data['positions']['close_time'].min().date()
+    max_date = data['positions']['close_time'].max().date()
+    
+    if date_option == "Last 7 Days":
+        start_date = max_date - timedelta(days=7)
+        end_date = max_date
+    elif date_option == "Last 30 Days":
+        start_date = max_date - timedelta(days=30)
+        end_date = max_date
+    elif date_option == "Custom" or date_option == "Custom (Admin Only)":
+        if is_admin:
+            col1, col2 = st.sidebar.columns(2)
+            with col1:
+                start_date = st.date_input("From", min_date, min_value=min_date, max_value=max_date)
+            with col2:
+                end_date = st.date_input("To", max_date, min_value=min_date, max_value=max_date)
+        else:
+            start_date = max_date - timedelta(days=30)
+            end_date = max_date
+    else:
+        start_date = min_date
+        end_date = max_date
+
+if data and not data['positions'].empty:
+    all_markets = sorted(data['positions']['market_id'].unique())
+    symbol_map = {m: simplify_symbol(m) for m in all_markets}
+    unique_symbols = sorted(set(symbol_map.values()))
+    
+    selected_symbols = st.sidebar.multiselect(
+        "Symbols",
+        unique_symbols,
+        default=[],
+        help="Select symbols to analyze (empty = all symbols)"
+    )
+    
+    if selected_symbols:
+        selected_markets = [m for m in all_markets if simplify_symbol(m) in selected_symbols]
+    else:
+        selected_markets = []
+else:
+    selected_markets = []
+
+st.sidebar.markdown("---")
+
+
+# ============================================================================
+# FIXED HEADER & NAVIGATION - NEVER SCROLLS
+# ============================================================================
+
+if "nav" not in st.session_state:
+    st.session_state.nav = "overview"
+
+with st.container():
+    st.markdown('<div class="fixed-header-container">', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns([1, 8])
+    
+    with col1:
+        if logo_bytes:
+            st.image(logo_bytes, width=60)
+        else:
+            st.markdown("### ðŸ”·")
+    
+    with col2:
+        st.markdown('<div class="header-title">Deriverse Trading Analytics</div>', unsafe_allow_html=True)
+        st.markdown('<div class="header-subtitle">Real-time performance insights â€¢ Local-first security</div>', unsafe_allow_html=True)
+    
+    if st.session_state.view_mode == "personal" and "authenticated_trader" in st.session_state:
+        st.markdown(f"""
+            <div class='profile-badge'>
+                ðŸ” {mask_trader_id(st.session_state.authenticated_trader)}
+            </div>
+        """, unsafe_allow_html=True)
+    
+    nav_items = [
+        ("ðŸ“Š Overview", "overview"),
+        ("ðŸ“ˆ Performance", "performance"),
+        ("âš ï¸ Risk", "risk"),
+        ("ðŸ“Š Volume", "volume"),
+        ("ðŸ“‹ Orders", "orders"),
+        ("ðŸ”¬ Greeks", "greeks"),
+        ("ðŸ“ Journal", "journal")
+    ]
+    
+    nav_cols = st.columns(len(nav_items))
+    
+    for idx, (col, (label, nav_key)) in enumerate(zip(nav_cols, nav_items)):
+        with col:
+            is_active = (st.session_state.nav == nav_key)
+            if st.button(
+                label,
+                key=f"nav_{nav_key}",
+                use_container_width=True,
+                type="primary" if is_active else "secondary"
+            ):
+                st.session_state.nav = nav_key
+                st.rerun()
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+
+
+# ============================================================================
+# APPLY FILTERS
+# ============================================================================
+
 filtered_positions = data['positions'].copy() if not data['positions'].empty else pd.DataFrame()
 filtered_open = data['open_positions'].copy() if not data['open_positions'].empty else pd.DataFrame()
 
-if selected_trader != "All":
+if st.session_state.view_mode == "personal" and "authenticated_trader" in st.session_state:
+    selected_trader = st.session_state.authenticated_trader
     if not filtered_positions.empty:
         filtered_positions = filtered_positions[filtered_positions['trader_id'] == selected_trader]
     if not filtered_open.empty:
         filtered_open = filtered_open[filtered_open['trader_id'] == selected_trader]
-
-# KPI Tiles
-st.header("ðŸ“ˆ Performance Overview")
-col1, col2, col3, col4 = st.columns(4)
-
-total_pnl = filtered_positions['realized_pnl'].sum() if not filtered_positions.empty else 0
-win_rate = (filtered_positions['realized_pnl'] > 0).mean() * 100 if not filtered_positions.empty else 0
-total_fees = filtered_positions['fees'].sum() if not filtered_positions.empty else 0
-trade_count = len(filtered_positions)
-
-col1.metric("Net Realized PnL", f"${total_pnl:,.2f}", delta=f"{total_pnl:,.2f}" if total_pnl > 0 else None)
-col2.metric("Win Rate", f"{win_rate:.1f}%")
-col3.metric("Total Closed Trades", trade_count)
-col4.metric("Fees Paid", f"${total_fees:,.2f}")
-
-# Risk Management Metrics
-st.header("âš–ï¸ Risk Analysis")
-c1, c2, c3, c4 = st.columns(4)
+else:
+    selected_trader = None
 
 if not filtered_positions.empty:
-    winning = filtered_positions[filtered_positions['realized_pnl'] > 0]
-    losing = filtered_positions[filtered_positions['realized_pnl'] < 0]
-    
-    avg_win = winning['realized_pnl'].mean() if len(winning) > 0 else 0
-    avg_loss = losing['realized_pnl'].mean() if len(losing) > 0 else 0
-    
-    if selected_trader != "All" and not data['summary'].empty:
-        trader_data = data['summary'][data['summary']['trader_id'] == selected_trader]
-        max_dd = trader_data['max_drawdown'].iloc[0] if not trader_data.empty else 0
-        sharpe = trader_data['sharpe_ratio'].iloc[0] if not trader_data.empty else 0
-    else:
-        max_dd = data['summary']['max_drawdown'].min() if not data['summary'].empty else 0
-        sharpe = data['summary']['sharpe_ratio'].mean() if not data['summary'].empty else 0
+    filtered_positions = filtered_positions[
+        (filtered_positions['close_time'].dt.date >= start_date) &
+        (filtered_positions['close_time'].dt.date <= end_date)
+    ]
+
+if selected_markets and not filtered_positions.empty:
+    filtered_positions = filtered_positions[filtered_positions['market_id'].isin(selected_markets)]
+if selected_markets and not filtered_open.empty:
+    filtered_open = filtered_open[filtered_open['market_id'].isin(selected_markets)]
+
+if not filtered_positions.empty:
+    filtered_positions = calculate_volume_usd(filtered_positions)
+
+if not data['equity'].empty:
+    filtered_equity = data['equity'].copy()
+    if selected_trader:
+        filtered_equity = filtered_equity[filtered_equity['trader_id'] == selected_trader]
+    filtered_equity = filtered_equity[
+        (filtered_equity['timestamp'].dt.date >= start_date) &
+        (filtered_equity['timestamp'].dt.date <= end_date)
+    ]
 else:
-    avg_win = avg_loss = max_dd = sharpe = 0
+    filtered_equity = pd.DataFrame()
 
-c1.metric("Average Win", f"${avg_win:,.2f}")
-c2.metric("Average Loss", f"${avg_loss:,.2f}")
-c3.metric("Max Drawdown", f"${max_dd:,.2f}")
-c4.metric("Sharpe Ratio", f"{sharpe:.2f}")
 
-# âœ… OPEN POSITIONS - REAL DATA, NO UNREALIZED PNL
+# ============================================================================
+# OPEN POSITIONS TABLE
+# ============================================================================
+
 if not filtered_open.empty:
-    st.header("ðŸ“Š Open Positions (Active Trades)")
-    st.caption("ðŸ’¡ Current positions still held. Unrealized PnL calculated at closing.")
+    st.warning(f"âš ï¸ **{len(filtered_open)} Open Positions** - Unrealized PnL not included")
     
-    # Prepare display
     open_display = filtered_open.copy()
-    open_display['time_held'] = (open_display['time_held_seconds'] / 3600).round(1)
     
-    # Format for display
-    display_open = open_display[[
-        'position_id', 'trader_id', 'market_id', 'product_type', 'side',
-        'entry_price', 'size', 'fees_paid', 'open_time', 'time_held'
-    ]].copy()
+    if 'time_held_seconds' in open_display.columns:
+        open_display['time_held'] = (open_display['time_held_seconds'] / 3600).round(1)
+    elif 'open_time' in open_display.columns:
+        open_display['time_held'] = ((pd.Timestamp.now() - pd.to_datetime(open_display['open_time'])).dt.total_seconds() / 3600).round(1)
+    else:
+        open_display['time_held'] = 0
     
-    display_open = display_open.rename(columns={
-        'position_id': 'Position ID',
-        'trader_id': 'Trader',
-        'market_id': 'Market',
-        'product_type': 'Type',
-        'side': 'Direction',
-        'entry_price': 'Entry Price',
-        'size': 'Size',
-        'fees_paid': 'Fees Paid',
-        'open_time': 'Opened At',
-        'time_held': 'Hours Held'
-    })
+    open_display['trader_display'] = open_display['trader_id'].apply(
+        lambda x: f"{x[:8]}...{x[-8:]}" if selected_trader and x == selected_trader else mask_trader_id(x)
+    )
+    open_display['symbol'] = open_display['market_id'].apply(simplify_symbol)
+    
+    display_cols = ['trader_display', 'symbol', 'product_type', 'side', 'entry_price', 'size']
+    
+    if 'fees_paid' in open_display.columns:
+        display_cols.append('fees_paid')
+    elif 'fees' in open_display.columns:
+        open_display['fees_paid'] = open_display['fees']
+        display_cols.append('fees_paid')
+    
+    display_cols.append('time_held')
     
     st.dataframe(
-        display_open.style.format({
+        open_display[display_cols].rename(columns={
+            'trader_display': 'Trader',
+            'symbol': 'Symbol',
+            'product_type': 'Type',
+            'side': 'Direction',
+            'entry_price': 'Entry Price',
+            'size': 'Size',
+            'fees_paid': 'Fees Paid',
+            'time_held': 'Hours Held'
+        }).style.format({
             'Entry Price': '${:,.2f}',
             'Fees Paid': '${:,.2f}',
             'Size': '{:,.4f}',
-            'Hours Held': '{:,.1f}h'
+            'Hours Held': '{:.1f}h'
         }),
         width='stretch',
         hide_index=True
     )
 
-# Equity Curve
-if not data['equity'].empty:
-    st.header("ðŸ’° Equity Curve")
-    filtered_equity = data['equity'].copy()
-    if selected_trader != "All":
-        filtered_equity = filtered_equity[filtered_equity['trader_id'] == selected_trader]
+
+# ============================================================================
+# SECTION RENDERING BASED ON NAVIGATION
+# ============================================================================
+
+if st.session_state.nav == "overview":
     
-    if not filtered_equity.empty:
-        fig = go.Figure()
-        for trader in filtered_equity['trader_id'].unique():
-            trader_eq = filtered_equity[filtered_equity['trader_id'] == trader].sort_values('timestamp')
-            trader_short = trader[:8] + "..." if len(trader) > 12 else trader
-            fig.add_trace(go.Scatter(x=trader_eq['timestamp'], y=trader_eq['cumulative_pnl'], name=f"{trader_short} PnL"))
-            fig.add_trace(go.Scatter(x=trader_eq['timestamp'], y=trader_eq['drawdown'], fill='tozeroy', 
-                                    fillcolor='rgba(255,0,0,0.2)', line=dict(color='red', width=0.5), 
-                                    name=f"{trader_short} DD"))
-        fig.update_layout(xaxis_title="Time", yaxis_title="PnL ($)", hovermode='x unified', height=400)
-        st.plotly_chart(fig, width='stretch')
-
-# Charts Row 1
-col1, col2 = st.columns(2)
-
-with col1:
-    st.subheader("ðŸ“… Daily PnL")
+    st.markdown("## ðŸ“ˆ Performance Overview")
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    total_pnl = filtered_positions['realized_pnl'].sum() if not filtered_positions.empty else 0
+    win_rate = (filtered_positions['realized_pnl'] > 0).mean() * 100 if not filtered_positions.empty else 0
+    total_fees = filtered_positions['fees'].sum() if not filtered_positions.empty else 0
+    trade_count = len(filtered_positions)
+    
+    col1.metric("Net Realized PnL", f"${total_pnl:,.2f}", delta=f"{total_pnl:,.2f}" if total_pnl != 0 else None)
+    col2.metric("Win Rate", f"{win_rate:.1f}%")
+    
+    win_rate_val = win_rate / 100 if win_rate > 0 else 0
+    col2.progress(win_rate_val, text=f"{win_rate_val*100:.1f}%")
+    
+    col3.metric("Total Closed Trades", trade_count)
+    col4.metric("Fees Paid", f"${total_fees:,.2f}")
+    
+    st.markdown("## âš–ï¸ Risk Analysis")
+    col1, col2, col3, col4 = st.columns(4)
+    
     if not filtered_positions.empty:
-        daily = filtered_positions.groupby(filtered_positions['close_time'].dt.date)['realized_pnl'].sum().reset_index()
-        daily.columns = ['date', 'pnl']
-        fig = px.bar(daily, x='date', y='pnl', color='pnl', color_continuous_scale=['red', 'gray', 'green'], 
-                    color_continuous_midpoint=0)
-        fig.update_layout(height=300, showlegend=False)
-        st.plotly_chart(fig, width='stretch')
-
-with col2:
-    st.subheader("ðŸ’¸ Fees by Product")
-    if not filtered_positions.empty:
-        fees_prod = filtered_positions.groupby('product_type')['fees'].sum().reset_index()
-        fig = px.bar(fees_prod, x='product_type', y='fees', color='product_type')
-        fig.update_layout(height=300, showlegend=False)
-        st.plotly_chart(fig, width='stretch')
-
-# Complete Fee Analysis
-if not filtered_positions.empty:
-    st.header("ðŸ’¸ Complete Fee Analysis")
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.subheader("Fee Composition")
-        if not data['fees'].empty:
-            trader_fees = data['fees'] if selected_trader == "All" else data['fees'][data['fees']['trader_id'] == selected_trader]
-            fig = px.pie(trader_fees, values='total_fees', names='product_type', title='Fee Distribution')
-            fig.update_layout(height=300)
-            st.plotly_chart(fig, width='stretch')
+        winning = filtered_positions[filtered_positions['realized_pnl'] > 0]
+        losing = filtered_positions[filtered_positions['realized_pnl'] < 0]
         
-        fee_summary = filtered_positions.groupby('product_type').agg({
-            'fees': ['sum', 'mean', 'count']
-        }).round(2)
-        fee_summary.columns = ['Total Fees', 'Avg Fee', 'Trade Count']
-        st.dataframe(fee_summary, width='stretch')
-    
-    with col2:
-        st.subheader("Cumulative Fee Tracking")
-        fee_timeline = filtered_positions.sort_values('close_time')[['close_time', 'fees']].copy()
-        fee_timeline['cumulative_fees'] = fee_timeline['fees'].cumsum()
+        avg_win = winning['realized_pnl'].mean() if len(winning) > 0 else 0
+        avg_loss = losing['realized_pnl'].mean() if len(losing) > 0 else 0
+        profit_factor = abs(avg_win / avg_loss) if avg_loss != 0 else float('inf')
         
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=fee_timeline['close_time'], y=fee_timeline['cumulative_fees'],
-                                mode='lines+markers', name='Cumulative Fees', line=dict(color='red', width=2)))
-        fig.update_layout(xaxis_title="Time", yaxis_title="Cumulative Fees ($)", height=300)
-        st.plotly_chart(fig, width='stretch')
-
-# Complete Volume Analysis
-if not filtered_positions.empty:
-    st.header("ðŸ“Š Trading Volume Analysis")
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.subheader("Volume by Market (USD)")
-        market_vol = filtered_positions.groupby('market_id').agg({
-            'volume_usd': 'sum',
-            'realized_pnl': 'sum'
-        }).sort_values('volume_usd', ascending=False)
-        
-        fig = px.bar(market_vol.reset_index(), x='market_id', y='volume_usd',
-                    title='Trading Volume (USD)', labels={'volume_usd': 'Volume (USD)'})
-        fig.update_layout(height=350, xaxis_tickangle=-45)
-        st.plotly_chart(fig, width='stretch')
-    
-    with col2:
-        st.subheader("Volume vs PnL")
-        market_stats = filtered_positions.groupby('market_id').agg({
-            'volume_usd': 'sum',
-            'realized_pnl': 'sum',
-            'size': 'sum'
-        }).sort_values('volume_usd', ascending=False).head(10)
-        
-        display_stats = market_stats.copy()
-        display_stats.columns = ['Volume (USD)', 'PnL ($)', 'Size (Units)']
-        st.dataframe(display_stats.style.format({
-            'Volume (USD)': '${:,.2f}',
-            'PnL ($)': '${:,.2f}',
-            'Size (Units)': '{:,.2f}'
-        }), width='stretch')
-
-# Charts Row 2
-if not filtered_positions.empty:
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.subheader("âš–ï¸ Long vs Short")
-        long_cnt = len(filtered_positions[filtered_positions['side'].isin(['long', 'buy'])])
-        short_cnt = len(filtered_positions[filtered_positions['side'].isin(['short', 'sell'])])
-        fig = go.Figure(data=[go.Pie(labels=['Long', 'Short'], values=[long_cnt, short_cnt], 
-                                     hole=0.4, marker_colors=['#00cc96', '#ef553b'])])
-        fig.update_layout(height=300)
-        st.plotly_chart(fig, width='stretch')
-    
-    with col2:
-        st.subheader("ðŸ• Hourly Performance")
-        hourly = filtered_positions.copy()
-        hourly['hour'] = hourly['close_time'].dt.hour
-        hour_pnl = hourly.groupby('hour')['realized_pnl'].mean().reset_index()
-        fig = px.line(hour_pnl, x='hour', y='realized_pnl', markers=True)
-        fig.update_layout(height=300, xaxis_title="Hour", yaxis_title="Avg PnL")
-        st.plotly_chart(fig, width='stretch')
-
-# Order Type Performance
-if not data['order_perf'].empty:
-    st.header("ðŸ“Š Order Type Performance")
-    fig = go.Figure()
-    fig.add_trace(go.Bar(name='Win Rate', x=data['order_perf']['order_type'], 
-                        y=data['order_perf']['win_rate']*100, yaxis='y', marker_color='lightblue'))
-    fig.add_trace(go.Scatter(name='Avg PnL', x=data['order_perf']['order_type'], 
-                            y=data['order_perf']['avg_pnl'], yaxis='y2', marker_color='green', 
-                            line=dict(width=3)))
-    fig.update_layout(xaxis_title="Order Type", yaxis_title="Win Rate (%)", 
-                     yaxis2=dict(title="Avg PnL ($)", overlaying='y', side='right'), height=400)
-    st.plotly_chart(fig, width='stretch')
-
-# Greeks Exposure
-if not data['greeks'].empty:
-    st.header("ðŸ”¬ Options Greeks Exposure")
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.subheader("Net Delta by Trader")
-        fig = px.bar(data['greeks'], x='trader_id', y='net_delta', title="Delta Exposure")
-        st.plotly_chart(fig, width='stretch')
-    
-    with col2:
-        st.subheader("Options Position Count")
-        fig = px.bar(data['greeks'], x='trader_id', y='total_option_positions')
-        st.plotly_chart(fig, width='stretch')
-
-# âœ… TRADE JOURNAL WITH ANNOTATIONS
-if not filtered_positions.empty:
-    st.header("ðŸ“ Trade Journal with Annotations")
-    st.caption("âœï¸ Document your trading decisions, lessons learned, and strategy insights")
-    
-    # Add explanatory info
-    with st.expander("â„¹ï¸ What are trade annotations? Click to learn more..."):
-        st.markdown("""
-        **Trade annotations** are your personal trading journal entries where you document:
-        - ðŸ“Š **Market conditions** when you entered/exited
-        - ðŸŽ¯ **Why you took the trade** (setup, strategy, conviction level)
-        - ðŸ§  **Emotional state** (FOMO, confident, fearful, disciplined)
-        - âœ… **What went right** (good entries, proper risk management)
-        - âŒ **What went wrong** (early exit, late entry, ignored signals)
-        - ðŸ“š **Lessons learned** for future trades
-        
-        **Example notes:**
-        - "Entered too early before confirmation - wait for volume spike next time"
-        - "Perfect setup: broke resistance on high volume, followed plan exactly"
-        - "Emotional revenge trade after previous loss - took too much risk"
-        - "News-driven: Fed announcement caused spike - set tighter stops for news events"
-        
-        These notes help you identify patterns, improve your strategy, and become a better trader.
-        """)
-    
-    # Prepare journal
-    available_cols = [
-        'close_time', 'trader_id', 'market_id', 'product_type', 'side',
-        'entry_price', 'exit_price', 'volume_usd', 'realized_pnl', 'fees'
-    ]
-    
-    # Add close_reason if it exists
-    if 'close_reason' in filtered_positions.columns:
-        available_cols.append('close_reason')
-    
-    journal_df = filtered_positions[available_cols].copy()
-    journal_df = journal_df.sort_values('close_time', ascending=False)
-    
-    # Shorten trader IDs for display
-    journal_df['trader_short'] = journal_df['trader_id'].str[:8] + '...'
-    
-    # Initialize notes in session state
-    if 'trade_notes' not in st.session_state:
-        st.session_state.trade_notes = {}
-    
-    # Add notes column
-    journal_df['trader_notes'] = journal_df.index.map(
-        lambda i: st.session_state.trade_notes.get(i, "")
-    )
-    
-    # Reorder columns for display
-    display_cols = [
-        'close_time', 'trader_short', 'market_id', 'product_type', 'side',
-        'entry_price', 'exit_price', 'volume_usd', 'realized_pnl', 'fees'
-    ]
-    
-    if 'close_reason' in journal_df.columns:
-        display_cols.append('close_reason')
-    
-    display_cols.append('trader_notes')
-    
-    # âœ… EDITABLE DATA TABLE
-    edited_journal = st.data_editor(
-        journal_df[display_cols],
-        column_config={
-            "close_time": st.column_config.DatetimeColumn(
-                "Closed At",
-                format="DD/MM/YYYY HH:mm"
-            ),
-            "trader_short": st.column_config.TextColumn(
-                "Trader",
-                help="First 8 characters of wallet address",
-                disabled=True
-            ),
-            "market_id": "Market",
-            "product_type": "Type",
-            "side": "Direction",
-            "entry_price": st.column_config.NumberColumn(
-                "Entry",
-                format="$%.2f"
-            ),
-            "exit_price": st.column_config.NumberColumn(
-                "Exit",
-                format="$%.2f",
-                help="None for exercised/expired options (PnL calculated from intrinsic value)"
-            ),
-            "volume_usd": st.column_config.NumberColumn(
-                "Volume (USD)",
-                format="$%.0f"
-            ),
-            "realized_pnl": st.column_config.NumberColumn(
-                "PnL",
-                format="$%.2f"
-            ),
-            "fees": st.column_config.NumberColumn(
-                "Fees",
-                format="$%.2f"
-            ),
-            "close_reason": st.column_config.TextColumn(
-                "Close Type",
-                help="How position was closed: close (normal), liquidation, exercise, expire"
-            ),
-            "trader_notes": st.column_config.TextColumn(
-                "ðŸ“ Your Trading Notes",
-                help="Document your analysis: strategy, emotions, lessons learned, improvements for next time",
-                max_chars=500,
-                width="large"
-            )
-        },
-        width='stretch',
-        hide_index=True,
-        num_rows="fixed",
-        disabled=[col for col in display_cols if col != 'trader_notes']
-    )
-    
-    # Update session state with edited notes
-    for idx, row in edited_journal.iterrows():
-        if pd.notna(row.get('trader_notes')) and row['trader_notes']:
-            st.session_state.trade_notes[idx] = row['trader_notes']
-    
-    # Export functionality
-    st.markdown("---")
-    col1, col2, col3, col4 = st.columns([3, 1, 1, 1])
-    
-    with col1:
-        notes_count = len([n for n in st.session_state.trade_notes.values() if n])
-        if notes_count > 0:
-            st.success(f"âœ… {notes_count} trade{'s' if notes_count != 1 else ''} annotated")
+        if selected_trader and not data['summary'].empty:
+            trader_data = data['summary'][data['summary']['trader_id'] == selected_trader]
+            max_dd = trader_data['max_drawdown'].iloc[0] if not trader_data.empty else 0
+            sharpe = trader_data['sharpe_ratio'].iloc[0] if not trader_data.empty else 0
         else:
-            st.info("ðŸ’¡ Click on the 'Your Trading Notes' column to add annotations")
+            max_dd = data['summary']['max_drawdown'].min() if not data['summary'].empty else 0
+            sharpe = data['summary']['sharpe_ratio'].mean() if not data['summary'].empty else 0
+    else:
+        avg_win = avg_loss = max_dd = sharpe = profit_factor = 0
     
-    with col2:
-        # Export with full trader IDs
-        export_df = filtered_positions[available_cols].copy()
-        export_df['trader_notes'] = export_df.index.map(
-            lambda i: st.session_state.trade_notes.get(i, "")
+    col1.metric("Average Win", f"${avg_win:,.2f}")
+    col2.metric("Average Loss", f"${avg_loss:,.2f}")
+    col3.metric("Profit Factor", f"{profit_factor:.2f}x")
+    col4.metric("Sharpe Ratio", f"{sharpe:.2f}")
+    
+    if not filtered_positions.empty and not selected_trader:
+        st.markdown("## ðŸ† Top Performers Analysis")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("### ðŸ“ˆ Top 5 Profitable Traders")
+            top_winners = get_top_traders(filtered_positions, n=5, by='profit')
+            
+            if top_winners:
+                winner_stats = []
+                for trader in top_winners:
+                    trader_pos = filtered_positions[filtered_positions['trader_id'] == trader]
+                    winner_stats.append({
+                        'Trader': mask_trader_id(trader),
+                        'Total PnL': trader_pos['realized_pnl'].sum(),
+                        'Trades': len(trader_pos),
+                        'Win Rate': (trader_pos['realized_pnl'] > 0).mean() * 100
+                    })
+                
+                winner_df = pd.DataFrame(winner_stats)
+                
+                fig = px.bar(
+                    winner_df,
+                    x='Trader',
+                    y='Total PnL',
+                    color='Total PnL',
+                    color_continuous_scale='Greens',
+                    text='Total PnL'
+                )
+                fig.update_traces(texttemplate='$%{text:.0f}', textposition='outside')
+                fig.update_layout(height=200, showlegend=False, template='plotly_dark')
+                st.plotly_chart(fig, width='stretch')
+                
+                st.dataframe(
+                    winner_df.style.format({
+                        'Total PnL': '${:,.2f}',
+                        'Win Rate': '{:.1f}%'
+                    }),
+                    width='stretch',
+                    hide_index=True
+                )
+        
+        with col2:
+            st.markdown("### ðŸ“‰ Top 5 Loss-Making Traders")
+            top_losers = get_top_traders(filtered_positions, n=5, by='loss')
+            
+            if top_losers:
+                loser_stats = []
+                for trader in top_losers:
+                    trader_pos = filtered_positions[filtered_positions['trader_id'] == trader]
+                    loser_stats.append({
+                        'Trader': mask_trader_id(trader),
+                        'Total PnL': trader_pos['realized_pnl'].sum(),
+                        'Trades': len(trader_pos),
+                        'Win Rate': (trader_pos['realized_pnl'] > 0).mean() * 100
+                    })
+                
+                loser_df = pd.DataFrame(loser_stats)
+                
+                fig = px.bar(
+                    loser_df,
+                    x='Trader',
+                    y='Total PnL',
+                    color='Total PnL',
+                    color_continuous_scale='Reds_r',
+                    text='Total PnL'
+                )
+                fig.update_traces(texttemplate='$%{text:.0f}', textposition='outside')
+                fig.update_layout(height=200, showlegend=False, template='plotly_dark')
+                st.plotly_chart(fig, width='stretch')
+                
+                st.dataframe(
+                    loser_df.style.format({
+                        'Total PnL': '${:,.2f}',
+                        'Win Rate': '{:.1f}%'
+                    }),
+                    width='stretch',
+                    hide_index=True
+                )
+
+elif st.session_state.nav == "performance":
+    if not filtered_positions.empty and not filtered_equity.empty:
+        display_equity_section(filtered_equity, filtered_positions, 
+                              st.session_state.authenticated_trader if st.session_state.view_mode == "personal" else None)
+    else:
+        st.info("No performance data for selected filters")
+
+elif st.session_state.nav == "risk":
+    if not filtered_positions.empty:
+        display_liquidation_analytics(filtered_positions)
+    else:
+        st.info("No risk data for selected filters")
+
+elif st.session_state.nav == "volume":
+    if not filtered_positions.empty:
+        display_volume_analysis(filtered_positions)
+    else:
+        st.info("No volume data for selected filters")
+
+elif st.session_state.nav == "orders":
+    if not data['order_perf'].empty:
+        display_order_type_performance(data['order_perf'], filtered_positions)
+    else:
+        st.info("No order type data available")
+
+elif st.session_state.nav == "greeks":
+    if not data['greeks'].empty:
+        greeks_filtered = data['greeks'].copy()
+        if selected_trader:
+            greeks_filtered = greeks_filtered[greeks_filtered['trader_id'] == selected_trader]
+        
+        if not greeks_filtered.empty:
+            display_greeks_analysis(greeks_filtered)
+        else:
+            st.info("No Greeks data for selected trader")
+    else:
+        st.info("No Greeks data available")
+
+elif st.session_state.nav == "journal":
+    
+    st.markdown('<div class="section-header">', unsafe_allow_html=True)
+    st.header("ðŸ“ Trade Journal with Annotations")
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    if filtered_positions.empty:
+        st.info("No trades to journal")
+    
+    elif st.session_state.view_mode == "personal" and "authenticated_trader" in st.session_state:
+        trader = st.session_state.authenticated_trader
+        
+        st.markdown("""
+        <div class='note-instruction'>
+            <strong>ðŸ“Œ How to take notes:</strong><br>
+            1. Click on any cell in the "ðŸ“ Your Trading Notes" column<br>
+            2. Type your observations, strategy notes, or lessons learned<br>
+            3. Press Enter or click outside to save automatically<br>
+            4. Notes are saved locally and persist between sessions
+        </div>
+        """, unsafe_allow_html=True)
+        
+        trader_notes = load_trader_notes(trader)
+        
+        journal_df = filtered_positions.sort_values('close_time', ascending=False).copy()
+        journal_df['symbol'] = journal_df['market_id'].apply(simplify_symbol)
+        journal_df['notes'] = journal_df['position_id'].map(lambda pid: trader_notes.get(str(pid), ""))
+        
+        notes_count = len([n for n in journal_df['notes'] if n and str(n).strip()])
+        st.info(f"ðŸ“ You have {notes_count} annotated trade{'s' if notes_count != 1 else ''}")
+        
+        available_cols = ['close_time', 'symbol', 'product_type', 'side',
+                         'entry_price', 'exit_price', 'volume_usd', 'realized_pnl', 'fees', 'notes']
+        
+        edited_journal = st.data_editor(
+            journal_df[available_cols],
+            column_config={
+                "close_time": st.column_config.DatetimeColumn("Closed At", format="DD/MM/YYYY HH:mm"),
+                "symbol": "Symbol",
+                "product_type": "Type",
+                "side": "Direction",
+                "entry_price": st.column_config.NumberColumn("Entry", format="$%.2f"),
+                "exit_price": st.column_config.NumberColumn("Exit", format="$%.2f"),
+                "volume_usd": st.column_config.NumberColumn("Volume", format="$%.0f"),
+                "realized_pnl": st.column_config.NumberColumn("PnL", format="$%.2f"),
+                "fees": st.column_config.NumberColumn("Fees", format="$%.2f"),
+                "notes": st.column_config.TextColumn(
+                    "ðŸ“ Your Trading Notes",
+                    help="Document your strategy, emotions, and lessons learned",
+                    max_chars=500,
+                    width="large"
+                )
+            },
+            width='stretch',
+            hide_index=True,
+            num_rows="fixed",
+            disabled=[col for col in available_cols if col != 'notes']
         )
         
-        csv = export_df.to_csv(index=False)
-        st.download_button(
-            "ðŸ“¥ Export CSV",
-            csv,
-            "trading_journal_annotated.csv",
-            "text/csv",
-            use_container_width=True
-        )
-    
-    with col3:
-        if st.button("ðŸ—‘ï¸ Clear Notes", use_container_width=True):
-            if st.session_state.trade_notes:
-                st.session_state.trade_notes = {}
+        updated_notes = {}
+        for idx, row in edited_journal.iterrows():
+            pid = journal_df.loc[idx, 'position_id']
+            note = row.get('notes', '')
+            if pd.notna(note) and str(note).strip():
+                updated_notes[str(pid)] = note
+        
+        if updated_notes != trader_notes:
+            save_trader_notes(trader, updated_notes)
+            st.success("âœ… Notes saved!")
+        
+        col1, col2, col3 = st.columns([3, 1, 1])
+        
+        with col2:
+            export_df = journal_df[available_cols].copy()
+            csv = export_df.to_csv(index=False)
+            st.download_button(
+                "ðŸ“¥ Export CSV",
+                csv,
+                f"journal_{trader[:8]}.csv",
+                "text/csv",
+                width='stretch'
+            )
+        
+        with col3:
+            if st.button("ðŸ—‘ï¸ Clear All Notes", width='stretch'):
+                save_trader_notes(trader, {})
                 st.rerun()
     
-    with col4:
-        if st.button("ðŸ“Š Stats", use_container_width=True):
-            st.toast(f"Trades: {len(journal_df)} | Annotated: {notes_count}")
+    elif selected_trader:
+        st.info(f"ðŸ‘ï¸ **Read-Only View:** Viewing {mask_trader_id(selected_trader)}")
+        st.caption("ðŸ’¡ To add notes, authenticate with your wallet in the sidebar")
+        
+        journal_df = filtered_positions.sort_values('close_time', ascending=False).copy()
+        journal_df['trader'] = journal_df['trader_id'].apply(mask_trader_id)
+        journal_df['symbol'] = journal_df['market_id'].apply(simplify_symbol)
+        
+        st.dataframe(
+            journal_df[['close_time', 'trader', 'symbol', 'product_type', 'side',
+                       'entry_price', 'exit_price', 'volume_usd', 'realized_pnl', 'fees']].style.format({
+                'entry_price': '${:,.2f}',
+                'exit_price': '${:,.2f}',
+                'volume_usd': '${:,.0f}',
+                'realized_pnl': '${:,.2f}',
+                'fees': '${:,.2f}'
+            }),
+            width='stretch',
+            hide_index=True
+        )
+    
+    else:
+        st.info("ðŸ‘¥ Select a specific trader or authenticate to add notes")
+        
+        journal_df = filtered_positions.sort_values('close_time', ascending=False).copy()
+        journal_df['trader'] = journal_df['trader_id'].apply(mask_trader_id)
+        journal_df['symbol'] = journal_df['market_id'].apply(simplify_symbol)
+        
+        st.dataframe(
+            journal_df[['close_time', 'trader', 'symbol', 'product_type', 'side',
+                       'entry_price', 'exit_price', 'volume_usd', 'realized_pnl', 'fees']].style.format({
+                'entry_price': '${:,.2f}',
+                'exit_price': '${:,.2f}',
+                'volume_usd': '${:,.0f}',
+                'realized_pnl': '${:,.2f}',
+                'fees': '${:,.2f}'
+            }),
+            width='stretch',
+            hide_index=True
+        )
 
-    # Download button
-    csv = edited_journal.to_csv(index=False)
-    st.download_button("ðŸ“¥ Download Annotated Journal", csv, "trading_journal_annotated.csv", "text/csv")
 
-# Footer
+# ============================================================================
+# FOOTER
+# ============================================================================
+
 st.markdown("---")
-st.caption(f"Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Deriverse Analytics v3.0 - Production Ready")
+col1, col2, col3 = st.columns([2, 1, 1])
+
+with col1:
+    st.caption(f"ðŸ• Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+with col2:
+    if is_admin:
+        st.caption("ðŸ” **Admin Mode** â€¢ All Time Access")
+    else:
+        st.caption("ðŸ”’ **Secure** â€¢ Local-first")
+
+with col3:
+    st.caption("v6.0 Enhanced")
+
+st.markdown("""
+    <div style='text-align: center; padding: 20px; color: #64748b; font-size: 12px;'>
+        <p><strong>Deriverse Analytics Dashboard</strong></p>
+        <p>Read-only â€¢ No private keys required â€¢ Data stays on your machine</p>
+    </div>
+""", unsafe_allow_html=True)
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\dashboards\__init__.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\dashboards\__init__.py =====
 
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\scripts\diagnose_data.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\scripts\diagnose_data.py =====
 
 # scripts/diagnose_data.py
 """
@@ -1144,7 +2851,7 @@ if events_path.exists():
 print("=" * 60)
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\scripts\generate_mock_data.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\scripts\generate_mock_data.py =====
 
 # scripts/generate_mock_data.py 
 """
@@ -1152,21 +2859,34 @@ Generate curated mock trading data for Deriverse analytics demo.
 
 This script creates a carefully designed dataset that showcases:
 - Profitable and losing trades across all product types
-- Risk management (liquidation event)
+- Risk management (5 liquidation events)
 - Active positions (open trades)
 - Complete options lifecycle (buy, sell, exercise, expire)
+- Historical data with gaps (realistic trading patterns)
 - Edge cases for robustness testing
+- Blockchain verifiability (transaction signatures)
+- Position tracking across partial closes and re-entries
+
+Data Quality Features:
+- Unique position IDs for trade matching
+- Transaction hashes for on-chain verification
+- Entry prices preserved on close events
+- Explicit USD fee denominations
 """
 
 import json
 import hashlib
+import base58
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 OUTPUT_PATH = Path("configs/mock_data.json")
 OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
+# Use historical base date (30 days ago) for realistic data
 now = datetime.now(timezone.utc)
+base_date = now - timedelta(days=30)
+
 events = []
 
 # Realistic Solana wallet addresses (base58 format)
@@ -1183,9 +2903,21 @@ WALLETS = {
     "julia": "4WqP8zYx5nT7mU9tS2lN6jM3rK1gH4oC8yL5vEfJxRwK",
 }
 
+# Position tracking for generating consistent position_ids
+position_counter = {}
+
 
 def generate_event_id(event_data, index):
-    """Generate deterministic event ID from event data."""
+    """
+    Generate deterministic event ID from event data.
+    
+    Args:
+        event_data: Dictionary containing event fields
+        index: Sequential index for uniqueness
+        
+    Returns:
+        SHA256 hash as event identifier
+    """
     seed_parts = [
         str(event_data.get('event_type', '')),
         str(event_data.get('timestamp', '') if isinstance(event_data.get('timestamp'), str) else ''),
@@ -1196,23 +2928,127 @@ def generate_event_id(event_data, index):
     return hashlib.sha256("|".join(seed_parts).encode()).hexdigest()
 
 
-def emit(event, order_type="market"):
+def generate_tx_signature(event_data, index):
     """
-    Add event to output array with automatic formatting.
+    Generate realistic-looking Solana transaction signature.
+    
+    Solana transaction signatures are base58-encoded and 88 characters long.
+    This creates deterministic but authentic-looking signatures for demo purposes.
+    
+    Args:
+        event_data: Dictionary containing event fields
+        index: Sequential index for uniqueness
+        
+    Returns:
+        Base58-encoded signature (88 characters)
+    """
+    seed_parts = [
+        str(event_data.get('event_type', '')),
+        str(event_data.get('timestamp', '')),
+        str(event_data.get('trader_id', '')),
+        str(event_data.get('market_id', '')),
+        str(event_data.get('price', '')),
+        str(index)
+    ]
+    
+    seed = "|".join(seed_parts)
+    hash_bytes = hashlib.sha256(seed.encode()).digest()
+    
+    # Pad to 64 bytes to match Solana signature length
+    padded = hash_bytes + bytes(32)
+    
+    # Encode as base58 (Solana standard)
+    return base58.b58encode(padded).decode()[:88]
+
+
+def generate_position_id(trader_id, market_id, timestamp):
+    """
+    Generate unique position identifier.
+    
+    Format: {trader_prefix}_{market}_{timestamp_ms}
+    Example: 7KNXqvHu_SOL-PERP_1704067200000
+    
+    Args:
+        trader_id: Wallet address
+        market_id: Market identifier
+        timestamp: Event timestamp
+        
+    Returns:
+        Unique position ID string
+    """
+    trader_prefix = trader_id[:8]
+    timestamp_ms = int(timestamp.timestamp() * 1000)
+    return f"{trader_prefix}_{market_id}_{timestamp_ms}"
+
+
+def emit(event, order_type="market", position_id=None):
+    """
+    Add event to output array with automatic field enrichment.
+    
+    This function handles:
+    - Timestamp formatting (ISO 8601 with Z suffix)
+    - Event ID generation (deterministic hash)
+    - Transaction signature generation (realistic Solana format)
+    - Position ID assignment (unique or inherited)
+    - Order type tagging
     
     Args:
         event: Event dictionary with trading data
         order_type: Type of order (market/limit/stop) - defaults to market
+        position_id: Optional position ID (for matching close to open)
     """
-    # Format timestamp
+    # Format timestamp to ISO 8601 with Z suffix
     if 'timestamp' in event and isinstance(event['timestamp'], datetime):
         event['timestamp'] = event['timestamp'].isoformat().replace("+00:00", "Z")
     
-    # Generate event ID
+    # Generate deterministic event ID
     if 'event_id' not in event:
         event['event_id'] = generate_event_id(event, len(events) + 1)
     
-    # Add order type for position events
+    # Generate Solana transaction signature
+    event['tx_hash'] = generate_tx_signature(event, len(events) + 1)
+    
+    # Handle position ID for trade matching
+    if event['event_type'] == 'open':
+        # Create new position ID for opening events
+        timestamp = datetime.fromisoformat(event['timestamp'].replace('Z', '+00:00'))
+        new_position_id = generate_position_id(
+            event['trader_id'], 
+            event['market_id'], 
+            timestamp
+        )
+        event['position_id'] = new_position_id
+        
+        # Store for matching closes
+        key = f"{event['trader_id']}:{event['market_id']}"
+        if key not in position_counter:
+            position_counter[key] = []
+        position_counter[key].append({
+            'position_id': new_position_id,
+            'entry_price': event['price'],
+            'timestamp': event['timestamp']
+        })
+    
+    elif event['event_type'] in ['close', 'liquidation', 'exercise', 'expire']:
+        # Match to existing position or use provided position_id
+        if position_id:
+            event['position_id'] = position_id
+        else:
+            key = f"{event['trader_id']}:{event['market_id']}"
+            if key in position_counter and position_counter[key]:
+                # Use most recent open position
+                position_info = position_counter[key][-1]
+                event['position_id'] = position_info['position_id']
+                
+                # Add entry price for PnL calculation
+                if 'entry_price' not in event:
+                    event['entry_price'] = position_info['entry_price']
+                
+                # Remove from open positions if fully closed
+                if event['event_type'] in ['close', 'liquidation', 'expire']:
+                    position_counter[key].pop()
+    
+    # Add order type for position-related events
     if event['event_type'] in ['open', 'close', 'liquidation']:
         event['order_type'] = order_type
     
@@ -1223,191 +3059,607 @@ def emit(event, order_type="market"):
 # SPOT TRADES - Simple buy/sell with clear profit/loss
 # ================================================================================
 
-# Winning spot trade (Alice: +$99)
-emit({"event_type": "open", "timestamp": now, "trader_id": WALLETS["alice"], 
-      "market_id": "SOL/USDC", "product_type": "spot", "side": "buy", 
-      "price": 100, "size": 10, "fee": 0.5}, order_type="stop")
+# Day 1 - Winning spot trade (Alice: +$99)
+# Buy SOL at $100, sell at $110 after 2 hours
+emit({
+    "event_type": "open",
+    "timestamp": base_date,
+    "trader_id": WALLETS["alice"],
+    "market_id": "SOL/USDC",
+    "product_type": "spot",
+    "side": "buy",
+    "price": 100,
+    "size": 10,
+    "fee_usd": 0.5
+}, order_type="stop")
 
-emit({"event_type": "close", "timestamp": now + timedelta(hours=2), "trader_id": WALLETS["alice"], 
-      "market_id": "SOL/USDC", "product_type": "spot", "side": "sell", 
-      "price": 110, "size": 10, "fee": 0.5}, order_type="market")
+emit({
+    "event_type": "close",
+    "timestamp": base_date + timedelta(hours=2),
+    "trader_id": WALLETS["alice"],
+    "market_id": "SOL/USDC",
+    "product_type": "spot",
+    "side": "sell",
+    "price": 110,
+    "size": 10,
+    "fee_usd": 0.5
+}, order_type="market")
 
-# Losing spot trade (Bob: -$252)
-emit({"event_type": "open", "timestamp": now + timedelta(minutes=10), "trader_id": WALLETS["bob"], 
-      "market_id": "ETH/USDC", "product_type": "spot", "side": "buy", 
-      "price": 2000, "size": 5, "fee": 1.0}, order_type="market")
+# Day 3 - Losing spot trade (Bob: -$252)
+# Gap in data: Day 2 has no activity (realistic pattern)
+emit({
+    "event_type": "open",
+    "timestamp": base_date + timedelta(days=2, minutes=10),
+    "trader_id": WALLETS["bob"],
+    "market_id": "ETH/USDC",
+    "product_type": "spot",
+    "side": "buy",
+    "price": 2000,
+    "size": 5,
+    "fee_usd": 1.0
+}, order_type="market")
 
-emit({"event_type": "close", "timestamp": now + timedelta(hours=3), "trader_id": WALLETS["bob"], 
-      "market_id": "ETH/USDC", "product_type": "spot", "side": "sell", 
-      "price": 1950, "size": 5, "fee": 1.0}, order_type="stop")
+emit({
+    "event_type": "close",
+    "timestamp": base_date + timedelta(days=2, hours=3),
+    "trader_id": WALLETS["bob"],
+    "market_id": "ETH/USDC",
+    "product_type": "spot",
+    "side": "sell",
+    "price": 1950,
+    "size": 5,
+    "fee_usd": 1.0
+}, order_type="stop")
 
 
 # ================================================================================
-# PERPETUAL TRADES - Long/short positions with liquidation
+# PERPETUAL TRADES - Long/short positions with liquidations
 # ================================================================================
 
-# Winning long perp (Charlie: +$199)
-emit({"event_type": "open", "timestamp": now + timedelta(minutes=20), "trader_id": WALLETS["charlie"], 
-      "market_id": "SOL-PERP", "product_type": "perp", "side": "long", 
-      "price": 100, "size": 10, "fee": 0.5}, order_type="limit")
+# Day 5 - Winning long perp (Charlie: +$199)
+# Gap in data: Day 4 has no activity
+emit({
+    "event_type": "open",
+    "timestamp": base_date + timedelta(days=4, minutes=20),
+    "trader_id": WALLETS["charlie"],
+    "market_id": "SOL-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 100,
+    "size": 10,
+    "fee_usd": 0.5
+}, order_type="limit")
 
-emit({"event_type": "close", "timestamp": now + timedelta(hours=4), "trader_id": WALLETS["charlie"], 
-      "market_id": "SOL-PERP", "product_type": "perp", "side": "long", 
-      "price": 120, "size": 10, "fee": 0.5}, order_type="market")
+emit({
+    "event_type": "close",
+    "timestamp": base_date + timedelta(days=4, hours=4),
+    "trader_id": WALLETS["charlie"],
+    "market_id": "SOL-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 120,
+    "size": 10,
+    "fee_usd": 0.5
+}, order_type="market")
 
-# Winning short perp (Diana: +$1990)
-emit({"event_type": "open", "timestamp": now + timedelta(minutes=30), "trader_id": WALLETS["diana"], 
-      "market_id": "BTC-PERP", "product_type": "perp", "side": "short", 
-      "price": 50000, "size": 1, "fee": 5.0}, order_type="market")
+# Day 7 - Winning short perp (Diana: +$1990)
+# Gap in data: Day 6 has no activity
+emit({
+    "event_type": "open",
+    "timestamp": base_date + timedelta(days=6, minutes=30),
+    "trader_id": WALLETS["diana"],
+    "market_id": "BTC-PERP",
+    "product_type": "perp",
+    "side": "short",
+    "price": 50000,
+    "size": 1,
+    "fee_usd": 5.0
+}, order_type="market")
 
-emit({"event_type": "close", "timestamp": now + timedelta(hours=5), "trader_id": WALLETS["diana"], 
-      "market_id": "BTC-PERP", "product_type": "perp", "side": "short", 
-      "price": 48000, "size": 1, "fee": 5.0}, order_type="market")
+emit({
+    "event_type": "close",
+    "timestamp": base_date + timedelta(days=6, hours=5),
+    "trader_id": WALLETS["diana"],
+    "market_id": "BTC-PERP",
+    "product_type": "perp",
+    "side": "short",
+    "price": 48000,
+    "size": 1,
+    "fee_usd": 5.0
+}, order_type="market")
 
-# Losing long perp (Evan: -$254)
-emit({"event_type": "open", "timestamp": now + timedelta(minutes=40), "trader_id": WALLETS["evan"], 
-      "market_id": "ETH-PERP", "product_type": "perp", "side": "long", 
-      "price": 2100, "size": 5, "fee": 2.0}, order_type="stop")
+# Day 8 - Losing long perp (Evan: -$254)
+emit({
+    "event_type": "open",
+    "timestamp": base_date + timedelta(days=7, minutes=40),
+    "trader_id": WALLETS["evan"],
+    "market_id": "ETH-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 2100,
+    "size": 5,
+    "fee_usd": 2.0
+}, order_type="stop")
 
-emit({"event_type": "close", "timestamp": now + timedelta(hours=6), "trader_id": WALLETS["evan"], 
-      "market_id": "ETH-PERP", "product_type": "perp", "side": "long", 
-      "price": 2050, "size": 5, "fee": 2.0}, order_type="market")
+emit({
+    "event_type": "close",
+    "timestamp": base_date + timedelta(days=7, hours=6),
+    "trader_id": WALLETS["evan"],
+    "market_id": "ETH-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 2050,
+    "size": 5,
+    "fee_usd": 2.0
+}, order_type="market")
 
-# LIQUIDATION EVENT - Risk management showcase (Diana: -$875)
-emit({"event_type": "open", "timestamp": now + timedelta(hours=1), "trader_id": WALLETS["diana"], 
-      "market_id": "SOL-PERP", "product_type": "perp", "side": "long", 
-      "price": 105, "size": 50, "fee": 5.0}, order_type="market")
 
-emit({"event_type": "liquidation", "timestamp": now + timedelta(hours=2), "trader_id": WALLETS["diana"], 
-      "market_id": "SOL-PERP", "product_type": "perp", "side": "long", 
-      "price": 88, "size": 50, "fee": 25.0}, order_type="liquidation")
+# ================================================================================
+# LIQUIDATION EVENTS (5 total for detailed risk analysis)
+# ================================================================================
+
+# LIQUIDATION 1 - Day 10: SOL-PERP (Diana: -$880)
+# Demonstrates overleveraged long position in volatile market
+# Gap in data: Day 9 has no activity
+emit({
+    "event_type": "open",
+    "timestamp": base_date + timedelta(days=9, hours=1),
+    "trader_id": WALLETS["diana"],
+    "market_id": "SOL-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 105,
+    "size": 50,
+    "fee_usd": 5.0
+}, order_type="market")
+
+emit({
+    "event_type": "liquidation",
+    "timestamp": base_date + timedelta(days=9, hours=2),
+    "trader_id": WALLETS["diana"],
+    "market_id": "SOL-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 88,
+    "size": 50,
+    "fee_usd": 25.0
+}, order_type="liquidation")
+
+# LIQUIDATION 2 - Day 12: ETH-PERP (Bob: -$1,520)
+# Gap in data: Day 11 has no activity
+emit({
+    "event_type": "open",
+    "timestamp": base_date + timedelta(days=11, hours=3),
+    "trader_id": WALLETS["bob"],
+    "market_id": "ETH-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 2200,
+    "size": 10,
+    "fee_usd": 3.0
+}, order_type="market")
+
+emit({
+    "event_type": "liquidation",
+    "timestamp": base_date + timedelta(days=11, hours=8),
+    "trader_id": WALLETS["bob"],
+    "market_id": "ETH-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 2050,
+    "size": 10,
+    "fee_usd": 20.0
+}, order_type="liquidation")
+
+# LIQUIDATION 3 - Day 15: BTC-PERP (Evan: -$2,530)
+# Large short position caught in price surge
+# Gap in data: Days 13-14 have no activity
+emit({
+    "event_type": "open",
+    "timestamp": base_date + timedelta(days=14, hours=2),
+    "trader_id": WALLETS["evan"],
+    "market_id": "BTC-PERP",
+    "product_type": "perp",
+    "side": "short",
+    "price": 49000,
+    "size": 2,
+    "fee_usd": 8.0
+}, order_type="limit")
+
+emit({
+    "event_type": "liquidation",
+    "timestamp": base_date + timedelta(days=14, hours=12),
+    "trader_id": WALLETS["evan"],
+    "market_id": "BTC-PERP",
+    "product_type": "perp",
+    "side": "short",
+    "price": 50250,
+    "size": 2,
+    "fee_usd": 30.0
+}, order_type="liquidation")
+
+# LIQUIDATION 4 - Day 18: AVAX-PERP (Charlie: -$342)
+# Gap in data: Days 16-17 have no activity
+emit({
+    "event_type": "open",
+    "timestamp": base_date + timedelta(days=17, hours=5),
+    "trader_id": WALLETS["charlie"],
+    "market_id": "AVAX-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 38.5,
+    "size": 100,
+    "fee_usd": 4.0
+}, order_type="market")
+
+emit({
+    "event_type": "liquidation",
+    "timestamp": base_date + timedelta(days=17, hours=14),
+    "trader_id": WALLETS["charlie"],
+    "market_id": "AVAX-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 35.2,
+    "size": 100,
+    "fee_usd": 12.0
+}, order_type="liquidation")
+
+# LIQUIDATION 5 - Day 20: SOL-PERP (Alice: -$615)
+# Gap in data: Day 19 has no activity
+emit({
+    "event_type": "open",
+    "timestamp": base_date + timedelta(days=19, hours=4),
+    "trader_id": WALLETS["alice"],
+    "market_id": "SOL-PERP",
+    "product_type": "perp",
+    "side": "short",
+    "price": 115,
+    "size": 30,
+    "fee_usd": 3.5
+}, order_type="stop")
+
+emit({
+    "event_type": "liquidation",
+    "timestamp": base_date + timedelta(days=19, hours=9),
+    "trader_id": WALLETS["alice"],
+    "market_id": "SOL-PERP",
+    "product_type": "perp",
+    "side": "short",
+    "price": 135,
+    "size": 30,
+    "fee_usd": 18.0
+}, order_type="liquidation")
 
 
 # ================================================================================
 # OPTION TRADES - Complete lifecycle (buy, sell, exercise, expire)
 # ================================================================================
 
-# Long call - profitable close (Fiona: +$29)
-emit({"event_type": "open", "timestamp": now + timedelta(hours=1), "trader_id": WALLETS["fiona"], 
-      "market_id": "SOL-CALL-120-FEB28", "product_type": "option", "option_type": "call", 
-      "strike": 120, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
-      "side": "buy", "price": 5.0, "size": 10, "fee": 0.5, 
-      "delta": 0.65, "implied_vol": 0.45}, order_type="stop")
+# Day 21 - Long call - profitable close (Fiona: +$29)
+emit({
+    "event_type": "open",
+    "timestamp": base_date + timedelta(days=20, hours=1),
+    "trader_id": WALLETS["fiona"],
+    "market_id": "SOL-CALL-120-JAN15",
+    "product_type": "option",
+    "option_type": "call",
+    "strike": 120,
+    "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
+    "side": "buy",
+    "price": 5.0,
+    "size": 10,
+    "fee_usd": 0.5,
+    "delta": 0.65,
+    "implied_vol": 0.45
+}, order_type="stop")
 
-emit({"event_type": "close", "timestamp": now + timedelta(hours=24), "trader_id": WALLETS["fiona"], 
-      "market_id": "SOL-CALL-120-FEB28", "product_type": "option", "option_type": "call", 
-      "strike": 120, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
-      "side": "sell", "price": 8.0, "size": 10, "fee": 0.5, 
-      "delta": 0.85, "implied_vol": 0.50}, order_type="stop")
+emit({
+    "event_type": "close",
+    "timestamp": base_date + timedelta(days=21, hours=0),
+    "trader_id": WALLETS["fiona"],
+    "market_id": "SOL-CALL-120-JAN15",
+    "product_type": "option",
+    "option_type": "call",
+    "strike": 120,
+    "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
+    "side": "sell",
+    "price": 8.0,
+    "size": 10,
+    "fee_usd": 0.5,
+    "delta": 0.85,
+    "implied_vol": 0.50
+}, order_type="stop")
 
-# Short put - profitable buyback (George: +$36.1)
-emit({"event_type": "open", "timestamp": now + timedelta(hours=1, minutes=30), "trader_id": WALLETS["george"], 
-      "market_id": "SOL-PUT-90-FEB28", "product_type": "option", "option_type": "put", 
-      "strike": 90, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
-      "side": "sell", "price": 4.0, "size": 15, "fee": 0.7, 
-      "delta": -0.25, "implied_vol": 0.40}, order_type="stop")
+# Day 22 - Short put - profitable buyback (George: +$36.1)
+emit({
+    "event_type": "open",
+    "timestamp": base_date + timedelta(days=21, hours=1, minutes=30),
+    "trader_id": WALLETS["george"],
+    "market_id": "SOL-PUT-90-JAN15",
+    "product_type": "option",
+    "option_type": "put",
+    "strike": 90,
+    "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
+    "side": "sell",
+    "price": 4.0,
+    "size": 15,
+    "fee_usd": 0.7,
+    "delta": -0.25,
+    "implied_vol": 0.40
+}, order_type="stop")
 
-emit({"event_type": "close", "timestamp": now + timedelta(hours=36), "trader_id": WALLETS["george"], 
-      "market_id": "SOL-PUT-90-FEB28", "product_type": "option", "option_type": "put", 
-      "strike": 90, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
-      "side": "buy", "price": 1.5, "size": 15, "fee": 0.7, 
-      "delta": -0.10, "implied_vol": 0.30}, order_type="market")
+emit({
+    "event_type": "close",
+    "timestamp": base_date + timedelta(days=22, hours=12),
+    "trader_id": WALLETS["george"],
+    "market_id": "SOL-PUT-90-JAN15",
+    "product_type": "option",
+    "option_type": "put",
+    "strike": 90,
+    "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
+    "side": "buy",
+    "price": 1.5,
+    "size": 15,
+    "fee_usd": 0.7,
+    "delta": -0.10,
+    "implied_vol": 0.30
+}, order_type="market")
 
-# Long put - losing close (Hannah: -$127)
-emit({"event_type": "open", "timestamp": now + timedelta(hours=2), "trader_id": WALLETS["hannah"], 
-      "market_id": "ETH-PUT-1900-FEB28", "product_type": "option", "option_type": "put", 
-      "strike": 1900, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
-      "side": "buy", "price": 45.0, "size": 5, "fee": 1.0, 
-      "delta": -0.35, "implied_vol": 0.55}, order_type="stop")
+# Day 23 - Long put - losing close (Hannah: -$127)
+emit({
+    "event_type": "open",
+    "timestamp": base_date + timedelta(days=22, hours=2),
+    "trader_id": WALLETS["hannah"],
+    "market_id": "ETH-PUT-1900-JAN15",
+    "product_type": "option",
+    "option_type": "put",
+    "strike": 1900,
+    "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
+    "side": "buy",
+    "price": 45.0,
+    "size": 5,
+    "fee_usd": 1.0,
+    "delta": -0.35,
+    "implied_vol": 0.55
+}, order_type="stop")
 
-emit({"event_type": "close", "timestamp": now + timedelta(hours=48), "trader_id": WALLETS["hannah"], 
-      "market_id": "ETH-PUT-1900-FEB28", "product_type": "option", "option_type": "put", 
-      "strike": 1900, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
-      "side": "sell", "price": 20.0, "size": 5, "fee": 1.0, 
-      "delta": -0.15, "implied_vol": 0.40}, order_type="limit")
+emit({
+    "event_type": "close",
+    "timestamp": base_date + timedelta(days=24, hours=0),
+    "trader_id": WALLETS["hannah"],
+    "market_id": "ETH-PUT-1900-JAN15",
+    "product_type": "option",
+    "option_type": "put",
+    "strike": 1900,
+    "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
+    "side": "sell",
+    "price": 20.0,
+    "size": 5,
+    "fee_usd": 1.0,
+    "delta": -0.15,
+    "implied_vol": 0.40
+}, order_type="limit")
 
-# Long call - exercised ITM (Ivan: +$2980)
-emit({"event_type": "open", "timestamp": now + timedelta(hours=3), "trader_id": WALLETS["ivan"], 
-      "market_id": "BTC-CALL-50000-FEB28", "product_type": "option", "option_type": "call", 
-      "strike": 50000, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
-      "side": "buy", "price": 2000.0, "size": 1, "fee": 10.0}, order_type="market")
+# Day 25 - Long call - exercised ITM (Ivan: +$2980)
+emit({
+    "event_type": "open",
+    "timestamp": base_date + timedelta(days=24, hours=3),
+    "trader_id": WALLETS["ivan"],
+    "market_id": "BTC-CALL-50000-JAN15",
+    "product_type": "option",
+    "option_type": "call",
+    "strike": 50000,
+    "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
+    "side": "buy",
+    "price": 2000.0,
+    "size": 1,
+    "fee_usd": 10.0
+}, order_type="market")
 
-emit({"event_type": "exercise", "timestamp": now + timedelta(days=17), "trader_id": WALLETS["ivan"], 
-      "market_id": "BTC-CALL-50000-FEB28", "product_type": "option", "option_type": "call", 
-      "strike": 50000, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
-      "side": "exercise", "size": 1, "fee": 10.0, "underlying_price": 55000})
+# Day 38 - Exercise happens near expiry
+emit({
+    "event_type": "exercise",
+    "timestamp": base_date + timedelta(days=37),
+    "trader_id": WALLETS["ivan"],
+    "market_id": "BTC-CALL-50000-JAN15",
+    "product_type": "option",
+    "option_type": "call",
+    "strike": 50000,
+    "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
+    "side": "exercise",
+    "size": 1,
+    "fee_usd": 10.0,
+    "underlying_price": 55000
+})
 
-# Long put - expired worthless (Julia: -$60.2)
-emit({"event_type": "open", "timestamp": now + timedelta(hours=4), "trader_id": WALLETS["julia"], 
-      "market_id": "SOL-PUT-80-FEB28", "product_type": "option", "option_type": "put", 
-      "strike": 80, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
-      "side": "buy", "price": 3.0, "size": 20, "fee": 0.2}, order_type="market")
+# Day 26 - Long put - expired worthless (Julia: -$60.2)
+# Gap in data: Day 25 trading
+emit({
+    "event_type": "open",
+    "timestamp": base_date + timedelta(days=25, hours=4),
+    "trader_id": WALLETS["julia"],
+    "market_id": "SOL-PUT-80-JAN15",
+    "product_type": "option",
+    "option_type": "put",
+    "strike": 80,
+    "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
+    "side": "buy",
+    "price": 3.0,
+    "size": 20,
+    "fee_usd": 0.2
+}, order_type="market")
 
-emit({"event_type": "expire", "timestamp": now + timedelta(days=18), "trader_id": WALLETS["julia"], 
-      "market_id": "SOL-PUT-80-FEB28", "product_type": "option", "option_type": "put", 
-      "strike": 80, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
-      "side": "expire", "price": 0.0, "size": 20, "fee": 0.0, "underlying_price": 95})
+# Day 38 - Expires worthless
+emit({
+    "event_type": "expire",
+    "timestamp": base_date + timedelta(days=38),
+    "trader_id": WALLETS["julia"],
+    "market_id": "SOL-PUT-80-JAN15",
+    "product_type": "option",
+    "option_type": "put",
+    "strike": 80,
+    "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
+    "side": "expire",
+    "price": 0.0,
+    "size": 20,
+    "fee_usd": 0.0,
+    "underlying_price": 95
+})
 
-# Partial close scenario (Alice: +$39 + $69 = $108)
-emit({"event_type": "open", "timestamp": now + timedelta(hours=5), "trader_id": WALLETS["alice"], 
-      "market_id": "SOL-CALL-110-FEB28", "product_type": "option", "option_type": "call", 
-      "strike": 110, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
-      "side": "buy", "price": 8.0, "size": 20, "fee": 1.0}, order_type="market")
+# Day 27 - Partial close scenario (Alice: +$39 + $69 = $108)
+# Demonstrates position splitting - same position_id for both closes
+emit({
+    "event_type": "open",
+    "timestamp": base_date + timedelta(days=26, hours=5),
+    "trader_id": WALLETS["alice"],
+    "market_id": "SOL-CALL-110-JAN15",
+    "product_type": "option",
+    "option_type": "call",
+    "strike": 110,
+    "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
+    "side": "buy",
+    "price": 8.0,
+    "size": 20,
+    "fee_usd": 1.0
+}, order_type="market")
 
-emit({"event_type": "close", "timestamp": now + timedelta(hours=26), "trader_id": WALLETS["alice"], 
-      "market_id": "SOL-CALL-110-FEB28", "product_type": "option", "option_type": "call", 
-      "strike": 110, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
-      "side": "sell", "price": 12.0, "size": 10, "fee": 0.5}, order_type="market")
+# First partial close - 50% of position
+emit({
+    "event_type": "close",
+    "timestamp": base_date + timedelta(days=27, hours=2),
+    "trader_id": WALLETS["alice"],
+    "market_id": "SOL-CALL-110-JAN15",
+    "product_type": "option",
+    "option_type": "call",
+    "strike": 110,
+    "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
+    "side": "sell",
+    "price": 12.0,
+    "size": 10,
+    "fee_usd": 0.5
+}, order_type="market")
 
-emit({"event_type": "close", "timestamp": now + timedelta(hours=50), "trader_id": WALLETS["alice"], 
-      "market_id": "SOL-CALL-110-FEB28", "product_type": "option", "option_type": "call", 
-      "strike": 110, "expiry": (now + timedelta(days=18)).isoformat().replace("+00:00", "Z"), 
-      "side": "sell", "price": 15.0, "size": 10, "fee": 0.5}, order_type="market")
+# Second partial close - remaining 50%
+emit({
+    "event_type": "close",
+    "timestamp": base_date + timedelta(days=28, hours=2),
+    "trader_id": WALLETS["alice"],
+    "market_id": "SOL-CALL-110-JAN15",
+    "product_type": "option",
+    "option_type": "call",
+    "strike": 110,
+    "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
+    "side": "sell",
+    "price": 15.0,
+    "size": 10,
+    "fee_usd": 0.5
+}, order_type="market")
 
 
 # ================================================================================
 # OPEN POSITIONS - Active trades (will appear in dashboard)
 # ================================================================================
 
-emit({"event_type": "open", "timestamp": now + timedelta(hours=7), "trader_id": WALLETS["alice"], 
-      "market_id": "BTC/USDC", "product_type": "spot", "side": "buy", 
-      "price": 51000, "size": 0.5, "fee": 5.0}, order_type="market")
+# Recent open position - 2 days ago
+emit({
+    "event_type": "open",
+    "timestamp": now - timedelta(days=2, hours=7),
+    "trader_id": WALLETS["alice"],
+    "market_id": "BTC/USDC",
+    "product_type": "spot",
+    "side": "buy",
+    "price": 51000,
+    "size": 0.5,
+    "fee_usd": 5.0
+}, order_type="market")
 
-emit({"event_type": "open", "timestamp": now + timedelta(hours=8), "trader_id": WALLETS["bob"], 
-      "market_id": "AVAX-PERP", "product_type": "perp", "side": "long", 
-      "price": 35.5, "size": 100, "fee": 1.5}, order_type="limit")
+# Open position - 1 day ago
+emit({
+    "event_type": "open",
+    "timestamp": now - timedelta(days=1, hours=8),
+    "trader_id": WALLETS["bob"],
+    "market_id": "AVAX-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 35.5,
+    "size": 100,
+    "fee_usd": 1.5
+}, order_type="limit")
 
-emit({"event_type": "open", "timestamp": now + timedelta(hours=9), "trader_id": WALLETS["charlie"], 
-      "market_id": "ETH-CALL-2200-MAR15", "product_type": "option", "option_type": "call", 
-      "strike": 2200, "expiry": (now + timedelta(days=30)).isoformat().replace("+00:00", "Z"), 
-      "side": "buy", "price": 85.0, "size": 3, "fee": 0.5}, order_type="limit")
+# Open position - 12 hours ago
+emit({
+    "event_type": "open",
+    "timestamp": now - timedelta(hours=12),
+    "trader_id": WALLETS["charlie"],
+    "market_id": "ETH-CALL-2200-FEB13",
+    "product_type": "option",
+    "option_type": "call",
+    "strike": 2200,
+    "expiry": (now + timedelta(days=15)).isoformat().replace("+00:00", "Z"),
+    "side": "buy",
+    "price": 85.0,
+    "size": 3,
+    "fee_usd": 0.5
+}, order_type="limit")
 
 
 # ================================================================================
-# EDGE CASES - Robustness testing
+# EDGE CASES - Robustness testing for validation layer
 # ================================================================================
 
-# Duplicate open (will be rejected by validation)
-emit({"event_type": "open", "timestamp": now + timedelta(minutes=60), "trader_id": WALLETS["alice"], 
-      "market_id": "SOL/USDC", "product_type": "spot", "side": "buy", 
-      "price": 105, "size": 5, "fee": 0.3}, order_type="stop")
+# Duplicate open - tests duplicate detection
+# Same trader, market, and timestamp as Day 1 trade
+emit({
+    "event_type": "open",
+    "timestamp": base_date + timedelta(days=5, minutes=60),
+    "trader_id": WALLETS["alice"],
+    "market_id": "SOL/USDC",
+    "product_type": "spot",
+    "side": "buy",
+    "price": 105,
+    "size": 5,
+    "fee_usd": 0.3
+}, order_type="stop")
 
-# Close without open (will be rejected)
-emit({"event_type": "close", "timestamp": now + timedelta(hours=10), 
-      "trader_id": "GhostWallet1111111111111111111111111111", 
-      "market_id": "GHOST-PERP", "product_type": "perp", "side": "long", 
-      "price": 999, "size": 1, "fee": 0.1}, order_type="stop")
+# Close without open - tests orphaned close detection
+# Uses non-existent trader and market combination
+emit({
+    "event_type": "close",
+    "timestamp": base_date + timedelta(days=10, hours=10),
+    "trader_id": "GhostWallet1111111111111111111111111111",
+    "market_id": "GHOST-PERP",
+    "product_type": "perp",
+    "side": "long",
+    "price": 999,
+    "size": 1,
+    "fee_usd": 0.1
+}, order_type="stop")
 
-# Trade events (informational only - not matched)
-emit({"event_type": "trade", "timestamp": now + timedelta(minutes=15), 
-      "trader_id": "MarketMaker1111111111111111111111111", 
-      "market_id": "SOL/USDC", "product_type": "spot", "side": "buy", 
-      "price": 101, "size": 100, "fee": 1.0})
+# Trade events - market maker activity (informational only)
+# These won't be matched to positions but provide market context
+emit({
+    "event_type": "trade",
+    "timestamp": base_date + timedelta(days=3, minutes=15),
+    "trader_id": "MarketMaker1111111111111111111111111",
+    "market_id": "SOL/USDC",
+    "product_type": "spot",
+    "side": "buy",
+    "price": 101,
+    "size": 100,
+    "fee_usd": 1.0
+})
 
-emit({"event_type": "trade", "timestamp": now + timedelta(minutes=45), 
-      "trader_id": "MarketMaker1111111111111111111111111", 
-      "market_id": "ETH-PERP", "product_type": "perp", "side": "sell", 
-      "price": 2105, "size": 50, "fee": 5.0})
+emit({
+    "event_type": "trade",
+    "timestamp": base_date + timedelta(days=8, minutes=45),
+    "trader_id": "MarketMaker1111111111111111111111111",
+    "market_id": "ETH-PERP",
+    "product_type": "perp",
+    "side": "sell",
+    "price": 2105,
+    "size": 50,
+    "fee_usd": 5.0
+})
 
 
 # ================================================================================
@@ -1418,14 +3670,26 @@ with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
     json.dump(events, f, indent=2)
 
 print(f"âœ… Generated {len(events)} curated mock events â†’ {OUTPUT_PATH}")
+print(f"\nðŸ“Š Data Summary:")
 print(f"   Wallets: {len(WALLETS)} realistic Solana addresses")
-print(f"   Closed Positions: 13 (spot: 2, perp: 4, options: 7)")
+print(f"   Date Range: {base_date.strftime('%Y-%m-%d')} to {now.strftime('%Y-%m-%d')} (30 days)")
+print(f"   Closed Positions: 18 (spot: 2, perp: 4, options: 7, liquidations: 5)")
 print(f"   Open Positions: 3 (spot: 1, perp: 1, option: 1)")
-print(f"   Risk Features: 1 liquidation event")
-print(f"   Format: JSON array - ready for ingestion")
+print(f"   Partial Closes: 1 (Alice's SOL-CALL-110 split into 2 closes)")
+print(f"\nðŸ” Blockchain Features:")
+print(f"   Transaction Signatures: {len([e for e in events if 'tx_hash' in e])} (Solana base58 format)")
+print(f"   Position IDs: Unique identifiers for trade matching")
+print(f"   Entry Prices: Preserved on close events for PnL accuracy")
+print(f"\nâš ï¸ Risk Analysis:")
+print(f"   Liquidation Events: 5 (detailed analysis enabled)")
+print(f"   Total Liquidation Loss: ~$5,900")
+print(f"\nðŸ§ª Data Quality:")
+print(f"   Date Gaps: Yes (realistic trading patterns)")
+print(f"   Edge Cases: 3 (duplicate open, orphaned close, market maker trades)")
+print(f"   Format: JSON array - ready for validation pipeline")
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\scripts\launch_dashboard.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\scripts\launch_dashboard.py =====
 
 # scripts/launch_dashboard.py
 
@@ -1454,7 +3718,7 @@ if __name__ == "__main__":
     main()
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\scripts\run_analytics.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\scripts\run_analytics.py =====
 
 # scripts/run_analytics.py - WITH OPEN POSITIONS SUPPORT
 import pandas as pd
@@ -1569,7 +3833,7 @@ if __name__ == "__main__":
     main()
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\scripts\run_ingestion.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\scripts\run_ingestion.py =====
 
 
 # scripts/run_ingestion.py
@@ -1600,7 +3864,7 @@ if __name__ == "__main__":
     main()
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\scripts\validate_analytics.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\scripts\validate_analytics.py =====
 
 # scripts/validate_analytics.py
 """
@@ -1823,13 +4087,13 @@ if __name__ == "__main__":
     main()
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\trades\__init__.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\src\analytics\trades\__init__.py =====
 
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\analytics_builder.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\src\analytics\analytics_builder.py =====
 
-# src/analytics/analytics_builder.py - WITH OPEN POSITIONS SUPPORT
+# src/analytics/analytics_builder.py - FIXED DELTA CALCULATIONS
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -1863,7 +4127,7 @@ class AnalyticsBuilder:
         logger.info("Building core truth tables...")
         self._build_positions()
         self._build_realized_pnl()
-        self._build_open_positions()  # âœ… NEW
+        self._build_open_positions()
         
         if self.positions.empty:
             logger.warning("No closed positions - generating empty analytics")
@@ -2162,19 +4426,48 @@ class AnalyticsBuilder:
             trader_opts = options[options['trader_id'] == trader]
             
             net_delta = 0
+            net_gamma = 0
+            net_theta = 0
+            
             for _, opt in trader_opts.iterrows():
+                # Position direction multiplier
                 if opt['side'] in ['buy', 'long']:
-                    delta_sign = 1
+                    direction = 1
+                else:  # sell/short
+                    direction = -1
+                
+                if 'delta' in opt and pd.notna(opt['delta']):
+                    # Use provided delta (already accounts for call/put sign)
+                    option_delta = opt['delta']
                 else:
-                    delta_sign = -1
-                net_delta += delta_sign * opt['size'] * 0.5
+                    # Fallback: estimate based on option type
+                    if 'option_type' in opt and pd.notna(opt['option_type']):
+                        if opt['option_type'] == 'call':
+                            option_delta = 0.5  # Assume ATM call (positive)
+                        else:  # put
+                            option_delta = -0.5  # Assume ATM put (negative)
+                    else:
+                        option_delta = 0.5  # Default fallback
+                
+                # Calculate position delta: direction Ã— delta Ã— size
+                # Example: Buy 10 calls with 0.65 delta = +1 Ã— 0.65 Ã— 10 = +6.5
+                # Example: Sell 15 puts with -0.25 delta = -1 Ã— -0.25 Ã— 15 = +3.75
+                position_delta = direction * option_delta * opt['size']
+                net_delta += position_delta
+                
+                # Other Greeks (whenever available in data)
+                if 'gamma' in opt and pd.notna(opt['gamma']):
+                    net_gamma += direction * opt['gamma'] * opt['size']
+                
+                if 'theta' in opt and pd.notna(opt['theta']):
+                    net_theta += direction * opt['theta'] * opt['size']
             
             result.append({
                 'trader_id': trader,
                 'total_option_positions': len(trader_opts),
-                'net_delta': net_delta,
-                'gamma_exposure': 0,
-                'theta_decay': 0
+                'net_delta': round(net_delta, 4),
+                'gamma_exposure': round(net_gamma, 4),
+                'theta_decay': round(net_theta, 4)
             })
         
         df = pd.DataFrame(result)
@@ -2192,7 +4485,7 @@ class AnalyticsBuilder:
             pd.DataFrame().to_csv(self.output_dir / filename, index=False)
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\debug.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\src\analytics\debug.py =====
 
 import json
 from pathlib import Path
@@ -2244,7 +4537,7 @@ if __name__ == "__main__":
     inspect_normalized_data()
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\pnl_engine.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\src\analytics\pnl_engine.py =====
 
 # src/analytics/pnl_engine.py
 import pandas as pd
@@ -2524,7 +4817,7 @@ def calculate_option_pnl(
     return 0.0
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\summary.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\src\analytics\summary.py =====
 
 # src/analytics/summary.py
 import pandas as pd
@@ -2600,7 +4893,7 @@ def compute_executive_summary(positions: pd.DataFrame, pnl: pd.DataFrame) -> dic
     return summary
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\validate.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\src\analytics\validate.py =====
 
 # src/analytics/validate.py - WITH LIQUIDATION SUPPORT
 from typing import Dict, Any, Set
@@ -2784,11 +5077,11 @@ def validate_event(event: dict) -> None:
                 raise EventValidationError(f"Invalid expiry format: {expiry}")
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\analytics\__init__.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\src\analytics\__init__.py =====
 
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\common\logging.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\src\common\logging.py =====
 
 import logging
 
@@ -2803,11 +5096,11 @@ def get_logger(name):
     return logger
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\common\__init__.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\src\common\__init__.py =====
 
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\ingestion\normalizer.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\src\ingestion\normalizer.py =====
 
 # src/ingestion/normalizer.py
 from typing import Dict, Any
@@ -2934,7 +5227,7 @@ def normalize_event(raw_event: Dict[str, Any]) -> Dict[str, Any]:
     return event
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\ingestion\pipelines.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\src\ingestion\pipelines.py =====
 
 # src/ingestion/pipelines.py
 import json
@@ -3024,7 +5317,7 @@ class IngestionPipeline:
         return len(new_events)
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\ingestion\watermark.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\src\ingestion\watermark.py =====
 
 # src/ingestion/watermark.py
 import json
@@ -3059,15 +5352,15 @@ class WatermarkStore:
         self._save()
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\ingestion\__init__.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\src\ingestion\__init__.py =====
 
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\src\__init__.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\src\__init__.py =====
 
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\tests\analytics\test_ingestion.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\tests\analytics\test_ingestion.py =====
 
 # Create a test script test_ingestion.py
 import json
@@ -3086,7 +5379,7 @@ with open("data/normalized/events.jsonl", "r") as f:
             print(f"Line {i}: EMPTY LINE")
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\tests\analytics\test_pnl_engine.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\tests\analytics\test_pnl_engine.py =====
 
 import pandas as pd
 from datetime import datetime, timezone
@@ -3357,15 +5650,15 @@ def test_liquidation_is_partial_close():
     assert positions.iloc[0]["close_reason"] == "liquidation"
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\tests\analytics\__init__.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\tests\analytics\__init__.py =====
 
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\tests\__init__.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\tests\__init__.py =====
 
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\main.py =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\main.py =====
 
 def main():
     print("Hello from deriverse-data-puller!")
@@ -3375,7 +5668,7 @@ if __name__ == "__main__":
     main()
 
 
-===== FILE: C:\Users\HP\Direverse\Deriverse-Trading-System-Analysis\deriverse-data-puller\pyproject.toml =====
+===== FILE: C:\Users\g\Deriverse\deriverse-data-puller\pyproject.toml =====
 
 [project]
 name = "deriverse-data-puller"
@@ -3385,6 +5678,8 @@ readme = "README.md"
 requires-python = ">=3.10"
 
 dependencies = [
+    "base58>=2.1.1",
+    "dotenv",
     "matplotlib>=3.10.8",
     "pandas>=2.3.3",
     "plotly>=6.5.2",

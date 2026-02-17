@@ -1,4 +1,9 @@
 # src/analytics/pnl_engine.py
+"""
+Canonical PnL engine with full lifecycle support.
+Handles position tracking, PnL calculation, and transaction mapping.
+"""
+
 import pandas as pd
 import hashlib
 import logging
@@ -10,18 +15,17 @@ logger = logging.getLogger(__name__)
 def compute_realized_pnl(events: pd.DataFrame):
     """
     Canonical PnL engine with full options lifecycle support.
-    NOW RETURNS OPEN POSITIONS TOO!
     
     Returns:
         positions_df: Closed positions with realized PnL
         pnl_df: Daily PnL aggregates
-        open_positions_df: Currently open positions (NEW!)
+        open_positions_df: Currently open positions
     """
 
     required_cols = {
         "event_type", "timestamp", "trader_id",
         "market_id", "product_type", "side",
-        "price", "size", "fee"
+        "price", "size"
     }
 
     missing = required_cols - set(events.columns)
@@ -33,7 +37,6 @@ def compute_realized_pnl(events: pd.DataFrame):
     open_positions = {}
     closed_positions = []
 
-    # Validation stats
     stats = {
         "duplicate_opens": 0,
         "close_without_open": 0,
@@ -55,35 +58,39 @@ def compute_realized_pnl(events: pd.DataFrame):
                 event["market_id"],
                 event["product_type"]
             )
-        else:  # spot
+        else:
             key = (
                 event["trader_id"],
                 event["market_id"],
                 event["product_type"]
             )
 
-        # OPEN POSITION
         if event["event_type"] == "open":
             if key in open_positions:
                 stats["duplicate_opens"] += 1
                 continue
 
-            position_data = (
-                f"{event['trader_id']}|{event['market_id']}|"
-                f"{event['timestamp']}|{event.get('side', '')}"
-            )
-            position_id = hashlib.sha256(position_data.encode()).hexdigest()[:16]
+            position_id = event.get('position_id')
+            if not position_id:
+                position_data = (
+                    f"{event['trader_id']}|{event['market_id']}|"
+                    f"{event['timestamp']}|{event.get('side', '')}"
+                )
+                position_id = hashlib.sha256(position_data.encode()).hexdigest()[:16]
+
+            fee_value = event.get("fee_usd", event.get("fee", 0))
 
             open_positions[key] = {
                 "position_id": position_id,
                 "open_time": event["timestamp"],
                 "entry_price": event["price"],
                 "size": event["size"],
-                "fees": event["fee"],
+                "fees": fee_value,
                 "trader_id": event["trader_id"],
                 "market_id": event["market_id"],
                 "product_type": event["product_type"],
                 "side": event["side"],
+                "open_tx_hash": event.get("tx_hash"),
             }
             
             if event["product_type"] == "option":
@@ -91,7 +98,6 @@ def compute_realized_pnl(events: pd.DataFrame):
                 open_positions[key]["strike"] = event.get("strike")
                 open_positions[key]["expiry"] = event.get("expiry")
 
-        # CLOSE POSITION
         elif event["event_type"] in {"close", "liquidation", "exercise", "expire"}:
             if key not in open_positions:
                 stats["close_without_open"] += 1
@@ -104,13 +110,12 @@ def compute_realized_pnl(events: pd.DataFrame):
                 stats["oversized_closes"] += 1
                 continue
 
-            # Calculate fees
             fee_ratio = close_size / pos["size"]
             allocated_open_fee = pos["fees"] * fee_ratio
-            close_fee = event.get("fee", 0)
-            total_fees = allocated_open_fee + close_fee
+            
+            close_fee_value = event.get("fee_usd", event.get("fee", 0))
+            total_fees = allocated_open_fee + close_fee_value
 
-            # OPTIONS PNL
             if pos["product_type"] == "option":
                 gross_pnl = calculate_option_pnl(
                     event_type=event["event_type"],
@@ -125,7 +130,6 @@ def compute_realized_pnl(events: pd.DataFrame):
                 net_pnl = gross_pnl - total_fees
                 exit_price = event.get("price", 0)
 
-            # SPOT/PERP PNL
             else:
                 exit_price = event["price"]
 
@@ -140,7 +144,6 @@ def compute_realized_pnl(events: pd.DataFrame):
 
                     net_pnl = gross_pnl - total_fees
 
-            # Record closed position
             closed_positions.append({
                 "position_id": pos["position_id"],
                 "open_time": pos["open_time"],
@@ -157,9 +160,10 @@ def compute_realized_pnl(events: pd.DataFrame):
                 "realized_pnl": round(net_pnl, 4),
                 "fees": round(total_fees, 4),
                 "close_reason": event["event_type"],
+                "open_tx_hash": pos.get("open_tx_hash"),
+                "close_tx_hash": event.get("tx_hash"),
             })
 
-            # Update or remove position
             pos["size"] -= close_size
             pos["fees"] -= allocated_open_fee
 
@@ -168,7 +172,6 @@ def compute_realized_pnl(events: pd.DataFrame):
 
     positions_df = pd.DataFrame(closed_positions)
 
-    # Log validation summary
     logger.info(
         "PnL validation summary | "
         f"duplicate_opens={stats['duplicate_opens']} | "
@@ -180,7 +183,6 @@ def compute_realized_pnl(events: pd.DataFrame):
         positions_df = pd.DataFrame()
         pnl_df = pd.DataFrame()
     else:
-        # Build daily PnL aggregates
         pnl_df = (
             positions_df
             .assign(date=lambda df: pd.to_datetime(df["close_time"]).dt.date)
@@ -196,10 +198,8 @@ def compute_realized_pnl(events: pd.DataFrame):
             )
         )
 
-    # ✅ NEW: Build open positions dataframe
     open_positions_list = []
     for key, pos in open_positions.items():
-        # Calculate time held
         now = datetime.now(timezone.utc)
         open_time = pd.to_datetime(pos["open_time"])
         if open_time.tzinfo is None:
@@ -217,7 +217,8 @@ def compute_realized_pnl(events: pd.DataFrame):
             "size": pos["size"],
             "fees_paid": pos["fees"],
             "open_time": pos["open_time"],
-            "time_held_seconds": time_held
+            "time_held_seconds": time_held,
+            "open_tx_hash": pos.get("open_tx_hash")
         })
     
     open_positions_df = pd.DataFrame(open_positions_list)

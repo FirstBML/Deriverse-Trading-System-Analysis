@@ -1,38 +1,26 @@
 # dashboards/app.py
 """
-Deriverse Trading Analytics Dashboard - Enhanced v6.0
-Features:
-- Privacy-aware trader masking
-- Authenticated profile mode
-- Adaptive visualizations across all sections
-- Enhanced filtering (date range, symbols)
-- Top performers analysis with charts
-- Persistent trade notes (JSON storage)
-- Admin controls for full data access
-- Navigation bar for section jumping
+Deriverse Trading Analytics Dashboard - v7.4
+Implements: Adaptive/Context-Aware Visualization, duplicate key fix,
+sparkline trend lines, improved Greeks/Orders tabs, and all prior fixes.
 """
-
 import streamlit as st
 import pandas as pd
+import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
-from plotly.subplots import make_subplots
 from pathlib import Path
 from datetime import datetime, timedelta
 import requests
+from plotly.subplots import make_subplots
 import json
-import hmac
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# ============================================================================
-# CONFIGURATION & CONSTANTS
-# ============================================================================
-
 DATA_DIR = Path("data/analytics_output")
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "ADMIN_PASSWORD")  
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "ADMIN_PASSWORD")
 
 st.set_page_config(
     page_title="Deriverse Trading Analytics",
@@ -41,16 +29,178 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# ============================================================================
+# CSS — fixed header, zero gap between tabs and KPIs
+# ============================================================================
+st.markdown("""
+<style>
+    /* Streamlit default header gone */
+    header[data-testid="stHeader"] { display: none !important; }
+    .main > div { padding-top: 0 !important; margin-top: 0 !important; }
+
+    /* Fixed header — never scrolls */
+    .fixed-header {
+        position: fixed !important;
+        top: 0 !important;
+        left: 250px;
+        right: 0;
+        z-index: 999999 !important;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        padding: 8px 25px 0 25px;
+        border-bottom: 2px solid rgba(99,102,241,0.3);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    /* Push body content below fixed header */
+    .main-content { margin-top: 260px !important; padding: 0 20px; }
+
+    /* Zero gap between nav buttons and KPIs */
+    .stButton { margin-bottom: 0 !important; }
+    div.row-widget.stButton > button { margin-bottom: 0 !important; }
+    .kpi-row { margin-top: 0 !important; margin-bottom: 0 !important; padding-top: 0 !important; }
+    .element-container { margin-bottom: 0 !important; }
+
+    .header-title {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 1.8rem; font-weight: 700; color: #f1f5f9;
+        margin: 0; padding: 0; letter-spacing: -0.02em; line-height: 1.2;
+    }
+    .header-subtitle { color: #94a3b8; font-size: 0.8rem; margin-top: 2px; }
+
+    .metric-major {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        padding: 8px 12px; border-radius: 10px;
+        border: 2px solid rgba(99,102,241,0.3); text-align: center;
+    }
+    .metric-major-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    .metric-major-value { font-size: 1.3rem; font-weight: 700; color: #f1f5f9; line-height: 1.2; }
+
+    .profile-badge {
+        background: linear-gradient(135deg,#10b981,#059669);
+        color: white; padding: 2px 10px; border-radius: 16px;
+        font-weight: 600; font-size: 0.8rem; display: inline-block;
+        margin: 2px 0; border: 1px solid rgba(255,255,255,0.1);
+    }
+    .section-header { margin: 15px 0 10px 0; padding-bottom: 5px; border-bottom: 2px solid rgba(99,102,241,0.3); }
+    .section-header h2 { font-family: 'IBM Plex Mono', monospace; font-size: 1.5rem; font-weight: 600; color: #f1f5f9; margin: 0; }
+
+    /* Horizontal scroll for tables */
+    .scroll-x { width: 100%; overflow-x: auto !important; display: block; }
+
+    /* Adaptive context note */
+    .context-note {
+        background: rgba(99,102,241,0.08);
+        border-left: 3px solid #6366f1;
+        padding: 6px 12px; border-radius: 4px;
+        color: #94a3b8; font-size: 0.78rem; margin-bottom: 8px;
+    }
+
+    /* Verify links */
+    .verify-link { color: #10b981 !important; text-decoration: none; font-weight: 600; cursor: pointer; }
+    .verify-link:hover { text-decoration: underline; color: #34d399 !important; }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+    .status-live {
+        display: inline-block; width: 6px; height: 6px;
+        background: #10b981; border-radius: 50%;
+        animation: pulse 2s infinite; margin-right: 4px;
+    }
+
+    /* HTML table styling */
+    table.tx-table { border-collapse: collapse; width: 100%; font-size: 0.82rem; }
+    table.tx-table th { background: #1e293b; color: #94a3b8; padding: 6px 10px; text-align: left; border-bottom: 1px solid #334155; }
+    table.tx-table td { padding: 6px 10px; border-bottom: 1px solid rgba(51,65,85,0.4); color: #e2e8f0; white-space: nowrap; }
+    table.tx-table tr:hover td { background: rgba(99,102,241,0.06); }
+</style>
+""", unsafe_allow_html=True)
+
+
+# ============================================================================
+# ADAPTIVE VISUALIZATION FRAMEWORK
+# ============================================================================
+
+def data_profile(df, metric):
+    """Return count, unique value count, and variance for a metric."""
+    series = df[metric].dropna()
+    return {
+        "count": len(series),
+        "unique": series.nunique(),
+        "variance": float(series.var()) if len(series) > 1 else 0.0
+    }
+
+
+def visualization_confidence(df, metric, expected_variance=10.0):
+    """Score 0-1 indicating how well data supports a complex chart."""
+    p = data_profile(df, metric)
+    score = min(1.0,
+        (p["count"] / 20) * 0.4 +
+        (p["unique"] / 10) * 0.3 +
+        (p["variance"] / max(expected_variance, 1e-6)) * 0.3
+    )
+    return score
+
+
+def context_note(msg):
+    """Render a soft info banner when simplified view is shown."""
+    st.markdown(f"<div class='context-note'>ℹ️ {msg}</div>", unsafe_allow_html=True)
+
+
+def choose_liquidation_chart(df):
+    """Adaptive: decide chart type for liquidation section."""
+    if df['trader_id'].nunique() < 5:
+        return "kpi_only"
+    trader_liq_rates = []
+    for trader in df['trader_id'].unique():
+        td = df[df['trader_id'] == trader]
+        total = len(td[td['close_reason'].isin(['closed', 'liquidation'])])
+        if total > 0:
+            trader_liq_rates.append(len(td[td['close_reason'] == 'liquidation']) / total * 100)
+    if not trader_liq_rates or pd.Series(trader_liq_rates).var() < 1:
+        return "bar_chart_loss"
+    return "scatter"
+
+
+def choose_trade_size_chart(df):
+    """Adaptive: decide chart type for trade size."""
+    n = len(df)
+    unique_sizes = df['volume_usd'].round(0).nunique()
+    if n < 10:
+        return "kpi_only"
+    if unique_sizes < 5:
+        return "strip"
+    return "histogram"
+
+
+def choose_pnl_chart(df):
+    """Adaptive: decide chart type for PnL distribution."""
+    n = len(df)
+    if n < 5:
+        return "list"
+    skew = abs(float(df['realized_pnl'].skew())) if n > 2 else 0
+    if skew > 2:
+        return "boxplot"
+    return "histogram"
+
+
+def choose_win_rate_chart(df):
+    """Adaptive: decide chart type for win rate."""
+    sides = df['side'].str.lower().unique()
+    long_sides  = {'long', 'buy'}
+    short_sides = {'short', 'sell'}
+    has_long  = bool(set(sides) & long_sides)
+    has_short = bool(set(sides) & short_sides)
+    if has_long and has_short:
+        return "bar"
+    return "kpi"
+
 
 # ============================================================================
 # HELPER FUNCTIONS
 # ============================================================================
 
 def check_admin_password():
-    """Verify admin password for all-time access."""
     if "admin_authenticated" not in st.session_state:
         st.session_state.admin_authenticated = False
-    
     if not st.session_state.admin_authenticated:
         with st.sidebar.expander("🔐 Admin Access"):
             password = st.text_input("Password", type="password")
@@ -61,12 +211,10 @@ def check_admin_password():
                     st.rerun()
                 else:
                     st.error("❌ Invalid password")
-    
     return st.session_state.admin_authenticated
 
 
 def mask_trader_id(trader_id):
-    """Format trader wallet address for privacy."""
     if pd.isna(trader_id):
         return "Unknown"
     s = str(trader_id)
@@ -74,7 +222,6 @@ def mask_trader_id(trader_id):
 
 
 def simplify_symbol(market_id):
-    """Extract base symbol from market identifier."""
     if pd.isna(market_id):
         return market_id
     s = str(market_id)
@@ -82,27 +229,20 @@ def simplify_symbol(market_id):
 
 
 def get_top_traders(positions_df, n=5, by='profit'):
-    """Get top N traders by specified criteria."""
     if positions_df.empty:
         return []
-    
     trader_stats = positions_df.groupby('trader_id')['realized_pnl'].agg(['sum', 'count'])
-    
     if by == 'profit':
         return trader_stats.nlargest(n, 'sum').index.tolist()
     elif by == 'loss':
         return trader_stats.nsmallest(n, 'sum').index.tolist()
-    else:
-        return trader_stats.nlargest(n, 'count').index.tolist()
+    return trader_stats.nlargest(n, 'count').index.tolist()
 
 
 def load_trader_notes(trader_id):
-    """Load trade notes from JSON file for specific trader."""
     notes_dir = Path("data/trader_notes")
     notes_dir.mkdir(parents=True, exist_ok=True)
-    
     notes_file = notes_dir / f"{trader_id}.json"
-    
     if notes_file.exists():
         with open(notes_file, 'r') as f:
             return json.load(f)
@@ -110,305 +250,756 @@ def load_trader_notes(trader_id):
 
 
 def save_trader_notes(trader_id, notes):
-    """Save trade notes to JSON file for specific trader."""
     notes_dir = Path("data/trader_notes")
     notes_dir.mkdir(parents=True, exist_ok=True)
-    
-    notes_file = notes_dir / f"{trader_id}.json"
-    
-    with open(notes_file, 'w') as f:
+    with open(notes_dir / f"{trader_id}.json", 'w') as f:
         json.dump(notes, f, indent=2)
 
 
-def get_trade_density(filtered_positions):
-    """Classify data density for adaptive visualization selection."""
-    trade_count = len(filtered_positions)
-    
-    if trade_count == 0:
-        return "empty"
-    elif trade_count == 1:
-        return "single"
-    elif trade_count < 5:
-        return "sparse"
-    elif trade_count < 15:
-        return "moderate"
-    else:
-        return "dense"
+def get_trade_density(positions_df):
+    count = len(positions_df)
+    if count == 0:   return "empty"
+    if count == 1:   return "single"
+    if count < 5:    return "sparse"
+    return "dense"
 
 
 def calculate_volume_usd(df):
-    """Calculate USD volume from price and size."""
     df = df.copy()
     df['volume_usd'] = df['exit_price'] * df['size']
     return df
 
 
+CHART_BG = dict(
+    template='plotly_dark',
+    plot_bgcolor='rgba(15,23,42,0.9)',
+    paper_bgcolor='rgba(15,23,42,0.9)'
+)
+
+
 # ============================================================================
-# STYLING & CSS
+# TRADER PERFORMANCE SUMMARY — with trend line in sparklines
 # ============================================================================
 
-st.markdown("""
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@300;400;600;700&display=swap');
-    
-    :root {
-        --primary-color: #6366f1;
-        --secondary-color: #8b5cf6;
-        --success-color: #10b981;
-        --danger-color: #ef4444;
-        --warning-color: #f59e0b;
-        --bg-dark: #0f172a;
-        --bg-card: #1e293b;
-        --text-primary: #f1f5f9;
-        --text-secondary: #94a3b8;
+def create_trader_summary_table(equity_df, positions_df):
+    """Trader summary table with sparklines that include a trend overlay."""
+    st.markdown("### 📋 Trader Performance Summary")
+
+    traders = []
+    for trader in equity_df['trader_id'].unique()[:10]:
+        te = equity_df[equity_df['trader_id'] == trader].sort_values('timestamp')
+        tp = positions_df[positions_df['trader_id'] == trader]
+        total_pnl = tp['realized_pnl'].sum()
+        win_rate  = (tp['realized_pnl'] > 0).mean() * 100
+        max_dd    = te['drawdown'].min()
+        sparkline = te['cumulative_pnl'].values
+        norm = ((sparkline - sparkline.min()) / (sparkline.max() - sparkline.min() + 1e-9)) if len(sparkline) > 1 else np.array([0.5])
+        traders.append({
+            'trader': mask_trader_id(trader),
+            'pnl': total_pnl, 'win_rate': win_rate, 'max_dd': max_dd,
+            'trades': len(tp), 'sparkline': norm[-20:],
+            'trend': '📈' if total_pnl > 0 and len(sparkline) > 1 and sparkline[-1] > sparkline[0] else '📉'
+        })
+    traders.sort(key=lambda x: x['pnl'], reverse=True)
+
+    headers = st.columns([1.2, 1.8, 1, 1, 1, 1.5])
+    for h, label in zip(headers, ["**Trader**", "**Equity Trend**", "**PnL**", "**Win Rate**", "**Max DD**", "**Activity**"]):
+        h.markdown(label)
+    st.divider()
+
+    for i, t in enumerate(traders):
+        cols = st.columns([1.2, 1.8, 1, 1, 1, 1.5])
+        cols[0].markdown(f"`{t['trader']}`")
+
+        # Sparkline with trend overlay
+        sp = t['sparkline']
+        x_idx = list(range(len(sp)))
+        fig = go.Figure()
+        color = '#10b981' if t['pnl'] > 0 else '#ef4444'
+        fig.add_trace(go.Scatter(y=sp, mode='lines', line=dict(color=color, width=2), showlegend=False))
+        # Trend line over sparkline
+        if len(sp) >= 2:
+            z = np.polyfit(x_idx, sp, 1)
+            trend_y = np.polyval(z, x_idx)
+            fig.add_trace(go.Scatter(y=trend_y, mode='lines', line=dict(color='#f59e0b', width=1.5, dash='dot'), showlegend=False))
+        fig.update_layout(
+            height=40, margin=dict(l=0, r=0, t=0, b=0),
+            xaxis=dict(showticklabels=False, showgrid=False, zeroline=False),
+            yaxis=dict(showticklabels=False, showgrid=False, zeroline=False),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)'
+        )
+        cols[1].plotly_chart(fig, use_container_width=True, config={'displayModeBar': False}, key=f"spark_{i}")
+
+        pnl_color = '#10b981' if t['pnl'] > 0 else '#ef4444'
+        cols[2].markdown(f"<span style='color:{pnl_color};font-weight:600;'>${t['pnl']:,.0f}</span>", unsafe_allow_html=True)
+        cols[3].markdown(f"{t['win_rate']:.0f}%")
+        cols[4].markdown(f"${abs(t['max_dd']):,.0f}")
+        cols[5].markdown(f"{t['trades']} trades {t['trend']}")
+
+
+# ============================================================================
+# EQUITY CHARTS — no trend line on protocol chart (removed per request)
+# ============================================================================
+
+def create_protocol_equity_charts(positions_df):
+    """Protocol equity (no trend line) + drawdown chart."""
+    ps = positions_df.sort_values('close_time').copy()
+    ps['cumulative_pnl'] = ps['realized_pnl'].cumsum()
+
+    fig_eq = go.Figure()
+    fig_eq.add_trace(go.Scatter(
+        x=ps['close_time'], y=ps['cumulative_pnl'],
+        line=dict(color='#6366f1', width=3),
+        fill='tozeroy', fillcolor='rgba(99,102,241,0.1)',
+        showlegend=False,
+        hovertemplate='Date: %{x}<br>PnL: $%{y:,.2f}<extra></extra>'
+    ))
+    fig_eq.update_layout(
+        title="📈 Protocol Cumulative PnL",
+        xaxis_title="Date", yaxis_title="Cumulative PnL ($)",
+        height=350, margin=dict(l=40,r=40,t=40,b=40), **CHART_BG
+    )
+
+    rolling_max = ps['cumulative_pnl'].cummax()
+    drawdown = ps['cumulative_pnl'] - rolling_max
+    max_dd = drawdown.min()
+
+    fig_dd = go.Figure()
+    fig_dd.add_trace(go.Scatter(
+        x=ps['close_time'], y=drawdown,
+        line=dict(color='#ef4444', width=2.5),
+        fill='tozeroy', fillcolor='rgba(239,68,68,0.15)', showlegend=False
+    ))
+    fig_dd.add_hline(y=max_dd, line_dash="dash", line_color="#ef4444",
+                     annotation_text=f"Max DD: ${max_dd:,.0f}", annotation_position="bottom right")
+    fig_dd.update_layout(
+        title="📉 Drawdown from Peak",
+        xaxis_title="Date", yaxis_title="Drawdown ($)",
+        height=250, margin=dict(l=40,r=40,t=40,b=40), **CHART_BG
+    )
+    return fig_eq, fig_dd
+
+
+def create_personal_equity_chart(trader_positions):
+    """Adaptive equity chart for personal mode."""
+    density = get_trade_density(trader_positions)
+
+    if density == "single":
+        pnl = trader_positions['realized_pnl'].iloc[0]
+        fig = go.Figure(go.Bar(
+            x=['Your Trade'], y=[pnl],
+            marker_color='#10b981' if pnl > 0 else '#ef4444',
+            text=[f"${pnl:,.2f}"], textposition='outside', width=0.4
+        ))
+        fig.update_layout(title=f"Trade Result: {'🟢 Profit' if pnl > 0 else '🔴 Loss'}",
+                          yaxis_title="PnL ($)", height=350, showlegend=False,
+                          margin=dict(l=40,r=40,t=40,b=40), **CHART_BG)
+        return fig
+
+    tp = trader_positions.sort_values('close_time').copy()
+    tp['cumulative'] = tp['realized_pnl'].cumsum()
+
+    if density == "sparse":
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            x=tp['close_time'], y=tp['cumulative'],
+            mode='lines+markers', line=dict(shape='hv', width=3, color='#6366f1'),
+            marker=dict(size=12, symbol='diamond', color='#6366f1'),
+            fill='tozeroy', fillcolor='rgba(99,102,241,0.1)'
+        ))
+        fig.update_layout(title="📈 Your Trading Performance",
+                          xaxis_title="Date", yaxis_title="Cumulative PnL ($)",
+                          height=350, margin=dict(l=40,r=40,t=40,b=40), **CHART_BG)
+        return fig
+
+    # Dense: equity curve with trend
+    tp['idx'] = range(len(tp))
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=tp['close_time'], y=tp['cumulative'],
+        line=dict(color='#6366f1', width=3),
+        fill='tozeroy', fillcolor='rgba(99,102,241,0.1)', name='Your PnL'
+    ))
+    z = np.polyfit(tp['idx'], tp['cumulative'], 1)
+    fig.add_trace(go.Scatter(
+        x=tp['close_time'], y=np.polyval(z, tp['idx']),
+        mode='lines', line=dict(color='#f59e0b', width=2, dash='dash'), name='Trend'
+    ))
+    fig.update_layout(
+        title="📈 Your Equity Curve with Trend",
+        xaxis_title="Date", yaxis_title="Cumulative PnL ($)", height=350,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        margin=dict(l=40,r=40,t=40,b=40), **CHART_BG
+    )
+    return fig
+
+
+# ============================================================================
+# LIQUIDATION ANALYTICS — adaptive
+# ============================================================================
+
+def render_liquidation_kpis(positions_df):
+    """Simplified KPI view when trader count is low."""
+    context_note("Limited traders — showing simplified summary view")
+    liq = positions_df[positions_df['close_reason'] == 'liquidation']
+    total = len(positions_df[positions_df['close_reason'].isin(['closed', 'liquidation'])])
+    rate = (len(liq) / total * 100) if total > 0 else 0
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Liquidations", len(liq))
+    c2.metric("Liq Rate", f"{rate:.1f}%")
+    c3.metric("Loss from Liq", f"${abs(liq['realized_pnl'].sum()):,.0f}")
+
+
+def render_liquidation_loss_bar(positions_df):
+    """Bar chart of liquidation loss per trader."""
+    context_note("Low variance in liquidation rates — showing loss comparison")
+    liq = positions_df[positions_df['close_reason'] == 'liquidation']
+    if liq.empty:
+        st.success("✅ No liquidations in selected period")
+        return
+    df = liq.groupby('trader_id')['realized_pnl'].sum().abs().reset_index()
+    df['trader'] = df['trader_id'].apply(mask_trader_id)
+    df = df.sort_values('realized_pnl', ascending=False)
+    fig = px.bar(df, x='trader', y='realized_pnl', title='Liquidation Loss by Trader',
+                 color='realized_pnl', color_continuous_scale='Reds',
+                 labels={'realized_pnl': 'Loss ($)'})
+    fig.update_layout(height=350, **CHART_BG)
+    st.plotly_chart(fig, use_container_width=True, key="liq_bar_loss")
+
+
+def render_liquidation_scatter(positions_df):
+    """Scatter: trading activity vs liquidation rate."""
+    trader_stats = []
+    for trader in positions_df['trader_id'].unique():
+        td = positions_df[positions_df['trader_id'] == trader]
+        total = len(td[td['close_reason'].isin(['closed', 'liquidation'])])
+        if total > 0:
+            liq_n = len(td[td['close_reason'] == 'liquidation'])
+            trader_stats.append({
+                'trader': mask_trader_id(trader),
+                'total_trades': total,
+                'liquidation_rate': liq_n / total * 100,
+                'abs_pnl': abs(td['realized_pnl'].sum()),
+                'total_pnl': td['realized_pnl'].sum(),
+                'liq_count': liq_n,
+                'products': ', '.join(td['product_type'].unique())
+            })
+    if not trader_stats:
+        return
+    df = pd.DataFrame(trader_stats)
+    fig = px.scatter(df, x='total_trades', y='liquidation_rate', size='abs_pnl',
+                     color='liquidation_rate', hover_data=['trader','liq_count','total_pnl','products'],
+                     color_continuous_scale='RdYlGn_r',
+                     title='Liquidation Risk vs Trading Activity',
+                     labels={'total_trades':'Total Trades','liquidation_rate':'Liq Rate (%)','abs_pnl':'|PnL|'})
+    fig.update_layout(height=400, **CHART_BG)
+    fig.add_hline(y=5, line_dash="dash", line_color="#ef4444", annotation_text="High Risk")
+    fig.add_hline(y=2, line_dash="dash", line_color="#10b981", annotation_text="Low Risk")
+    st.plotly_chart(fig, use_container_width=True, key="liq_scatter")
+
+
+def display_liquidation_analytics(positions_df, is_personal_mode=False, trader_id=None):
+    st.markdown('<div class="section-header">', unsafe_allow_html=True)
+    st.header("⚠️ Liquidation Risk Monitoring")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    if 'close_reason' not in positions_df.columns:
+        st.info("ℹ️ Liquidation tracking not available")
+        return
+
+    if is_personal_mode and trader_id:
+        tp = positions_df[positions_df['trader_id'] == trader_id]
+        liq = tp[tp['close_reason'] == 'liquidation']
+        st.markdown("### ⚠️ Your Riskiest Trades")
+        if liq.empty:
+            st.success("✅ No liquidations in your history!")
+            return
+        worst = tp.nsmallest(5, 'realized_pnl').copy()
+        worst['symbol'] = worst['market_id'].apply(simplify_symbol)
+        fig = px.bar(worst, x='symbol', y='realized_pnl', title='Your Top 5 Loss-Making Trades',
+                     color='realized_pnl', color_continuous_scale='Reds_r',
+                     labels={'realized_pnl':'Loss ($)'})
+        fig.update_layout(height=350, **CHART_BG)
+        st.plotly_chart(fig, use_container_width=True, key="personal_liq_bar")
+        return
+
+    liq = positions_df[positions_df['close_reason'] == 'liquidation']
+    if liq.empty:
+        st.success("✅ No liquidations in selected period")
+        return
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Total Liquidations", len(liq))
+    c2.metric("Affected Traders", liq['trader_id'].nunique())
+    c3.metric("Total Loss", f"${abs(liq['realized_pnl'].sum()):,.0f}")
+
+    # Adaptive chart selection
+    chart_type = choose_liquidation_chart(positions_df)
+    if chart_type == "kpi_only":
+        render_liquidation_kpis(positions_df)
+    elif chart_type == "bar_chart_loss":
+        render_liquidation_loss_bar(positions_df)
+    else:
+        render_liquidation_scatter(positions_df)
+
+    # Liquidation rate per trader bar
+    st.subheader("📊 Liquidation Rate by Trader")
+    st.caption("% of trades ending in liquidation — lower is better")
+    stats = []
+    for trader in positions_df['trader_id'].unique():
+        td = positions_df[positions_df['trader_id'] == trader]
+        total = len(td[td['close_reason'].isin(['closed','liquidation'])])
+        if total > 0:
+            liq_n = len(td[td['close_reason'] == 'liquidation'])
+            stats.append({'trader': mask_trader_id(trader), 'liq_rate': liq_n/total*100,
+                          'liq_count': liq_n, 'total_trades': total})
+    if stats:
+        df = pd.DataFrame(stats).sort_values('liq_rate', ascending=False)
+        colors = ['#10b981' if x<2 else '#f59e0b' if x<5 else '#ef4444' for x in df['liq_rate']]
+        fig = go.Figure(go.Bar(
+            x=df['trader'], y=df['liq_rate'], marker_color=colors,
+            text=[f"{r:.1f}%\n({l}/{t})" for r,l,t in zip(df['liq_rate'],df['liq_count'],df['total_trades'])],
+            textposition='outside'
+        ))
+        fig.add_hline(y=2, line_dash="dash", line_color="#10b981", annotation_text="Low Risk")
+        fig.add_hline(y=5, line_dash="dash", line_color="#ef4444", annotation_text="High Risk")
+        fig.update_layout(height=350, xaxis_title="Trader", yaxis_title="Liq Rate (%)", **CHART_BG)
+        fig.update_xaxes(tickangle=-45)
+        st.plotly_chart(fig, use_container_width=True, key="liq_rate_bar")
+
+    st.subheader("💰 Financial Impact")
+    c1, c2 = st.columns(2)
+    with c1:
+        bm = liq.groupby('market_id')['realized_pnl'].sum().abs().reset_index()
+        bm['symbol'] = bm['market_id'].apply(simplify_symbol)
+        bm = bm.sort_values('realized_pnl', ascending=False).head(5)
+        fig = px.bar(bm, x='symbol', y='realized_pnl', title='Top 5 Markets by Liq Loss',
+                     color='realized_pnl', color_continuous_scale='Reds')
+        fig.update_layout(height=300, **CHART_BG)
+        st.plotly_chart(fig, use_container_width=True, key="liq_mkt")
+    with c2:
+        bt = liq.groupby('trader_id')['realized_pnl'].sum().abs().reset_index()
+        bt['trader'] = bt['trader_id'].apply(mask_trader_id)
+        bt = bt.sort_values('realized_pnl', ascending=False).head(5)
+        fig = px.bar(bt, x='trader', y='realized_pnl', title='Top 5 Traders by Liq Loss',
+                     color='realized_pnl', color_continuous_scale='Reds')
+        fig.update_layout(height=300, **CHART_BG)
+        st.plotly_chart(fig, use_container_width=True, key="liq_trader")
+
+
+# ============================================================================
+# VOLUME ANALYSIS — adaptive, unique keys fix
+# ============================================================================
+
+def display_volume_analysis(positions_df):
+    st.markdown('<div class="section-header">', unsafe_allow_html=True)
+    st.header("📊 Trading Volume Analysis")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    if positions_df.empty:
+        st.info("No volume data available")
+        return
+
+    positions_df = calculate_volume_usd(positions_df)
+    product_counts = positions_df['product_type'].value_counts()
+    st.caption(f"Product types present: {', '.join(f'{k}({v})' for k,v in product_counts.items())}")
+
+    total_vol  = positions_df['volume_usd'].sum()
+    total_fees = positions_df['fees'].sum()
+    unique_sym = positions_df['market_id'].apply(simplify_symbol).nunique()
+    vol_shares = positions_df.groupby(positions_df['market_id'].apply(simplify_symbol))['volume_usd'].sum() / total_vol
+    hhi = (vol_shares**2).sum() * 10000
+
+    c1,c2,c3,c4 = st.columns(4)
+    c1.metric("Total Volume",  f"${total_vol:,.0f}")
+    c2.metric("Total Fees",    f"${total_fees:,.0f}")
+    c3.metric("Active Symbols", unique_sym)
+    c4.metric("Concentration", f"{hhi:.0f} ({'Low' if hhi<1500 else 'Medium' if hhi<2500 else 'High'})")
+
+    # Adaptive trade-size visualization
+    st.subheader("📊 Trade Size Distribution")
+    chart_type = choose_trade_size_chart(positions_df)
+    if chart_type == "kpi_only":
+        context_note("Too few trades for a distribution chart — showing summary stats")
+        k1,k2 = st.columns(2)
+        k1.metric("Average Trade", f"${positions_df['volume_usd'].mean():,.0f}")
+        k2.metric("Median Trade",  f"${positions_df['volume_usd'].median():,.0f}")
+    elif chart_type == "strip":
+        context_note("Limited size variety — showing strip plot")
+        fig = px.strip(positions_df, x='product_type', y='volume_usd',
+                       color='product_type', title='Trade Sizes by Product',
+                       color_discrete_map={'spot':'#10b981','perp':'#6366f1','option':'#f59e0b'})
+        fig.update_layout(height=300, showlegend=False, **CHART_BG)
+        st.plotly_chart(fig, use_container_width=True, key="strip_overall")
+    else:
+        # Box + histogram
+        c1,c2 = st.columns(2)
+        with c1:
+            fig = px.box(positions_df, x='product_type', y='volume_usd', points='all',
+                         title='Trade Size by Product Type',
+                         color='product_type',
+                         color_discrete_map={'spot':'#10b981','perp':'#6366f1','option':'#f59e0b'})
+            fig.update_layout(height=300, showlegend=False, **CHART_BG)
+            st.plotly_chart(fig, use_container_width=True, key="box_overall")
+        with c2:
+            fig = px.histogram(positions_df, x='volume_usd', nbins=30,
+                               title='Trade Size Histogram',
+                               color_discrete_sequence=['#6366f1'])
+            fig.update_layout(height=300, showlegend=False, **CHART_BG)
+            st.plotly_chart(fig, use_container_width=True, key="hist_overall")
+
+    # Stats row
+    vals = positions_df['volume_usd']
+    s1,s2,s3,s4,s5 = st.columns(5)
+    s1.metric("Median", f"${vals.median():,.0f}")
+    s2.metric("Mean",   f"${vals.mean():,.0f}")
+    s3.metric("P25",    f"${vals.quantile(0.25):,.0f}")
+    s4.metric("P75",    f"${vals.quantile(0.75):,.0f}")
+    s5.metric("Max",    f"${vals.max():,.0f}")
+
+    # Per-product tabs — all plotly_chart calls get unique keys via tab_idx
+    tabs = st.tabs(["📈 All", "📍 Spot", "⚡ Perp", "🎯 Options"])
+    products = {
+        "All":     positions_df,
+        "Spot":    positions_df[positions_df['product_type'] == 'spot'],
+        "Perp":    positions_df[positions_df['product_type'] == 'perp'],
+        "Options": positions_df[positions_df['product_type'] == 'option'],
     }
-    
-    .main {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        font-family: 'Inter', sans-serif;
+
+    for tidx, (tab, (pname, pdf)) in enumerate(zip(tabs, products.items())):
+        with tab:
+            if pdf.empty:
+                st.info(f"No {pname} trades in selected period")
+                continue
+            st.caption(f"{len(pdf)} trades")
+
+            c1, c2 = st.columns(2)
+            with c1:
+                st.markdown("#### Volume by Symbol — Top 5")
+                sym_vol = pdf.groupby(pdf['market_id'].apply(simplify_symbol)).agg(
+                    volume_usd=('volume_usd','sum'), realized_pnl=('realized_pnl','sum')
+                ).sort_values('volume_usd', ascending=False).head(5)
+
+                if not sym_vol.empty:
+                    total = sym_vol['volume_usd'].sum()
+                    for sym, row in sym_vol.iterrows():
+                        pct = row['volume_usd']/total*100 if total>0 else 0
+                        pc  = "#10b981" if row['realized_pnl']>0 else "#ef4444"
+                        st.markdown(f"""
+                        <div style='background:rgba(30,41,59,0.4);border-radius:8px;padding:8px;margin-bottom:6px;'>
+                            <div style='display:flex;justify-content:space-between;margin-bottom:4px;'>
+                                <span style='color:#94a3b8;font-size:.8rem;'>{sym}</span>
+                                <span style='color:#f1f5f9;font-size:.85rem;font-weight:600;'>
+                                    ${row['volume_usd']:,.0f} ({pct:.1f}%) <span style='color:{pc};'>${row['realized_pnl']:,.0f}</span>
+                                </span>
+                            </div>
+                            <div style='background:rgba(100,116,139,.3);border-radius:4px;height:5px;'>
+                                <div style='background:#6366f1;width:{pct}%;height:100%;border-radius:4px;'></div>
+                            </div>
+                        </div>""", unsafe_allow_html=True)
+
+                st.markdown("#### Fee Generation")
+                fsym = pdf.groupby(pdf['market_id'].apply(simplify_symbol))['fees'].sum().sort_values(ascending=False).head(5)
+                if not fsym.empty:
+                    fig = px.bar(x=fsym.values, y=fsym.index, orientation='h',
+                                 title='Top 5 Symbols by Fees', color=fsym.values,
+                                 color_continuous_scale='Reds')
+                    fig.update_layout(height=200, **CHART_BG, margin=dict(l=80))
+                    st.plotly_chart(fig, use_container_width=True, key=f"fee_{tidx}")
+
+            with c2:
+                # Adaptive win-rate / long-short
+                wrchart = choose_win_rate_chart(pdf)
+                if wrchart == "kpi":
+                    context_note("Only one direction traded — showing single KPI")
+                    side_name = pdf['side'].str.lower().iloc[0]
+                    win_r = (pdf['realized_pnl'] > 0).mean() * 100
+                    st.metric(f"Win Rate ({side_name.title()} only)", f"{win_r:.1f}%")
+                else:
+                    st.markdown("#### Long vs Short Distribution")
+                    long_vol  = pdf[pdf['side'].str.lower().isin(['long','buy'])]['volume_usd'].sum()
+                    short_vol = pdf[pdf['side'].str.lower().isin(['short','sell'])]['volume_usd'].sum()
+                    total_v   = long_vol + short_vol
+                    if total_v > 0:
+                        lp = long_vol/total_v*100
+                        sp = short_vol/total_v*100
+                        fig = go.Figure()
+                        fig.add_trace(go.Bar(y=['Direction'], x=[lp], name='Long', orientation='h',
+                                             marker_color='#10b981', text=f'{lp:.1f}%',
+                                             textposition='inside', textfont=dict(color='white', size=14)))
+                        fig.add_trace(go.Bar(y=['Direction'], x=[sp], name='Short', orientation='h',
+                                             marker_color='#ef4444', text=f'{sp:.1f}%',
+                                             textposition='inside', textfont=dict(color='white', size=14)))
+                        fig.update_layout(barmode='stack', height=80,
+                                          legend=dict(orientation="h",yanchor="bottom",y=1.02,xanchor="right",x=1),
+                                          margin=dict(l=40,r=20,t=30,b=10), **CHART_BG)
+                        st.plotly_chart(fig, use_container_width=True, key=f"ls_{tidx}")
+                        ratio = long_vol/short_vol if short_vol>0 else float('inf')
+                        st.metric("Long/Short Ratio", f"{ratio:.2f}x" if ratio!=float('inf') else "N/A (No shorts)")
+
+                # Adaptive PnL distribution
+                st.markdown("#### PnL Distribution")
+                pnl_chart = choose_pnl_chart(pdf)
+                if pnl_chart == "list":
+                    context_note("Too few trades — showing individual trade list")
+                    st.dataframe(pdf[['market_id','side','realized_pnl']].assign(
+                        market_id=pdf['market_id'].apply(simplify_symbol),
+                        realized_pnl=pdf['realized_pnl'].apply(lambda x: f"${x:,.2f}")
+                    ), use_container_width=True, hide_index=True, key=f"pnl_list_{tidx}")
+                elif pnl_chart == "boxplot":
+                    context_note("Extreme skew detected — using box plot for clarity")
+                    fig = px.box(pdf, y='realized_pnl', title='PnL Distribution (Skewed)',
+                                 color_discrete_sequence=['#6366f1'])
+                    fig.update_layout(height=250, **CHART_BG)
+                    st.plotly_chart(fig, use_container_width=True, key=f"pnl_box_{tidx}")
+                else:
+                    fig = px.histogram(pdf, x='realized_pnl', nbins=20,
+                                       title='PnL Distribution',
+                                       color_discrete_sequence=['#6366f1'])
+                    fig.add_vline(x=0, line_dash="dash", line_color="gray")
+                    fig.update_layout(height=250, **CHART_BG)
+                    st.plotly_chart(fig, use_container_width=True, key=f"pnl_hist_{tidx}")
+
+
+# ============================================================================
+# ORDER TYPE PERFORMANCE — enhanced with table + heatmap
+# ============================================================================
+
+def display_order_type_performance(order_df):
+    st.markdown('<div class="section-header">', unsafe_allow_html=True)
+    st.header("📋 Order Type Performance")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    if order_df.empty:
+        st.info("No order type data available")
+        return
+
+    # Primary: dual-axis bar+line
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    fig.add_trace(go.Bar(
+        x=order_df['order_type'], y=order_df['win_rate']*100,
+        name='Win Rate %', marker_color='#6366f1',
+        text=[f"{w:.1f}%" for w in order_df['win_rate']*100],
+        textposition='inside', textfont=dict(color='white', size=11),
+        hovertemplate='<b>%{x}</b><br>Win Rate: %{y:.1f}%<br>Trades: %{customdata}<extra></extra>',
+        customdata=order_df['trade_count']
+    ), secondary_y=False)
+
+    colors = ['#10b981' if x>0 else '#ef4444' for x in order_df['avg_pnl']]
+    fig.add_trace(go.Scatter(
+        x=order_df['order_type'], y=order_df['avg_pnl'],
+        name='Avg PnL $', mode='lines+markers',
+        line=dict(color='#f1f5f9', width=3),
+        marker=dict(size=12, color=colors, line=dict(color='#1e293b', width=2)),
+        text=[f"${x:,.0f}" for x in order_df['avg_pnl']],
+        textposition='top center',
+        hovertemplate='<b>%{x}</b><br>Avg PnL: $%{y:,.2f}<extra></extra>'
+    ), secondary_y=True)
+
+    fig.update_layout(title="Win Rate & Avg PnL by Order Type", xaxis_title="Order Type",
+                      hovermode='x unified', height=400, **CHART_BG,
+                      legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                      margin=dict(l=40,r=40,t=50,b=40))
+    fig.update_yaxes(title_text="Win Rate (%)", secondary_y=False, range=[0,100])
+    fig.update_yaxes(title_text="Avg PnL ($)", secondary_y=True)
+    fig.add_hline(y=0, line_dash="dash", line_color="gray", opacity=0.5, secondary_y=True)
+    st.plotly_chart(fig, use_container_width=True, key="order_main")
+
+    # Summary KPIs
+    c1,c2,c3 = st.columns(3)
+    c1.metric("🏆 Best Win Rate", f"{order_df['win_rate'].max()*100:.1f}%",
+              order_df.loc[order_df['win_rate'].idxmax(),'order_type'])
+    c2.metric("💰 Best Avg PnL", f"${order_df['avg_pnl'].max():,.2f}",
+              order_df.loc[order_df['avg_pnl'].idxmax(),'order_type'])
+    c3.metric("📊 Most Used",    f"{order_df['trade_count'].max()} trades",
+              order_df.loc[order_df['trade_count'].idxmax(),'order_type'])
+
+    # Full data table
+    st.subheader("📋 Detailed Breakdown")
+    disp = order_df.copy()
+    disp['win_rate'] = (disp['win_rate']*100).apply(lambda x: f"{x:.1f}%")
+    disp['avg_pnl']  = disp['avg_pnl'].apply(lambda x: f"${x:,.2f}")
+    if 'total_volume' in disp.columns:
+        disp['total_volume'] = disp['total_volume'].apply(lambda x: f"${x:,.0f}")
+    st.dataframe(disp, use_container_width=True, hide_index=True)
+
+    # Volume heatmap if enough data
+    if 'total_volume' in order_df.columns and len(order_df) > 2:
+        st.subheader("📊 Volume & Trade Count Heatmap")
+        heat_vals = order_df[['order_type','trade_count']].set_index('order_type').T
+        fig2 = px.imshow(heat_vals, text_auto=True, aspect='auto',
+                         color_continuous_scale='Blues',
+                         title='Trade Count by Order Type')
+        fig2.update_layout(height=150, **CHART_BG)
+        st.plotly_chart(fig2, use_container_width=True, key="order_heatmap")
+
+
+# ============================================================================
+# GREEKS — adaptive for single trader
+# ============================================================================
+
+def compute_greeks_per_position(positions_df):
+    opts = positions_df[positions_df['product_type'] == 'option'].copy()
+    if opts.empty:
+        return pd.DataFrame()
+    rows = []
+    for _, pos in opts.iterrows():
+        is_call = 'CALL' in str(pos['market_id']).upper()
+        if pos['side'] == 'buy':
+            delta = abs(pos['size']) if is_call else -abs(pos['size'])
+        else:
+            delta = -abs(pos['size']) if is_call else abs(pos['size'])
+        rows.append({'position_id': pos['position_id'], 'trader_id': pos['trader_id'], 'delta': delta})
+    return pd.DataFrame(rows)
+
+
+def display_greeks_analysis(greeks_df, is_personal=False):
+    st.markdown('<div class="section-header">', unsafe_allow_html=True)
+    st.header("🔬 Options Greeks Exposure")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    if greeks_df.empty:
+        st.info("No options Greeks data available")
+        return
+
+    total_delta = greeks_df['net_delta'].sum()
+    delta_color = "#10b981" if total_delta > 0 else "#ef4444"
+    total_pos   = greeks_df['total_option_positions'].sum()
+
+    c1,c2,c3,c4 = st.columns(4)
+    for col, label, val, sub in [
+        (c1, "Net Delta",  f"<span style='color:{delta_color};font-size:1.2rem;font-weight:600;'>{total_delta:,.2f}</span>", "Directional exposure"),
+        (c2, "Gamma",      "<span style='color:#f59e0b;font-size:1.2rem;font-weight:600;'>🔜 Soon</span>", "Delta sensitivity"),
+        (c3, "Theta",      "<span style='color:#f59e0b;font-size:1.2rem;font-weight:600;'>🔜 Soon</span>", "Time decay/day"),
+        (c4, "Positions",  f"<span style='color:#f1f5f9;font-size:1.2rem;font-weight:600;'>{int(total_pos)}</span>", "Active contracts"),
+    ]:
+        col.markdown(f"""
+        <div style='background:rgba(30,41,59,0.4);padding:10px;border-radius:8px;text-align:center;'>
+            <div style='color:#94a3b8;font-size:.7rem;'>{label}</div>
+            {val}
+            <div style='color:#64748b;font-size:.6rem;'>{sub}</div>
+        </div>""", unsafe_allow_html=True)
+
+    disp = greeks_df.copy()
+    disp['trader'] = disp['trader_id'].apply(mask_trader_id)
+    disp = disp.sort_values('net_delta', ascending=False)
+
+    # Adaptive: single trader gets per-position breakdown; multi-trader gets bar
+    if is_personal or disp['trader_id'].nunique() == 1:
+        context_note("Single trader view — showing per-position delta breakdown")
+        st.subheader("📊 Per-Position Delta")
+        per_pos = compute_greeks_per_position(
+            pd.DataFrame({'product_type':['option'], 'market_id':['CALL'], 'side':['buy'], 'size':[1], 'position_id':[0], 'trader_id':[0]})
+        )
+        # Use the greeks_df data directly for display
+        disp2 = disp[['trader','net_delta','total_option_positions']].copy()
+        disp2.columns = ['Trader', 'Net Delta', 'Option Positions']
+        disp2['Net Delta'] = disp2['Net Delta'].apply(lambda x: f"{x:+.3f}")
+        st.dataframe(disp2, use_container_width=True, hide_index=True)
+
+        # Delta gauge
+        fig = go.Figure(go.Indicator(
+            mode="gauge+number", value=total_delta,
+            title={'text': "Net Delta Exposure"},
+            gauge={'axis': {'range': [-abs(total_delta)*2, abs(total_delta)*2]},
+                   'bar': {'color': "#10b981" if total_delta >= 0 else "#ef4444"},
+                   'steps': [
+                       {'range': [-abs(total_delta)*2, 0], 'color': 'rgba(239,68,68,0.1)'},
+                       {'range': [0, abs(total_delta)*2], 'color': 'rgba(16,185,129,0.1)'}
+                   ]}
+        ))
+        fig.update_layout(height=280, **CHART_BG)
+        st.plotly_chart(fig, use_container_width=True, key="delta_gauge")
+    else:
+        st.subheader("📊 Delta Exposure by Trader")
+        fig = px.bar(disp, x='trader', y='net_delta', color='net_delta',
+                     color_continuous_scale='RdBu', color_continuous_midpoint=0,
+                     title='Net Delta by Trader')
+        fig.update_layout(height=350, **CHART_BG)
+        fig.update_xaxes(tickangle=-45)
+        st.plotly_chart(fig, use_container_width=True, key="delta_bar_multi")
+
+
+# ============================================================================
+# TRANSACTION HISTORY — volume_usd, horizontal scroll, clickable verify
+# ============================================================================
+
+def display_transaction_history(positions_df):
+    st.markdown("### 📋 Transaction History")
+    if positions_df.empty:
+        st.info("No transactions to display")
+        return
+
+    df = positions_df.copy()
+    df['symbol']     = df['market_id'].apply(simplify_symbol)
+    df['trader']     = df['trader_id'].apply(mask_trader_id)
+    df['volume_usd'] = df['exit_price'] * df['size']
+
+    page_size   = 10
+    total_pages = max(1, (len(df) - 1) // page_size + 1)
+    page        = st.number_input("Page", 1, total_pages, 1, key="tx_page")
+    start, end  = (page-1)*page_size, min(page*page_size, len(df))
+    ddf         = df.iloc[start:end].copy()
+
+    cols = ['close_time','trader','symbol','product_type','side',
+            'entry_price','exit_price','size','volume_usd','realized_pnl','fees','close_reason']
+
+    fmt = {
+        'close_time':   lambda x: pd.to_datetime(x).strftime('%Y-%m-%d %H:%M'),
+        'entry_price':  lambda x: f"${x:,.2f}",
+        'exit_price':   lambda x: f"${x:,.2f}",
+        'size':         lambda x: f"{x:,.4f}",
+        'volume_usd':   lambda x: f"${x:,.0f}",
+        'realized_pnl': lambda x: f"${x:,.2f}",
+        'fees':         lambda x: f"${x:,.2f}",
     }
-    
-    .fixed-header-container {
-        position: sticky;
-        top: 0;
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        z-index: 1000;
-        padding: 15px 20px 10px 20px;
-        border-bottom: 2px solid rgba(99, 102, 241, 0.3);
-        margin-bottom: 20px;
-        width: 100%;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    }
-    
-    .header-title {
-        font-family: 'IBM Plex Mono', monospace;
-        font-size: 2rem;
-        font-weight: 700;
-        color: #f1f5f9;
-        margin: 0;
-        padding: 0;
-        letter-spacing: -0.02em;
-    }
-    
-    .header-subtitle {
-        color: #94a3b8;
-        font-size: 0.9rem;
-        margin-top: 4px;
-    }
-    
-    .nav-bar {
-        display: flex;
-        gap: 8px;
-        margin-top: 15px;
-        flex-wrap: wrap;
-    }
-    
-    .nav-item {
-        padding: 8px 16px;
-        border-radius: 8px;
-        background: rgba(30, 41, 59, 0.6);
-        color: #94a3b8;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border: 1px solid rgba(99, 102, 241, 0.1);
-        text-align: center;
-        flex: 1;
-        min-width: 80px;
-    }
-    
-    .nav-item:hover {
-        background: rgba(99, 102, 241, 0.2);
-        color: #f1f5f9;
-        border-color: #6366f1;
-        transform: translateY(-2px);
-    }
-    
-    .nav-item-active {
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
-        color: white;
-        border: none;
-        box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
-    }
-    
-    .nav-item-active:hover {
-        background: linear-gradient(135deg, #4f46e5, #7c3aed);
-        color: white;
-    }
-    
-    .profile-badge {
-        background: linear-gradient(135deg, #10b981, #059669);
-        color: white;
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        display: inline-block;
-        margin: 10px 0 5px 0;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .section-header {
-        position: sticky;
-        top: 180px;
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        z-index: 998;
-        padding: 10px 0;
-        border-bottom: 1px solid rgba(99, 102, 241, 0.1);
-        margin-bottom: 15px;
-    }
-    
-    h1, h2, h3 {
-        font-family: 'IBM Plex Mono', monospace;
-        font-weight: 600;
-        color: var(--text-primary);
-        letter-spacing: -0.02em;
-    }
-    
-    .stMetric {
-        background: linear-gradient(135deg, var(--bg-card) 0%, #334155 100%);
-        padding: 20px;
-        border-radius: 12px;
-        border: 1px solid rgba(99, 102, 241, 0.1);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-    }
-    
-    .stMetric:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 12px -1px rgba(99, 102, 241, 0.2);
-        border-color: rgba(99, 102, 241, 0.3);
-    }
-    
-    .stMetric label {
-        color: var(--text-secondary);
-        font-size: 0.875rem;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-    
-    .stMetric [data-testid="stMetricValue"] {
-        font-family: 'IBM Plex Mono', monospace;
-        font-size: 1.875rem;
-        font-weight: 700;
-        color: var(--text-primary);
-    }
-    
-    .stButton>button {
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 0.75rem 1.5rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
-    }
-    
-    .stButton>button:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
-    }
-    
-    [data-testid="stSidebar"] {
-        background: var(--bg-card);
-        border-right: 1px solid rgba(99, 102, 241, 0.1);
-    }
-    
-    .status-live {
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        background: var(--success-color);
-        border-radius: 50%;
-        animation: pulse 2s infinite;
-    }
-    
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.5; }
-    }
-    
-    .greeks-metric {
-        background: rgba(30, 41, 59, 0.4);
-        padding: 12px 16px;
-        border-radius: 8px;
-        border: 1px solid rgba(100, 116, 139, 0.2);
-        text-align: center;
-    }
-    
-    .greeks-metric-label {
-        color: #94a3b8;
-        font-size: 0.75rem;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 4px;
-    }
-    
-    .greeks-metric-value {
-        color: #e2e8f0;
-        font-size: 1.5rem;
-        font-weight: 600;
-        font-family: 'IBM Plex Mono', monospace;
-    }
-    
-    .greeks-metric-help {
-        color: #64748b;
-        font-size: 0.7rem;
-        margin-top: 4px;
-    }
-    
-    .progress-bar-container {
-        background: rgba(30, 41, 59, 0.4);
-        border-radius: 8px;
-        padding: 12px;
-        margin-bottom: 8px;
-    }
-    
-    .progress-bar-label {
-        color: #94a3b8;
-        font-size: 0.875rem;
-        font-weight: 500;
-        margin-bottom: 6px;
-    }
-    
-    .progress-bar-value {
-        color: #f1f5f9;
-        font-size: 1rem;
-        font-weight: 600;
-        font-family: 'IBM Plex Mono', monospace;
-    }
-    
-    .coming-soon {
-        background: rgba(245, 158, 11, 0.1);
-        border: 1px dashed #f59e0b;
-        border-radius: 8px;
-        padding: 20px;
-        text-align: center;
-        color: #f59e0b;
-        font-weight: 600;
-    }
-    
-    .note-instruction {
-        background: rgba(99, 102, 241, 0.1);
-        border-left: 4px solid var(--primary-color);
-        padding: 12px 16px;
-        border-radius: 8px;
-        margin-bottom: 16px;
-        color: #e2e8f0;
-        font-size: 0.95rem;
-    }
-    
-    .note-instruction code {
-        background: #1e293b;
-        padding: 4px 8px;
-        border-radius: 4px;
-        color: var(--primary-color);
-    }
-    </style>
-""", unsafe_allow_html=True)
+    for col, fn in fmt.items():
+        if col in ddf.columns:
+            ddf[col] = ddf[col].apply(fn)
+
+    if 'close_tx_hash' in ddf.columns:
+        ddf['Verify'] = ddf['close_tx_hash'].apply(
+            lambda tx: f'<a href="https://solscan.io/tx/{tx}" target="_blank" class="verify-link">🔗 Verify</a>'
+            if pd.notna(tx) and str(tx).strip() else '—'
+        )
+        cols.append('Verify')
+
+    html = ddf[cols].to_html(escape=False, index=False, classes='tx-table')
+    st.markdown(f'<div class="scroll-x">{html}</div>', unsafe_allow_html=True)
+    st.caption(f"Showing {start+1}–{end} of {len(df)} transactions")
+
+    csv = positions_df.to_csv(index=False)
+    st.download_button("📥 Download CSV", csv,
+                       f"transactions_{datetime.now().strftime('%Y%m%d')}.csv", "text/csv")
+
+
+# ============================================================================
+# KPI BAR
+# ============================================================================
+
+def display_global_kpis(positions_df, summary_df, selected_trader=None):
+    total_pnl  = positions_df['realized_pnl'].sum()  if not positions_df.empty else 0
+    win_rate   = (positions_df['realized_pnl']>0).mean()*100 if not positions_df.empty else 0
+    trade_count= len(positions_df)
+
+    if selected_trader and not summary_df.empty:
+        td = summary_df[summary_df['trader_id']==selected_trader]
+        sharpe  = td['sharpe_ratio'].iloc[0]  if not td.empty else 0
+        sortino = td['sortino_ratio'].iloc[0] if not td.empty and 'sortino_ratio' in td.columns else 0
+    else:
+        sharpe  = summary_df['sharpe_ratio'].mean()  if not summary_df.empty and 'sharpe_ratio'  in summary_df.columns else 0
+        sortino = summary_df['sortino_ratio'].mean() if not summary_df.empty and 'sortino_ratio' in summary_df.columns else 0
+
+    cols = st.columns(5)
+    for col, label, val in zip(cols,
+        ["NET PNL","WIN RATE","TRADES","SHARPE","SORTINO"],
+        [f"${total_pnl:,.2f}", f"{win_rate:.1f}%", str(trade_count), f"{sharpe:.2f}", f"{sortino:.2f}"]
+    ):
+        col.markdown(f"""
+        <div class='metric-major'>
+            <div class='metric-major-label'>{label}</div>
+            <div class='metric-major-value'>{val}</div>
+        </div>""", unsafe_allow_html=True)
 
 
 # ============================================================================
@@ -417,967 +1008,52 @@ st.markdown("""
 
 @st.cache_data
 def load_logo(url):
-    """Load Deriverse logo with error handling."""
     try:
-        response = requests.get(url, timeout=5)
-        if response.status_code == 200:
-            return response.content
-        return None
+        r = requests.get(url, timeout=5)
+        return r.content if r.status_code == 200 else None
     except Exception:
         return None
 
 
 @st.cache_data
 def load_data():
-    """Load analytics data with error handling."""
     try:
         return {
-            'equity': pd.read_csv(DATA_DIR / "equity_curve.csv", parse_dates=["timestamp"]),
-            'positions': pd.read_csv(DATA_DIR / "positions.csv", parse_dates=["open_time", "close_time"]),
-            'summary': pd.read_csv(DATA_DIR / "summary_metrics.csv"),
-            'fees': pd.read_csv(DATA_DIR / "fees_breakdown.csv"),
-            'volume': pd.read_csv(DATA_DIR / "volume_by_market.csv"),
-            'pnl_day': pd.read_csv(DATA_DIR / "pnl_by_day.csv", parse_dates=["date"]),
-            'pnl_hour': pd.read_csv(DATA_DIR / "pnl_by_hour.csv"),
-            'directional': pd.read_csv(DATA_DIR / "directional_bias.csv"),
-            'order_perf': pd.read_csv(DATA_DIR / "order_type_performance.csv"),
-            'greeks': pd.read_csv(DATA_DIR / "greeks_exposure.csv"),
-            'open_positions': pd.read_csv(DATA_DIR / "open_positions.csv", parse_dates=["open_time"])
+            'equity':        pd.read_csv(DATA_DIR/"equity_curve.csv",     parse_dates=["timestamp"]),
+            'positions':     pd.read_csv(DATA_DIR/"positions.csv",         parse_dates=["open_time","close_time"]),
+            'summary':       pd.read_csv(DATA_DIR/"summary_metrics.csv"),
+            'fees':          pd.read_csv(DATA_DIR/"fees_breakdown.csv"),
+            'volume':        pd.read_csv(DATA_DIR/"volume_by_market.csv"),
+            'pnl_day':       pd.read_csv(DATA_DIR/"pnl_by_day.csv",        parse_dates=["date"]),
+            'pnl_hour':      pd.read_csv(DATA_DIR/"pnl_by_hour.csv"),
+            'directional':   pd.read_csv(DATA_DIR/"directional_bias.csv"),
+            'order_perf':    pd.read_csv(DATA_DIR/"order_type_performance.csv"),
+            'greeks':        pd.read_csv(DATA_DIR/"greeks_exposure.csv"),
+            'open_positions':pd.read_csv(DATA_DIR/"open_positions.csv",    parse_dates=["open_time"]),
         }
     except FileNotFoundError as e:
         st.error(f"❌ Data files not found: {e}")
         return None
 
 
-# ============================================================================
-# ADAPTIVE CHART FUNCTIONS
-# ============================================================================
-
-def create_clean_equity_chart(equity_df, positions_df, authenticated_trader=None):
-    """Create clean equity chart with PnL on top, drawdown below."""
-    
-    fig = make_subplots(
-        rows=2, cols=1,
-        subplot_titles=("📈 Cumulative PnL by Trader", "📉 Drawdown Analysis"),
-        vertical_spacing=0.12,
-        row_heights=[0.7, 0.3]
-    )
-    
-    colors = px.colors.qualitative.Set2
-    
-    traders_to_show = equity_df['trader_id'].unique()
-    if not authenticated_trader and len(traders_to_show) > 5:
-        top_traders = get_top_traders(positions_df, n=5, by='activity')
-        equity_df = equity_df[equity_df['trader_id'].isin(top_traders)]
-        traders_to_show = equity_df['trader_id'].unique()
-    
-    for i, trader in enumerate(traders_to_show):
-        trader_data = equity_df[equity_df['trader_id'] == trader].sort_values('timestamp')
-        
-        if authenticated_trader and trader == authenticated_trader:
-            display_name = f"{trader[:8]}...{trader[-8:]}"
-        else:
-            display_name = mask_trader_id(trader)
-        
-        fig.add_trace(
-            go.Scatter(
-                x=trader_data['timestamp'],
-                y=trader_data['cumulative_pnl'],
-                name=display_name,
-                line=dict(width=2, color=colors[i % len(colors)]),
-                legendgroup=f"trader_{i}",
-                hovertemplate="<b>%{fullData.name}</b><br>" +
-                            "Date: %{x}<br>" +
-                            "PnL: $%{y:,.2f}<br>" +
-                            "<extra></extra>"
-            ),
-            row=1, col=1
-        )
-    
-    for i, trader in enumerate(traders_to_show):
-        trader_data = equity_df[equity_df['trader_id'] == trader].sort_values('timestamp')
-        
-        fig.add_trace(
-            go.Scatter(
-                x=trader_data['timestamp'],
-                y=trader_data['drawdown'],
-                name=f"DD",
-                line=dict(width=1.5, dash='dot', color=colors[i % len(colors)]),
-                legendgroup=f"trader_{i}",
-                showlegend=False,
-                hovertemplate="<b>Drawdown</b><br>" +
-                            "Date: %{x}<br>" +
-                            "Drawdown: $%{y:,.2f}<br>" +
-                            "<extra></extra>"
-            ),
-            row=2, col=1
-        )
-    
-    all_drawdowns = equity_df['drawdown'].min()
-    fig.add_hline(
-        y=all_drawdowns, 
-        line_dash="dash", 
-        line_color="red",
-        annotation_text=f"Max System Drawdown: ${all_drawdowns:,.0f}",
-        annotation_position="bottom right",
-        row=2, col=1
-    )
-    
-    fig.update_layout(
-        height=600,
-        hovermode='x unified',
-        template='plotly_dark',
-        plot_bgcolor='rgba(15, 23, 42, 0.9)',
-        paper_bgcolor='rgba(15, 23, 42, 0.9)',
-        legend=dict(
-            title="Traders",
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1
-        )
-    )
-    
-    fig.update_xaxes(title_text="", row=1, col=1)
-    fig.update_xaxes(title_text="Date", row=2, col=1)
-    fig.update_yaxes(title_text="Cumulative PnL ($)", row=1, col=1)
-    fig.update_yaxes(title_text="Drawdown ($)", row=2, col=1)
-    
-    return fig
-
-
-def create_trader_focus_chart(equity_df, positions_df, trader_id):
-    """Create detailed view for a single trader."""
-    
-    trader_equity = equity_df[equity_df['trader_id'] == trader_id].sort_values('timestamp')
-    trader_positions = positions_df[positions_df['trader_id'] == trader_id]
-    
-    fig = make_subplots(
-        rows=3, cols=1,
-        subplot_titles=(
-            f"Cumulative PnL - {mask_trader_id(trader_id)}",
-            "Daily Returns",
-            "Drawdown from Peak"
-        ),
-        vertical_spacing=0.1,
-        row_heights=[0.5, 0.25, 0.25]
-    )
-    
-    fig.add_trace(
-        go.Scatter(
-            x=trader_equity['timestamp'],
-            y=trader_equity['cumulative_pnl'],
-            name="Equity",
-            line=dict(color='#6366f1', width=3),
-            fill='tozeroy',
-            fillcolor='rgba(99, 102, 241, 0.1)'
-        ),
-        row=1, col=1
-    )
-    
-    wins = trader_positions[trader_positions['realized_pnl'] > 0]
-    if not wins.empty:
-        fig.add_trace(
-            go.Scatter(
-                x=wins['close_time'],
-                y=[trader_equity[trader_equity['timestamp'] == t]['cumulative_pnl'].iloc[0] 
-                   if any(trader_equity['timestamp'] == t) else None 
-                   for t in wins['close_time']],
-                mode='markers',
-                name='Wins',
-                marker=dict(color='#10b981', size=8, symbol='triangle-up')
-            ),
-            row=1, col=1
-        )
-    
-    losses = trader_positions[trader_positions['realized_pnl'] < 0]
-    if not losses.empty:
-        fig.add_trace(
-            go.Scatter(
-                x=losses['close_time'],
-                y=[trader_equity[trader_equity['timestamp'] == t]['cumulative_pnl'].iloc[0] 
-                   if any(trader_equity['timestamp'] == t) else None 
-                   for t in losses['close_time']],
-                mode='markers',
-                name='Losses',
-                marker=dict(color='#ef4444', size=8, symbol='triangle-down')
-            ),
-            row=1, col=1
-        )
-    
-    daily = trader_positions.groupby(
-        trader_positions['close_time'].dt.date
-    )['realized_pnl'].sum().reset_index()
-    
-    colors = ['#10b981' if x > 0 else '#ef4444' for x in daily['realized_pnl']]
-    
-    fig.add_trace(
-        go.Bar(
-            x=daily['close_time'],
-            y=daily['realized_pnl'],
-            marker_color=colors,
-            showlegend=False
-        ),
-        row=2, col=1
-    )
-    
-    fig.add_trace(
-        go.Scatter(
-            x=trader_equity['timestamp'],
-            y=trader_equity['drawdown'],
-            name='Drawdown',
-            line=dict(color='#ef4444', width=2),
-            fill='tozeroy',
-            fillcolor='rgba(239, 68, 68, 0.1)'
-        ),
-        row=3, col=1
-    )
-    
-    max_dd = trader_equity['drawdown'].min()
-    fig.add_hline(
-        y=max_dd,
-        line_dash="dash",
-        line_color="#ef4444",
-        annotation_text=f"Max DD: ${max_dd:,.0f}",
-        row=3, col=1
-    )
-    
-    fig.update_layout(
-        height=800,
-        hovermode='x unified',
-        template='plotly_dark',
-        plot_bgcolor='rgba(15, 23, 42, 0.9)',
-        paper_bgcolor='rgba(15, 23, 42, 0.9)',
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1
-        )
-    )
-    
-    return fig
-
-
-def create_trader_summary_table(equity_df, positions_df):
-    """Create summary table with mini sparklines."""
-    
-    st.markdown("### 📋 Trader Performance Summary")
-    
-    traders = []
-    for trader in equity_df['trader_id'].unique()[:10]:
-        trader_equity = equity_df[equity_df['trader_id'] == trader].sort_values('timestamp')
-        trader_positions = positions_df[positions_df['trader_id'] == trader]
-        
-        total_pnl = trader_positions['realized_pnl'].sum()
-        win_rate = (trader_positions['realized_pnl'] > 0).mean() * 100
-        max_dd = trader_equity['drawdown'].min()
-        trades = len(trader_positions)
-        
-        sparkline = trader_equity['cumulative_pnl'].values
-        if len(sparkline) > 1:
-            normalized = (sparkline - sparkline.min()) / (sparkline.max() - sparkline.min() + 1)
-        else:
-            normalized = [0.5]
-        
-        traders.append({
-            'trader': mask_trader_id(trader),
-            'pnl': total_pnl,
-            'win_rate': win_rate,
-            'max_dd': max_dd,
-            'trades': trades,
-            'sparkline': normalized[-20:],
-            'trend': '📈' if total_pnl > 0 and len(sparkline) > 1 and sparkline[-1] > sparkline[0] else '📉'
-        })
-    
-    traders.sort(key=lambda x: x['pnl'], reverse=True)
-    
-    cols = st.columns([1.2, 1.5, 1, 1, 1, 2])
-    cols[0].markdown("**Trader**")
-    cols[1].markdown("**Equity Trend**")
-    cols[2].markdown("**PnL**")
-    cols[3].markdown("**Win Rate**")
-    cols[4].markdown("**Max DD**")
-    cols[5].markdown("**Activity**")
-    
-    st.divider()
-    
-    for i, t in enumerate(traders):
-        cols = st.columns([1.2, 1.5, 1, 1, 1, 2])
-        
-        cols[0].markdown(f"`{t['trader']}`")
-        
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(
-            y=t['sparkline'],
-            mode='lines',
-            line=dict(color='#10b981' if t['pnl'] > 0 else '#ef4444', width=2),
-            showlegend=False
-        ))
-        fig.update_layout(
-            height=40,
-            margin=dict(l=0, r=0, t=0, b=0),
-            xaxis=dict(showticklabels=False, showgrid=False),
-            yaxis=dict(showticklabels=False, showgrid=False),
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)'
-        )
-        
-        cols[1].plotly_chart(
-            fig, 
-            width='stretch',
-            config={'displayModeBar': False},
-            key=f"sparkline_{i}"
-        )
-        
-        pnl_color = "#10b981" if t['pnl'] > 0 else "#ef4444"
-        cols[2].markdown(f"<span style='color:{pnl_color};font-weight:600;'>${t['pnl']:,.0f}</span>", unsafe_allow_html=True)
-        cols[3].markdown(f"{t['win_rate']:.0f}%")
-        cols[4].markdown(f"${abs(t['max_dd']):,.0f}")
-        cols[5].markdown(f"{t['trades']} trades {t['trend']}")
-
-
-def display_equity_section(equity_df, positions_df, authenticated_trader=None):
-    """Complete equity analysis section with tabs."""
-    
-    st.markdown('<div class="section-header">', unsafe_allow_html=True)
-    st.header("📈 Performance Analysis")
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    tab1, tab2, tab3 = st.tabs([
-        "📊 Overview Comparison", 
-        "👤 Individual Analysis", 
-        "📋 Summary Table"
-    ])
-    
-    with tab1:
-        st.subheader("Multi-Trader Performance")
-        st.caption("Top panel: Cumulative PnL | Bottom panel: Drawdown")
-        
-        fig = create_clean_equity_chart(equity_df, positions_df, authenticated_trader)
-        st.plotly_chart(fig, width='stretch')
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            if not equity_df.empty:
-                best_trader = equity_df.groupby('trader_id')['cumulative_pnl'].last().idxmax()
-                best_pnl = equity_df.groupby('trader_id')['cumulative_pnl'].last().max()
-                st.info(f"🏆 **Best Performer:** {mask_trader_id(best_trader)} (${best_pnl:,.2f})")
-        
-        with col2:
-            if not equity_df.empty:
-                worst_dd_trader = equity_df.groupby('trader_id')['drawdown'].min().idxmin()
-                worst_dd = equity_df.groupby('trader_id')['drawdown'].min().min()
-                st.warning(f"⚠️ **Highest Risk:** {mask_trader_id(worst_dd_trader)} (Max DD: ${worst_dd:,.2f})")
-    
-    with tab2:
-        if authenticated_trader:
-            fig = create_trader_focus_chart(equity_df, positions_df, authenticated_trader)
-            st.plotly_chart(fig, width='stretch')
-        else:
-            traders = equity_df['trader_id'].unique()
-            selected = st.selectbox(
-                "Select Trader to Analyze",
-                traders,
-                format_func=mask_trader_id
-            )
-            if selected:
-                fig = create_trader_focus_chart(equity_df, positions_df, selected)
-                st.plotly_chart(fig, width='stretch')
-    
-    with tab3:
-        create_trader_summary_table(equity_df, positions_df)
-
-
-def display_liquidation_analytics(positions_df):
-    """Complete liquidation analysis with risk dashboard."""
-    
-    st.markdown('<div class="section-header">', unsafe_allow_html=True)
-    st.header("⚠️ Liquidation Risk Monitoring")
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    if 'close_reason' not in positions_df.columns:
-        st.info("ℹ️ Liquidation tracking not available for this data")
-        return
-    
-    liquidations = positions_df[positions_df['close_reason'] == 'liquidation'].copy()
-    
-    if liquidations.empty:
-        st.success("✅ No liquidations in selected period - clean trading!")
-        return
-    
-    col1, col2, col3 = st.columns(3)
-    
-    total_liq = len(liquidations)
-    unique_traders = liquidations['trader_id'].nunique()
-    total_liq_loss = liquidations['realized_pnl'].sum()
-    
-    with col1:
-        st.metric("Total Liquidations", total_liq)
-    with col2:
-        st.metric("Affected Traders", unique_traders)
-    with col3:
-        st.metric("Total Loss", f"${abs(total_liq_loss):,.0f}")
-    
-    st.subheader("📊 Liquidation Rate by Trader")
-    st.caption("Shows % of trades that ended in liquidation - lower is better")
-    
-    trader_stats = []
-    for trader in positions_df['trader_id'].unique():
-        trader_trades = positions_df[positions_df['trader_id'] == trader]
-        trader_liq = len(trader_trades[trader_trades['close_reason'] == 'liquidation'])
-        total_closed = len(trader_trades[trader_trades['close_reason'].isin(['closed', 'liquidation'])])
-        
-        if total_closed > 0:
-            liq_rate = (trader_liq / total_closed) * 100
-            trader_stats.append({
-                'trader': mask_trader_id(trader),
-                'liq_rate': liq_rate,
-                'liq_count': trader_liq,
-                'total_trades': total_closed
-            })
-    
-    if trader_stats:
-        df = pd.DataFrame(trader_stats).sort_values('liq_rate', ascending=False)
-        
-        colors = ['#10b981' if x < 2 else '#f59e0b' if x < 5 else '#ef4444' 
-                  for x in df['liq_rate']]
-        
-        fig = go.Figure()
-        fig.add_trace(go.Bar(
-            x=df['trader'],
-            y=df['liq_rate'],
-            marker_color=colors,
-            text=[f"{rate:.1f}%<br>({liq}/{total})" 
-                  for rate, liq, total in zip(df['liq_rate'], df['liq_count'], df['total_trades'])],
-            textposition='outside'
-        ))
-        
-        fig.add_hline(y=2, line_dash="dash", line_color="#10b981", 
-                      annotation_text="Low Risk", annotation_position="bottom right")
-        fig.add_hline(y=5, line_dash="dash", line_color="#f59e0b",
-                      annotation_text="Medium Risk", annotation_position="bottom right")
-        
-        fig.update_layout(
-            height=400,
-            xaxis_title="Trader",
-            yaxis_title="Liquidation Rate (%)",
-            template='plotly_dark',
-            plot_bgcolor='rgba(15, 23, 42, 0.9)',
-            paper_bgcolor='rgba(15, 23, 42, 0.9)'
-        )
-        fig.update_xaxes(tickangle=-45)
-        st.plotly_chart(fig, width='stretch', key="liquidation_rate_chart")
-    
-    st.subheader("💰 Financial Impact Analysis")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        liq_by_market = liquidations.groupby('market_id')['realized_pnl'].sum().abs().reset_index()
-        liq_by_market['symbol'] = liq_by_market['market_id'].apply(simplify_symbol)
-        liq_by_market = liq_by_market.sort_values('realized_pnl', ascending=False).head(5)
-        
-        fig = px.bar(
-            liq_by_market,
-            x='symbol',
-            y='realized_pnl',
-            title='Top 5 Markets by Liquidation Loss',
-            color='realized_pnl',
-            color_continuous_scale='Reds'
-        )
-        fig.update_layout(height=300, template='plotly_dark')
-        st.plotly_chart(fig, width='stretch', key="liquidation_by_market")
-    
-    with col2:
-        liq_by_trader = liquidations.groupby('trader_id')['realized_pnl'].sum().abs().reset_index()
-        liq_by_trader['trader'] = liq_by_trader['trader_id'].apply(mask_trader_id)
-        liq_by_trader = liq_by_trader.sort_values('realized_pnl', ascending=False).head(5)
-        
-        fig = px.bar(
-            liq_by_trader,
-            x='trader',
-            y='realized_pnl',
-            title='Top 5 Traders by Liquidation Loss',
-            color='realized_pnl',
-            color_continuous_scale='Reds'
-        )
-        fig.update_layout(height=300, template='plotly_dark')
-        st.plotly_chart(fig, width='stretch', key="liquidation_by_trader")
-    
-    with st.expander("🔍 Pattern Analysis"):
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            liquidations['hour'] = pd.to_datetime(liquidations['close_time']).dt.hour
-            liq_by_hour = liquidations.groupby('hour').size().reset_index(name='count')
-            
-            fig = px.line(
-                liq_by_hour,
-                x='hour',
-                y='count',
-                title='Liquidations by Hour of Day',
-                markers=True
-            )
-            fig.update_layout(height=300, template='plotly_dark')
-            st.plotly_chart(fig, width='stretch', key="liquidation_by_hour")
-        
-        with col2:
-            top_market = liquidations['market_id'].mode()
-            if not top_market.empty:
-                st.info(f"🔥 **Riskiest Market:** {simplify_symbol(top_market.iloc[0])}")
-            
-            liq_hours = pd.to_datetime(liquidations['close_time']).dt.hour
-            top_hour = liq_hours.mode()
-            if not top_hour.empty:
-                st.info(f"⏰ **Riskiest Hour:** {top_hour.iloc[0]}:00 UTC")
-            
-            avg_loss = liquidations['realized_pnl'].mean()
-            st.metric("Average Loss per Liquidation", f"${abs(avg_loss):,.2f}")
-            
-            with st.expander("📋 Liquidation History"):
-                liq_display = liquidations[['close_time', 'trader_id', 'market_id', 'side', 
-                                           'size', 'exit_price', 'realized_pnl', 'fees']].copy()
-                liq_display['trader'] = liq_display['trader_id'].apply(mask_trader_id)
-                liq_display['symbol'] = liq_display['market_id'].apply(simplify_symbol)
-                liq_display = liq_display.sort_values('close_time', ascending=False)
-                
-                st.dataframe(
-                    liq_display[['close_time', 'trader', 'symbol', 'side', 
-                                'size', 'exit_price', 'realized_pnl', 'fees']].style.format({
-                        'close_time': lambda x: x.strftime('%Y-%m-%d %H:%M'),
-                        'size': '{:.4f}',
-                        'exit_price': '${:.2f}',
-                        'realized_pnl': '${:.2f}',
-                        'fees': '${:.2f}'
-                    }).map(
-                        lambda x: 'color: #ef4444; font-weight: bold',
-                        subset=['realized_pnl']
-                    ),
-                    width='stretch',
-                    hide_index=True,
-                    column_config={
-                        "close_time": "Time",
-                        "trader": "Trader",
-                        "symbol": "Symbol",
-                        "side": "Side",
-                        "size": "Size",
-                        "exit_price": "Price",
-                        "realized_pnl": "Loss",
-                        "fees": "Fees"
-                    }
-                )
-
-
-def display_order_type_performance(order_perf_df, positions_df):
-    """Order type chart with proper classification."""
-    
-    st.markdown('<div class="section-header">', unsafe_allow_html=True)
-    st.header("📊 Order Type Performance")
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    if positions_df.empty:
-        st.info("No trade data available")
-        return
-    
-    df = positions_df.copy()
-    
-    if 'order_type' in df.columns and not df['order_type'].isna().all():
-        order_types = df['order_type'].value_counts()
-        st.caption(f"📊 Based on {len(order_types)} order types from trade data")
-    else:
-        df['order_type'] = df.apply(lambda row: 
-            f"{row['product_type']}" if row['product_type'] in ['option'] else
-            f"{row['product_type']}_market" if row['duration_seconds'] < 300 else
-            f"{row['product_type']}_limit" if row['duration_seconds'] < 3600 else
-            f"{row['product_type']}_stop",
-            axis=1
-        )
-        st.caption("📊 Order types derived from product type and duration")
-    
-    result = []
-    for order_type, group in df.groupby('order_type'):
-        trade_count = len(group)
-        if trade_count > 0:
-            result.append({
-                'order_type': order_type,
-                'trade_count': trade_count,
-                'avg_pnl': group['realized_pnl'].mean(),
-                'win_rate': (group['realized_pnl'] > 0).mean(),
-                'total_pnl': group['realized_pnl'].sum()
-            })
-    
-    if not result:
-        st.warning("Insufficient data for order type analysis")
-        return
-    
-    order_df = pd.DataFrame(result)
-    order_df = order_df.sort_values('trade_count', ascending=False)
-    
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
-    
-    fig.add_trace(
-        go.Bar(
-            x=order_df['order_type'],
-            y=order_df['win_rate'] * 100,
-            name='Win Rate',
-            marker_color='#6366f1',
-            text=[f"{w:.1f}%" for w in order_df['win_rate'] * 100],
-            textposition='inside',
-            textfont=dict(color='white'),
-            hovertemplate='<b>%{x}</b><br>Win Rate: %{y:.1f}%<br>Trades: %{customdata}<extra></extra>',
-            customdata=order_df['trade_count']
-        ),
-        secondary_y=False,
-    )
-    
-    colors = ['#10b981' if x > 0 else '#ef4444' for x in order_df['avg_pnl']]
-    
-    fig.add_trace(
-        go.Scatter(
-            x=order_df['order_type'],
-            y=order_df['avg_pnl'],
-            name='Avg PnL',
-            mode='lines+markers',
-            line=dict(color='#f1f5f9', width=3),
-            marker=dict(size=10, color=colors),
-            text=[f"${x:,.0f}" for x in order_df['avg_pnl']],
-            textposition='top center',
-            hovertemplate='<b>%{x}</b><br>Avg PnL: $%{y:,.2f}<extra></extra>'
-        ),
-        secondary_y=True,
-    )
-    
-    fig.update_layout(
-        title="Order Type Performance: Win Rate vs Average PnL",
-        xaxis_title="Order Type",
-        hovermode='x unified',
-        height=500,
-        template='plotly_dark',
-        plot_bgcolor='rgba(15, 23, 42, 0.9)',
-        paper_bgcolor='rgba(15, 23, 42, 0.9)',
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1
-        )
-    )
-    
-    fig.update_yaxes(title_text="Win Rate (%)", secondary_y=False, range=[0, 100])
-    fig.update_yaxes(title_text="Average PnL ($)", secondary_y=True)
-    fig.add_hline(y=0, line_dash="dash", line_color="gray", opacity=0.5, secondary_y=True)
-    
-    st.plotly_chart(fig, width='stretch')
-    
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        best_win = order_df.loc[order_df['win_rate'].idxmax()]
-        st.metric(
-            "🏆 Best Win Rate",
-            f"{best_win['win_rate']*100:.1f}%",
-            f"{best_win['order_type']}"
-        )
-    
-    with col2:
-        best_pnl = order_df.loc[order_df['avg_pnl'].idxmax()]
-        st.metric(
-            "💰 Best Avg PnL",
-            f"${best_pnl['avg_pnl']:,.2f}",
-            f"{best_pnl['order_type']}"
-        )
-    
-    with col3:
-        most_used = order_df.loc[order_df['trade_count'].idxmax()]
-        st.metric(
-            "📊 Most Used",
-            f"{most_used['trade_count']} trades",
-            f"{most_used['order_type']}"
-        )
-
-
-def display_volume_analysis(positions_df):
-    """Volume analysis with product tabs and progress bars."""
-    
-    st.markdown('<div class="section-header">', unsafe_allow_html=True)
-    st.header("📊 Trading Volume Analysis")
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    if positions_df.empty:
-        st.info("No volume data available")
-        return
-    
-    positions_df = calculate_volume_usd(positions_df)
-    
-    col1, col2, col3, col4 = st.columns(4)
-    
-    total_volume = positions_df['volume_usd'].sum()
-    total_fees = positions_df['fees'].sum()
-    unique_symbols = positions_df['market_id'].apply(simplify_symbol).nunique()
-    
-    symbol_vol = positions_df.groupby(positions_df['market_id'].apply(simplify_symbol))['volume_usd'].sum()
-    vol_shares = symbol_vol / total_volume if total_volume > 0 else pd.Series([0])
-    hhi = (vol_shares ** 2).sum() * 10000
-    
-    with col1:
-        st.metric("Total Volume", f"${total_volume:,.0f}")
-    with col2:
-        st.metric("Total Fees", f"${total_fees:,.0f}")
-    with col3:
-        st.metric("Active Symbols", unique_symbols)
-    with col4:
-        concentration = "Low" if hhi < 1500 else "Medium" if hhi < 2500 else "High"
-        st.metric("Concentration", f"{hhi:.0f} ({concentration})")
-    
-    product_tabs = st.tabs(["📈 All Products", "📍 Spot", "⚡ Perpetual", "🎯 Options"])
-    
-    products = {
-        "📈 All Products": positions_df,
-        "📍 Spot": positions_df[positions_df['product_type'] == 'spot'],
-        "⚡ Perpetual": positions_df[positions_df['product_type'] == 'perp'],
-        "🎯 Options": positions_df[positions_df['product_type'] == 'option']
-    }
-    
-    for tab_idx, (tab, (tab_name, product_df)) in enumerate(zip(product_tabs, products.items())):
-        with tab:
-            if product_df.empty:
-                st.info(f"No {tab_name} trades in selected period")
-                continue
-            
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.markdown(f"#### Volume by Symbol - Top 5")
-                
-                symbol_vol = product_df.groupby(product_df['market_id'].apply(simplify_symbol)).agg({
-                    'volume_usd': 'sum',
-                    'realized_pnl': 'sum',
-                    'fees': 'sum'
-                }).sort_values('volume_usd', ascending=False).head(5)
-                
-                total = symbol_vol['volume_usd'].sum()
-                
-                for symbol, row in symbol_vol.iterrows():
-                    pct = (row['volume_usd'] / total * 100) if total > 0 else 0
-                    pnl_color = "#10b981" if row['realized_pnl'] > 0 else "#ef4444"
-                    
-                    st.markdown(f"""
-                    <div class='progress-bar-container'>
-                        <div style='display: flex; justify-content: space-between; margin-bottom: 6px;'>
-                            <span class='progress-bar-label'>{symbol}</span>
-                            <span class='progress-bar-value'>
-                                ${row['volume_usd']:,.0f} ({pct:.1f}%) 
-                                <span style='color:{pnl_color};'>${row['realized_pnl']:,.0f}</span>
-                            </span>
-                        </div>
-                        <div style='background: rgba(100, 116, 139, 0.3); border-radius: 4px; height: 8px;'>
-                            <div style='
-                                background: #6366f1;
-                                width: {pct}%;
-                                height: 100%;
-                                border-radius: 4px;
-                                transition: width 0.3s ease;
-                            '></div>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                
-                st.markdown("#### Fee Generation")
-                fee_by_symbol = product_df.groupby(product_df['market_id'].apply(simplify_symbol))['fees'].sum().sort_values(ascending=False).head(5)
-                
-                fig = px.bar(
-                    x=fee_by_symbol.values,
-                    y=fee_by_symbol.index,
-                    orientation='h',
-                    title='Top 5 Symbols by Fees',
-                    color=fee_by_symbol.values,
-                    color_continuous_scale='Reds'
-                )
-                fig.update_layout(height=250, template='plotly_dark')
-                st.plotly_chart(fig, width='stretch', key=f"fee_chart_{tab_idx}")
-            
-            with col2:
-                st.markdown(f"#### Long vs Short Distribution")
-                
-                if tab_name == "🎯 Options" and 'option_type' in product_df.columns:
-                    calls = product_df[product_df['option_type'] == 'call']['volume_usd'].sum()
-                    puts = product_df[product_df['option_type'] == 'put']['volume_usd'].sum()
-                    
-                    fig = go.Figure(data=[go.Pie(
-                        labels=['Calls', 'Puts'],
-                        values=[calls, puts],
-                        hole=0.4,
-                        marker_colors=['#10b981', '#f59e0b']
-                    )])
-                    fig.update_layout(height=300, template='plotly_dark')
-                    st.plotly_chart(fig, width='stretch', key=f"options_pie_{tab_idx}")
-                    
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        avg_premium = product_df['exit_price'].mean()
-                        st.metric("Avg Premium", f"${avg_premium:,.2f}")
-                    with col2:
-                        total_options = len(product_df)
-                        st.metric("Option Trades", total_options)
-                
-                else:
-                    long_vol = product_df[product_df['side'].isin(['long', 'buy'])]['volume_usd'].sum()
-                    short_vol = product_df[product_df['side'].isin(['short', 'sell'])]['volume_usd'].sum()
-                    
-                    fig = go.Figure(data=[go.Pie(
-                        labels=['Long', 'Short'],
-                        values=[long_vol, short_vol],
-                        hole=0.4,
-                        marker_colors=['#10b981', '#ef4444']
-                    )])
-                    fig.update_layout(height=300, template='plotly_dark')
-                    st.plotly_chart(fig, width='stretch', key=f"long_short_pie_{tab_idx}")
-                    
-                    ratio = (long_vol / short_vol) if short_vol > 0 else float('inf')
-                    st.metric("Long/Short Ratio", f"{ratio:.2f}x")
-                
-                st.markdown("#### Average Trade Size")
-                avg_size = product_df['volume_usd'].mean()
-                median_size = product_df['volume_usd'].median()
-                
-                fig = go.Figure()
-                fig.add_trace(go.Box(
-                    y=product_df['volume_usd'],
-                    name='Trade Size Distribution',
-                    boxmean='sd',
-                    marker_color='#6366f1'
-                ))
-                fig.update_layout(height=200, template='plotly_dark', showlegend=False)
-                st.plotly_chart(fig, width='stretch', key=f"box_chart_{tab_idx}")
-                
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.metric("Average", f"${avg_size:,.0f}")
-                with col2:
-                    st.metric("Median", f"${median_size:,.0f}")
-
-
-def display_greeks_analysis(greeks_df):
-    """Greeks analysis with 'Available Soon' for missing metrics."""
-    
-    st.markdown('<div class="section-header">', unsafe_allow_html=True)
-    st.header("🔬 Options Greeks Exposure")
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    if greeks_df.empty:
-        st.info("No options Greeks data available")
-        return
-    
-    col1, col2, col3, col4 = st.columns(4)
-    
-    total_delta = greeks_df['net_delta'].sum()
-    delta_color = "#10b981" if total_delta > 0 else "#ef4444"
-    
-    with col1:
-        st.markdown(f"""
-            <div class='greeks-metric'>
-                <div class='greeks-metric-label'>Net Delta</div>
-                <div class='greeks-metric-value' style='color: {delta_color}'>{total_delta:,.2f}</div>
-                <div class='greeks-metric-help'>Directional exposure</div>
-            </div>
-        """, unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown(f"""
-            <div class='greeks-metric'>
-                <div class='greeks-metric-label'>Gamma</div>
-                <div class='greeks-metric-value'>🔜 Available Soon</div>
-                <div class='greeks-metric-help'>Delta sensitivity</div>
-            </div>
-        """, unsafe_allow_html=True)
-    
-    with col3:
-        st.markdown(f"""
-            <div class='greeks-metric'>
-                <div class='greeks-metric-label'>Theta</div>
-                <div class='greeks-metric-value'>🔜 Available Soon</div>
-                <div class='greeks-metric-help'>Time decay/day</div>
-            </div>
-        """, unsafe_allow_html=True)
-    
-    with col4:
-        total_positions = greeks_df['total_option_positions'].sum()
-        st.markdown(f"""
-            <div class='greeks-metric'>
-                <div class='greeks-metric-label'>Positions</div>
-                <div class='greeks-metric-value'>{int(total_positions)}</div>
-                <div class='greeks-metric-help'>Active contracts</div>
-            </div>
-        """, unsafe_allow_html=True)
-    
-    st.subheader("📊 Delta Exposure by Trader")
-    
-    display_df = greeks_df.copy()
-    display_df['trader'] = display_df['trader_id'].apply(mask_trader_id)
-    display_df = display_df.sort_values('net_delta', ascending=False)
-    
-    fig = px.bar(
-        display_df,
-        x='trader',
-        y='net_delta',
-        color='net_delta',
-        color_continuous_scale='RdBu',
-        color_continuous_midpoint=0,
-        title='Net Delta by Trader'
-    )
-    fig.update_layout(
-        height=400,
-        template='plotly_dark',
-        plot_bgcolor='rgba(15, 23, 42, 0.9)',
-        paper_bgcolor='rgba(15, 23, 42, 0.9)'
-    )
-    fig.update_xaxes(tickangle=-45)
-    st.plotly_chart(fig, width='stretch')
-    
-    st.subheader("📋 Greeks Breakdown")
-    
-    st.dataframe(
-        display_df[['trader', 'total_option_positions', 'net_delta']].style.format({
-            'net_delta': '{:,.2f}',
-            'total_option_positions': '{:.0f}'
-        }).background_gradient(
-            subset=['net_delta'],
-            cmap='RdYlGn',
-            vmin=-100,
-            vmax=100
-        ),
-        width='stretch',
-        hide_index=True,
-        column_config={
-            "trader": "Trader",
-            "total_option_positions": "Positions",
-            "net_delta": "Delta"
-        }
-    )
-
-
-# ============================================================================
-# DATA LOADING
-# ============================================================================
-
 with st.spinner('🔄 Loading analytics...'):
     data = load_data()
 
 if data is None or (data['positions'].empty and data['open_positions'].empty):
-    st.error("❌ **No analytics data found**")
+    st.error("❌ No analytics data found")
     st.info("💡 Run: `python -m scripts.run_analytics`")
     st.stop()
+
 
 # ============================================================================
 # SIDEBAR
 # ============================================================================
 
-logo_url = "https://deriverse.gitbook.io/deriverse-v1/~gitbook/image?url=https%3A%2F%2F3705106568-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Forganizations%252FVbKUpgicSXo9QHWM7uzI%252Fsites%252Fsite_oPxtF%252Ficon%252FNsfAUtLJH778Cn5Dd7zK%252Ffavicon.ico%3Falt%3Dmedia%26token%3D4099bf73-ccd6-4d9f-8bbb-01cdc664ddb0&width=32&dpr=3&quality=100&sign=13d31bb2&sv=2"
+logo_url = ("https://deriverse.gitbook.io/deriverse-v1/~gitbook/image"
+            "?url=https%3A%2F%2F3705106568-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com"
+            "%2Fo%2Forganizations%252FVbKUpgicSXo9QHWM7uzI%252Fsites%252Fsite_oPxtF%252Ficon%252FNsfAUtLJH778Cn5Dd7zK"
+            "%252Ffavicon.ico%3Falt%3Dmedia%26token%3D4099bf73-ccd6-4d9f-8bbb-01cdc664ddb0"
+            "&width=32&dpr=3&quality=100&sign=13d31bb2&sv=2")
 
 logo_bytes = load_logo(logo_url)
 if logo_bytes:
@@ -1388,14 +1064,12 @@ else:
 st.sidebar.markdown("---")
 st.sidebar.success("🔒 **Secure & Private**\nRead-only • Local-first")
 st.sidebar.markdown("---")
-
 st.sidebar.header("🔐 Access Control")
 is_admin = check_admin_password()
 
 st.sidebar.header("👤 Trader Access")
-
 all_traders = sorted(pd.concat([
-    data['positions']['trader_id'] if not data['positions'].empty else pd.Series([]),
+    data['positions']['trader_id']      if not data['positions'].empty      else pd.Series([]),
     data['open_positions']['trader_id'] if not data['open_positions'].empty else pd.Series([])
 ]).unique())
 
@@ -1404,13 +1078,8 @@ if "view_mode" not in st.session_state:
 
 if st.session_state.view_mode == "all_traders":
     st.sidebar.info("🌐 **Mode:** All Traders View")
-    
-    wallet_input = st.sidebar.text_input(
-        "Enter Your Wallet Address",
-        placeholder="7KNXqvHu2QWvDq8cGPGvKZhFvYnz...",
-        help="Enter your wallet to access personal dashboard"
-    )
-    
+    wallet_input = st.sidebar.text_input("Enter Your Wallet Address",
+                                          placeholder="7KNXqvHu2QWvDq8cGPGvKZhFvYnz...")
     if st.sidebar.button("🔑 Enter Personal Dashboard"):
         if wallet_input and len(wallet_input) > 32:
             if wallet_input in all_traders:
@@ -1421,144 +1090,44 @@ if st.session_state.view_mode == "all_traders":
                 st.sidebar.error("❌ Wallet not found in trading data")
         else:
             st.sidebar.warning("⚠️ Please enter a valid wallet address")
-
 else:
     if "authenticated_trader" in st.session_state:
-        trader = st.session_state.authenticated_trader
-        st.sidebar.success(f"✅ **Personal Mode:** {mask_trader_id(trader)}")
-        
+        st.sidebar.success(f"✅ **Personal Mode:** {mask_trader_id(st.session_state.authenticated_trader)}")
         if st.sidebar.button("👥 Return to All Traders View"):
             st.session_state.view_mode = "all_traders"
             st.rerun()
 
 st.sidebar.markdown("---")
-
 st.sidebar.header("🎛️ Filters")
 st.sidebar.markdown("**📅 Date Range**")
 
 if is_admin:
-    date_option = st.sidebar.radio(
-        "Range (Admin)",
-        ["Last 7 Days", "Last 30 Days", "All Time", "Custom"],
-        index=1,
-        horizontal=True,
-        label_visibility="collapsed"
-    )
+    date_option = st.sidebar.radio("Range", ["Last 7 Days","Last 30 Days","All Time","Custom"],
+                                    index=1, horizontal=True, label_visibility="collapsed")
 else:
-    date_option = st.sidebar.radio(
-        "Range",
-        ["Last 7 Days", "Last 30 Days", "Custom (Admin Only)"],
-        index=1,
-        horizontal=True,
-        label_visibility="collapsed"
-    )
-    
+    date_option = st.sidebar.radio("Range", ["Last 7 Days","Last 30 Days","Custom (Admin Only)"],
+                                    index=1, horizontal=True, label_visibility="collapsed")
     if date_option == "Custom (Admin Only)":
-        st.sidebar.warning("🔐 Custom date range requires admin authentication")
+        st.sidebar.warning("🔐 Requires admin authentication")
         date_option = "Last 30 Days"
 
-if data and not data['positions'].empty:
+if not data['positions'].empty:
     min_date = data['positions']['close_time'].min().date()
     max_date = data['positions']['close_time'].max().date()
-    
-    if date_option == "Last 7 Days":
-        start_date = max_date - timedelta(days=7)
-        end_date = max_date
-    elif date_option == "Last 30 Days":
-        start_date = max_date - timedelta(days=30)
-        end_date = max_date
-    elif date_option == "Custom" or date_option == "Custom (Admin Only)":
-        if is_admin:
-            col1, col2 = st.sidebar.columns(2)
-            with col1:
-                start_date = st.date_input("From", min_date, min_value=min_date, max_value=max_date)
-            with col2:
-                end_date = st.date_input("To", max_date, min_value=min_date, max_value=max_date)
-        else:
-            start_date = max_date - timedelta(days=30)
-            end_date = max_date
+    if   date_option == "Last 7 Days":  start_date, end_date = max_date-timedelta(7),  max_date
+    elif date_option == "Last 30 Days": start_date, end_date = max_date-timedelta(30), max_date
+    elif date_option in ("Custom","Custom (Admin Only)") and is_admin:
+        sc1,sc2 = st.sidebar.columns(2)
+        start_date = sc1.date_input("From", min_date, min_value=min_date, max_value=max_date)
+        end_date   = sc2.date_input("To",   max_date, min_value=min_date, max_value=max_date)
     else:
-        start_date = min_date
-        end_date = max_date
+        start_date, end_date = min_date, max_date
 
-if data and not data['positions'].empty:
-    all_markets = sorted(data['positions']['market_id'].unique())
-    symbol_map = {m: simplify_symbol(m) for m in all_markets}
-    unique_symbols = sorted(set(symbol_map.values()))
-    
-    selected_symbols = st.sidebar.multiselect(
-        "Symbols",
-        unique_symbols,
-        default=[],
-        help="Select symbols to analyze (empty = all symbols)"
-    )
-    
-    if selected_symbols:
-        selected_markets = [m for m in all_markets if simplify_symbol(m) in selected_symbols]
-    else:
-        selected_markets = []
-else:
-    selected_markets = []
-
+all_markets    = sorted(data['positions']['market_id'].unique()) if not data['positions'].empty else []
+unique_symbols = sorted(set(simplify_symbol(m) for m in all_markets))
+selected_symbols = st.sidebar.multiselect("Symbols", unique_symbols, default=[])
+selected_markets = [m for m in all_markets if simplify_symbol(m) in selected_symbols] if selected_symbols else []
 st.sidebar.markdown("---")
-
-
-# ============================================================================
-# FIXED HEADER & NAVIGATION - NEVER SCROLLS
-# ============================================================================
-
-if "nav" not in st.session_state:
-    st.session_state.nav = "overview"
-
-with st.container():
-    st.markdown('<div class="fixed-header-container">', unsafe_allow_html=True)
-    
-    col1, col2 = st.columns([1, 8])
-    
-    with col1:
-        if logo_bytes:
-            st.image(logo_bytes, width=60)
-        else:
-            st.markdown("### 🔷")
-    
-    with col2:
-        st.markdown('<div class="header-title">Deriverse Trading Analytics</div>', unsafe_allow_html=True)
-        st.markdown('<div class="header-subtitle">Real-time performance insights • Local-first security</div>', unsafe_allow_html=True)
-    
-    if st.session_state.view_mode == "personal" and "authenticated_trader" in st.session_state:
-        st.markdown(f"""
-            <div class='profile-badge'>
-                🔐 {mask_trader_id(st.session_state.authenticated_trader)}
-            </div>
-        """, unsafe_allow_html=True)
-    
-    nav_items = [
-        ("📊 Overview", "overview"),
-        ("📈 Performance", "performance"),
-        ("⚠️ Risk", "risk"),
-        ("📊 Volume", "volume"),
-        ("📋 Orders", "orders"),
-        ("🔬 Greeks", "greeks"),
-        ("📝 Journal", "journal")
-    ]
-    
-    nav_cols = st.columns(len(nav_items))
-    
-    for idx, (col, (label, nav_key)) in enumerate(zip(nav_cols, nav_items)):
-        with col:
-            is_active = (st.session_state.nav == nav_key)
-            if st.button(
-                label,
-                key=f"nav_{nav_key}",
-                use_container_width=True,
-                type="primary" if is_active else "secondary"
-            ):
-                st.session_state.nav = nav_key
-                st.rerun()
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
 
 # ============================================================================
@@ -1566,7 +1135,7 @@ st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 # ============================================================================
 
 filtered_positions = data['positions'].copy() if not data['positions'].empty else pd.DataFrame()
-filtered_open = data['open_positions'].copy() if not data['open_positions'].empty else pd.DataFrame()
+filtered_open      = data['open_positions'].copy() if not data['open_positions'].empty else pd.DataFrame()
 
 if st.session_state.view_mode == "personal" and "authenticated_trader" in st.session_state:
     selected_trader = st.session_state.authenticated_trader
@@ -1583,219 +1152,121 @@ if not filtered_positions.empty:
         (filtered_positions['close_time'].dt.date <= end_date)
     ]
 
-if selected_markets and not filtered_positions.empty:
-    filtered_positions = filtered_positions[filtered_positions['market_id'].isin(selected_markets)]
-if selected_markets and not filtered_open.empty:
-    filtered_open = filtered_open[filtered_open['market_id'].isin(selected_markets)]
+if selected_markets:
+    if not filtered_positions.empty: filtered_positions = filtered_positions[filtered_positions['market_id'].isin(selected_markets)]
+    if not filtered_open.empty:      filtered_open      = filtered_open[filtered_open['market_id'].isin(selected_markets)]
 
 if not filtered_positions.empty:
     filtered_positions = calculate_volume_usd(filtered_positions)
 
-if not data['equity'].empty:
-    filtered_equity = data['equity'].copy()
-    if selected_trader:
-        filtered_equity = filtered_equity[filtered_equity['trader_id'] == selected_trader]
-    filtered_equity = filtered_equity[
-        (filtered_equity['timestamp'].dt.date >= start_date) &
-        (filtered_equity['timestamp'].dt.date <= end_date)
-    ]
-else:
-    filtered_equity = pd.DataFrame()
+
+# ============================================================================
+# FIXED HEADER
+# ============================================================================
+
+if "nav" not in st.session_state:
+    st.session_state.nav = "overview"
+
+st.markdown('<div class="fixed-header">', unsafe_allow_html=True)
+
+hc1, hc2 = st.columns([1, 8])
+with hc1:
+    if logo_bytes: st.image(logo_bytes, width=50)
+    else:          st.markdown("### 🔷")
+with hc2:
+    st.markdown('<div class="header-title">Deriverse Trading Analytics</div>', unsafe_allow_html=True)
+    st.markdown('<div class="header-subtitle">Real-time performance insights • Local-first security</div>', unsafe_allow_html=True)
+
+if st.session_state.view_mode == "personal" and "authenticated_trader" in st.session_state:
+    st.markdown(f"<div class='profile-badge'>🔐 {mask_trader_id(st.session_state.authenticated_trader)}</div>",
+                unsafe_allow_html=True)
+
+nav_items = [("📊 Overview","overview"),("📈 Performance","performance"),("⚠️ Risk","risk"),
+             ("📊 Volume","volume"),("📋 Orders","orders"),("🔬 Greeks","greeks"),("📝 Journal","journal")]
+
+nav_cols = st.columns(len(nav_items))
+for col, (label, nav_key) in zip(nav_cols, nav_items):
+    with col:
+        if st.button(label, key=f"nav_{nav_key}", use_container_width=True,
+                     type="primary" if st.session_state.nav==nav_key else "secondary"):
+            st.session_state.nav = nav_key
+            st.rerun()
+
+st.markdown('<div class="kpi-row">', unsafe_allow_html=True)
+display_global_kpis(filtered_positions, data['summary'], selected_trader)
+st.markdown('</div></div>', unsafe_allow_html=True)
+st.markdown('<div class="main-content">', unsafe_allow_html=True)
 
 
 # ============================================================================
-# OPEN POSITIONS TABLE
+# OPEN POSITIONS
 # ============================================================================
 
-if not filtered_open.empty:
-    st.warning(f"⚠️ **{len(filtered_open)} Open Positions** - Unrealized PnL not included")
-    
-    open_display = filtered_open.copy()
-    
-    if 'time_held_seconds' in open_display.columns:
-        open_display['time_held'] = (open_display['time_held_seconds'] / 3600).round(1)
-    elif 'open_time' in open_display.columns:
-        open_display['time_held'] = ((pd.Timestamp.now() - pd.to_datetime(open_display['open_time'])).dt.total_seconds() / 3600).round(1)
-    else:
-        open_display['time_held'] = 0
-    
-    open_display['trader_display'] = open_display['trader_id'].apply(
-        lambda x: f"{x[:8]}...{x[-8:]}" if selected_trader and x == selected_trader else mask_trader_id(x)
-    )
-    open_display['symbol'] = open_display['market_id'].apply(simplify_symbol)
-    
-    display_cols = ['trader_display', 'symbol', 'product_type', 'side', 'entry_price', 'size']
-    
-    if 'fees_paid' in open_display.columns:
-        display_cols.append('fees_paid')
-    elif 'fees' in open_display.columns:
-        open_display['fees_paid'] = open_display['fees']
-        display_cols.append('fees_paid')
-    
-    display_cols.append('time_held')
-    
-    st.dataframe(
-        open_display[display_cols].rename(columns={
-            'trader_display': 'Trader',
-            'symbol': 'Symbol',
-            'product_type': 'Type',
-            'side': 'Direction',
-            'entry_price': 'Entry Price',
-            'size': 'Size',
-            'fees_paid': 'Fees Paid',
-            'time_held': 'Hours Held'
-        }).style.format({
-            'Entry Price': '${:,.2f}',
-            'Fees Paid': '${:,.2f}',
-            'Size': '{:,.4f}',
-            'Hours Held': '{:.1f}h'
-        }),
-        width='stretch',
-        hide_index=True
-    )
+if st.session_state.nav == "overview" and not filtered_open.empty:
+    st.markdown("### 📊 Open Positions")
+    st.warning(f"⚠️ **{len(filtered_open)} Open Positions** — Unrealized PnL not included")
+    od = filtered_open.copy()
+    od['symbol'] = od['market_id'].apply(simplify_symbol)
+    od['trader'] = od['trader_id'].apply(mask_trader_id)
+    st.dataframe(od[['trader','symbol','product_type','side','entry_price','size']],
+                 use_container_width=True, hide_index=True)
+    st.markdown("---")
 
 
 # ============================================================================
-# SECTION RENDERING BASED ON NAVIGATION
+# SECTION RENDERING
 # ============================================================================
 
 if st.session_state.nav == "overview":
-    
-    st.markdown("## 📈 Performance Overview")
-    
-    col1, col2, col3, col4 = st.columns(4)
-    
-    total_pnl = filtered_positions['realized_pnl'].sum() if not filtered_positions.empty else 0
-    win_rate = (filtered_positions['realized_pnl'] > 0).mean() * 100 if not filtered_positions.empty else 0
-    total_fees = filtered_positions['fees'].sum() if not filtered_positions.empty else 0
-    trade_count = len(filtered_positions)
-    
-    col1.metric("Net Realized PnL", f"${total_pnl:,.2f}", delta=f"{total_pnl:,.2f}" if total_pnl != 0 else None)
-    col2.metric("Win Rate", f"{win_rate:.1f}%")
-    
-    win_rate_val = win_rate / 100 if win_rate > 0 else 0
-    col2.progress(win_rate_val, text=f"{win_rate_val*100:.1f}%")
-    
-    col3.metric("Total Closed Trades", trade_count)
-    col4.metric("Fees Paid", f"${total_fees:,.2f}")
-    
-    st.markdown("## ⚖️ Risk Analysis")
-    col1, col2, col3, col4 = st.columns(4)
-    
-    if not filtered_positions.empty:
-        winning = filtered_positions[filtered_positions['realized_pnl'] > 0]
-        losing = filtered_positions[filtered_positions['realized_pnl'] < 0]
-        
-        avg_win = winning['realized_pnl'].mean() if len(winning) > 0 else 0
-        avg_loss = losing['realized_pnl'].mean() if len(losing) > 0 else 0
-        profit_factor = abs(avg_win / avg_loss) if avg_loss != 0 else float('inf')
-        
-        if selected_trader and not data['summary'].empty:
-            trader_data = data['summary'][data['summary']['trader_id'] == selected_trader]
-            max_dd = trader_data['max_drawdown'].iloc[0] if not trader_data.empty else 0
-            sharpe = trader_data['sharpe_ratio'].iloc[0] if not trader_data.empty else 0
-        else:
-            max_dd = data['summary']['max_drawdown'].min() if not data['summary'].empty else 0
-            sharpe = data['summary']['sharpe_ratio'].mean() if not data['summary'].empty else 0
-    else:
-        avg_win = avg_loss = max_dd = sharpe = profit_factor = 0
-    
-    col1.metric("Average Win", f"${avg_win:,.2f}")
-    col2.metric("Average Loss", f"${avg_loss:,.2f}")
-    col3.metric("Profit Factor", f"{profit_factor:.2f}x")
-    col4.metric("Sharpe Ratio", f"{sharpe:.2f}")
-    
     if not filtered_positions.empty and not selected_trader:
         st.markdown("## 🏆 Top Performers Analysis")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown("### 📈 Top 5 Profitable Traders")
-            top_winners = get_top_traders(filtered_positions, n=5, by='profit')
-            
-            if top_winners:
-                winner_stats = []
-                for trader in top_winners:
-                    trader_pos = filtered_positions[filtered_positions['trader_id'] == trader]
-                    winner_stats.append({
-                        'Trader': mask_trader_id(trader),
-                        'Total PnL': trader_pos['realized_pnl'].sum(),
-                        'Trades': len(trader_pos),
-                        'Win Rate': (trader_pos['realized_pnl'] > 0).mean() * 100
-                    })
-                
-                winner_df = pd.DataFrame(winner_stats)
-                
-                fig = px.bar(
-                    winner_df,
-                    x='Trader',
-                    y='Total PnL',
-                    color='Total PnL',
-                    color_continuous_scale='Greens',
-                    text='Total PnL'
-                )
-                fig.update_traces(texttemplate='$%{text:.0f}', textposition='outside')
-                fig.update_layout(height=200, showlegend=False, template='plotly_dark')
-                st.plotly_chart(fig, width='stretch')
-                
-                st.dataframe(
-                    winner_df.style.format({
-                        'Total PnL': '${:,.2f}',
-                        'Win Rate': '{:.1f}%'
-                    }),
-                    width='stretch',
-                    hide_index=True
-                )
-        
-        with col2:
-            st.markdown("### 📉 Top 5 Loss-Making Traders")
-            top_losers = get_top_traders(filtered_positions, n=5, by='loss')
-            
-            if top_losers:
-                loser_stats = []
-                for trader in top_losers:
-                    trader_pos = filtered_positions[filtered_positions['trader_id'] == trader]
-                    loser_stats.append({
-                        'Trader': mask_trader_id(trader),
-                        'Total PnL': trader_pos['realized_pnl'].sum(),
-                        'Trades': len(trader_pos),
-                        'Win Rate': (trader_pos['realized_pnl'] > 0).mean() * 100
-                    })
-                
-                loser_df = pd.DataFrame(loser_stats)
-                
-                fig = px.bar(
-                    loser_df,
-                    x='Trader',
-                    y='Total PnL',
-                    color='Total PnL',
-                    color_continuous_scale='Reds_r',
-                    text='Total PnL'
-                )
-                fig.update_traces(texttemplate='$%{text:.0f}', textposition='outside')
-                fig.update_layout(height=200, showlegend=False, template='plotly_dark')
-                st.plotly_chart(fig, width='stretch')
-                
-                st.dataframe(
-                    loser_df.style.format({
-                        'Total PnL': '${:,.2f}',
-                        'Win Rate': '{:.1f}%'
-                    }),
-                    width='stretch',
-                    hide_index=True
-                )
+        c1,c2 = st.columns(2)
+        for col, label, by, scale in [(c1,"📈 Top 5 Profitable","profit","Greens"),
+                                       (c2,"📉 Top 5 Loss-Making","loss","Reds_r")]:
+            with col:
+                st.markdown(f"### {label} Traders")
+                traders = get_top_traders(filtered_positions, n=5, by=by)
+                if traders:
+                    rows = []
+                    for t in traders:
+                        tp = filtered_positions[filtered_positions['trader_id']==t]
+                        rows.append({'Trader': mask_trader_id(t), 'Total PnL': tp['realized_pnl'].sum(),
+                                     'Trades': len(tp), 'Win Rate': (tp['realized_pnl']>0).mean()*100})
+                    df2 = pd.DataFrame(rows)
+                    fig = px.bar(df2, x='Trader', y='Total PnL', color='Total PnL',
+                                 color_continuous_scale=scale, text='Total PnL')
+                    fig.update_traces(texttemplate='$%{text:.0f}', textposition='outside')
+                    fig.update_layout(height=200, showlegend=False, **CHART_BG)
+                    st.plotly_chart(fig, use_container_width=True, key=f"top_{by}")
+                    st.dataframe(df2.style.format({'Total PnL':'${:,.2f}','Win Rate':'{:.1f}%'}),
+                                 use_container_width=True, hide_index=True)
+    st.markdown("---")
+    display_transaction_history(filtered_positions)
 
 elif st.session_state.nav == "performance":
-    if not filtered_positions.empty and not filtered_equity.empty:
-        display_equity_section(filtered_equity, filtered_positions, 
-                              st.session_state.authenticated_trader if st.session_state.view_mode == "personal" else None)
+    if not filtered_positions.empty:
+        if st.session_state.view_mode == "personal" and selected_trader:
+            fig = create_personal_equity_chart(filtered_positions)
+            st.plotly_chart(fig, use_container_width=True, key="personal_eq")
+        else:
+            fig_eq, fig_dd = create_protocol_equity_charts(filtered_positions)
+            st.plotly_chart(fig_eq, use_container_width=True, key="proto_eq")
+            st.caption("Protocol cumulative PnL")
+            st.plotly_chart(fig_dd, use_container_width=True, key="proto_dd")
+            st.caption("Drawdown from peak equity")
+
+        if not selected_trader and not data['equity'].empty:
+            create_trader_summary_table(data['equity'], filtered_positions)
     else:
         st.info("No performance data for selected filters")
 
 elif st.session_state.nav == "risk":
     if not filtered_positions.empty:
-        display_liquidation_analytics(filtered_positions)
+        display_liquidation_analytics(
+            filtered_positions,
+            is_personal_mode=(st.session_state.view_mode == "personal"),
+            trader_id=selected_trader
+        )
     else:
         st.info("No risk data for selected filters")
 
@@ -1806,151 +1277,120 @@ elif st.session_state.nav == "volume":
         st.info("No volume data for selected filters")
 
 elif st.session_state.nav == "orders":
-    if not data['order_perf'].empty:
-        display_order_type_performance(data['order_perf'], filtered_positions)
-    else:
-        st.info("No order type data available")
+    display_order_type_performance(data['order_perf'])
 
 elif st.session_state.nav == "greeks":
     if not data['greeks'].empty:
-        greeks_filtered = data['greeks'].copy()
+        gf = data['greeks'].copy()
         if selected_trader:
-            greeks_filtered = greeks_filtered[greeks_filtered['trader_id'] == selected_trader]
-        
-        if not greeks_filtered.empty:
-            display_greeks_analysis(greeks_filtered)
+            gf = gf[gf['trader_id'] == selected_trader]
+        if not gf.empty:
+            display_greeks_analysis(gf, is_personal=(selected_trader is not None))
         else:
             st.info("No Greeks data for selected trader")
     else:
         st.info("No Greeks data available")
 
 elif st.session_state.nav == "journal":
-    
     st.markdown('<div class="section-header">', unsafe_allow_html=True)
     st.header("📝 Trade Journal with Annotations")
     st.markdown('</div>', unsafe_allow_html=True)
-    
+
     if filtered_positions.empty:
         st.info("No trades to journal")
-    
-    elif st.session_state.view_mode == "personal" and "authenticated_trader" in st.session_state:
-        trader = st.session_state.authenticated_trader
-        
+
+    elif st.session_state.view_mode == "personal" and selected_trader:
+        trader = selected_trader
         st.markdown("""
-        <div class='note-instruction'>
+        <div style='background:rgba(99,102,241,0.1);border-left:4px solid #6366f1;
+                    padding:10px 14px;border-radius:8px;margin-bottom:16px;color:#e2e8f0;font-size:.9rem;'>
             <strong>📌 How to take notes:</strong><br>
-            1. Click on any cell in the "📝 Your Trading Notes" column<br>
-            2. Type your observations, strategy notes, or lessons learned<br>
-            3. Press Enter or click outside to save automatically<br>
-            4. Notes are saved locally and persist between sessions
-        </div>
-        """, unsafe_allow_html=True)
-        
+            Click any cell in the <em>📝 Your Trading Notes</em> column and type your observations.
+            Notes auto-save and persist between sessions.
+        </div>""", unsafe_allow_html=True)
+
         trader_notes = load_trader_notes(trader)
-        
-        journal_df = filtered_positions.sort_values('close_time', ascending=False).copy()
-        journal_df['symbol'] = journal_df['market_id'].apply(simplify_symbol)
-        journal_df['notes'] = journal_df['position_id'].map(lambda pid: trader_notes.get(str(pid), ""))
-        
-        notes_count = len([n for n in journal_df['notes'] if n and str(n).strip()])
-        st.info(f"📝 You have {notes_count} annotated trade{'s' if notes_count != 1 else ''}")
-        
-        available_cols = ['close_time', 'symbol', 'product_type', 'side',
-                         'entry_price', 'exit_price', 'volume_usd', 'realized_pnl', 'fees', 'notes']
-        
-        edited_journal = st.data_editor(
-            journal_df[available_cols],
-            column_config={
-                "close_time": st.column_config.DatetimeColumn("Closed At", format="DD/MM/YYYY HH:mm"),
-                "symbol": "Symbol",
-                "product_type": "Type",
-                "side": "Direction",
-                "entry_price": st.column_config.NumberColumn("Entry", format="$%.2f"),
-                "exit_price": st.column_config.NumberColumn("Exit", format="$%.2f"),
-                "volume_usd": st.column_config.NumberColumn("Volume", format="$%.0f"),
-                "realized_pnl": st.column_config.NumberColumn("PnL", format="$%.2f"),
-                "fees": st.column_config.NumberColumn("Fees", format="$%.2f"),
-                "notes": st.column_config.TextColumn(
-                    "📝 Your Trading Notes",
-                    help="Document your strategy, emotions, and lessons learned",
-                    max_chars=500,
-                    width="large"
-                )
-            },
-            width='stretch',
-            hide_index=True,
-            num_rows="fixed",
-            disabled=[col for col in available_cols if col != 'notes']
+        greeks_df    = compute_greeks_per_position(filtered_positions)
+
+        jdf = filtered_positions.sort_values('close_time', ascending=False).copy()
+        jdf['symbol']     = jdf['market_id'].apply(simplify_symbol)
+        jdf['volume_usd'] = jdf['exit_price'] * jdf['size']
+        jdf['notes']      = jdf['position_id'].map(lambda pid: trader_notes.get(str(pid), ""))
+
+        if not greeks_df.empty:
+            jdf = jdf.merge(greeks_df[['position_id','delta']], on='position_id', how='left')
+
+        notes_count = sum(1 for n in jdf['notes'] if n and str(n).strip())
+        st.info(f"📝 {notes_count} annotated trade{'s' if notes_count!=1 else ''}")
+
+        avail_cols = ['close_time','symbol','product_type','side',
+                      'entry_price','exit_price','size','volume_usd','realized_pnl','fees']
+        if 'delta' in jdf.columns:
+            avail_cols.append('delta')
+        avail_cols.append('notes')
+
+        col_cfg = {
+            "close_time":   st.column_config.DatetimeColumn("Closed At", format="DD/MM/YYYY HH:mm"),
+            "symbol":       "Symbol",
+            "product_type": "Type",
+            "side":         "Direction",
+            "entry_price":  st.column_config.NumberColumn("Entry",  format="$%.2f"),
+            "exit_price":   st.column_config.NumberColumn("Exit",   format="$%.2f"),
+            "size":         st.column_config.NumberColumn("Size",   format="%.4f"),
+            "volume_usd":   st.column_config.NumberColumn("Volume", format="$%.0f"),
+            "realized_pnl": st.column_config.NumberColumn("PnL",   format="$%.2f"),
+            "fees":         st.column_config.NumberColumn("Fees",   format="$%.2f"),
+            "delta":        st.column_config.NumberColumn("Delta",  format="%.2f"),
+            "notes":        st.column_config.TextColumn("📝 Notes", max_chars=500, width="large"),
+        }
+
+        st.markdown('<div class="scroll-x">', unsafe_allow_html=True)
+        edited = st.data_editor(
+            jdf[avail_cols], column_config=col_cfg,
+            use_container_width=True, hide_index=True, num_rows="fixed",
+            disabled=[c for c in avail_cols if c != 'notes']
         )
-        
-        updated_notes = {}
-        for idx, row in edited_journal.iterrows():
-            pid = journal_df.loc[idx, 'position_id']
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        updated = {}
+        for idx, row in edited.iterrows():
+            pid  = jdf.loc[idx, 'position_id']
             note = row.get('notes', '')
             if pd.notna(note) and str(note).strip():
-                updated_notes[str(pid)] = note
-        
-        if updated_notes != trader_notes:
-            save_trader_notes(trader, updated_notes)
+                updated[str(pid)] = note
+        if updated != trader_notes:
+            save_trader_notes(trader, updated)
             st.success("✅ Notes saved!")
-        
-        col1, col2, col3 = st.columns([3, 1, 1])
-        
-        with col2:
-            export_df = journal_df[available_cols].copy()
-            csv = export_df.to_csv(index=False)
-            st.download_button(
-                "📥 Export CSV",
-                csv,
-                f"journal_{trader[:8]}.csv",
-                "text/csv",
-                width='stretch'
-            )
-        
-        with col3:
-            if st.button("🗑️ Clear All Notes", width='stretch'):
+
+        bc1, bc2, bc3 = st.columns([3,1,1])
+        with bc2:
+            st.download_button("📥 Export CSV",
+                               jdf[avail_cols].to_csv(index=False),
+                               f"journal_{trader[:8]}.csv", "text/csv",
+                               use_container_width=True)
+        with bc3:
+            if st.button("🗑️ Clear Notes", use_container_width=True):
                 save_trader_notes(trader, {})
                 st.rerun()
-    
-    elif selected_trader:
-        st.info(f"👁️ **Read-Only View:** Viewing {mask_trader_id(selected_trader)}")
-        st.caption("💡 To add notes, authenticate with your wallet in the sidebar")
-        
-        journal_df = filtered_positions.sort_values('close_time', ascending=False).copy()
-        journal_df['trader'] = journal_df['trader_id'].apply(mask_trader_id)
-        journal_df['symbol'] = journal_df['market_id'].apply(simplify_symbol)
-        
-        st.dataframe(
-            journal_df[['close_time', 'trader', 'symbol', 'product_type', 'side',
-                       'entry_price', 'exit_price', 'volume_usd', 'realized_pnl', 'fees']].style.format({
-                'entry_price': '${:,.2f}',
-                'exit_price': '${:,.2f}',
-                'volume_usd': '${:,.0f}',
-                'realized_pnl': '${:,.2f}',
-                'fees': '${:,.2f}'
-            }),
-            width='stretch',
-            hide_index=True
-        )
-    
+
     else:
-        st.info("👥 Select a specific trader or authenticate to add notes")
-        
-        journal_df = filtered_positions.sort_values('close_time', ascending=False).copy()
-        journal_df['trader'] = journal_df['trader_id'].apply(mask_trader_id)
-        journal_df['symbol'] = journal_df['market_id'].apply(simplify_symbol)
-        
+        if selected_trader:
+            st.info(f"👁️ Read-Only View: {mask_trader_id(selected_trader)}")
+        else:
+            st.info("👥 Authenticate your wallet to add notes")
+
+        jdf = filtered_positions.sort_values('close_time', ascending=False).copy()
+        jdf['trader']     = jdf['trader_id'].apply(mask_trader_id)
+        jdf['symbol']     = jdf['market_id'].apply(simplify_symbol)
+        jdf['volume_usd'] = jdf['exit_price'] * jdf['size']
+        show_cols = ['close_time','trader','symbol','product_type','side',
+                     'entry_price','exit_price','size','volume_usd','realized_pnl','fees']
         st.dataframe(
-            journal_df[['close_time', 'trader', 'symbol', 'product_type', 'side',
-                       'entry_price', 'exit_price', 'volume_usd', 'realized_pnl', 'fees']].style.format({
-                'entry_price': '${:,.2f}',
-                'exit_price': '${:,.2f}',
-                'volume_usd': '${:,.0f}',
-                'realized_pnl': '${:,.2f}',
-                'fees': '${:,.2f}'
+            jdf[show_cols].style.format({
+                'entry_price':'${:,.2f}','exit_price':'${:,.2f}','size':'{:,.4f}',
+                'volume_usd':'${:,.0f}','realized_pnl':'${:,.2f}','fees':'${:,.2f}'
             }),
-            width='stretch',
-            hide_index=True
+            use_container_width=True, hide_index=True
         )
 
 
@@ -1959,23 +1399,14 @@ elif st.session_state.nav == "journal":
 # ============================================================================
 
 st.markdown("---")
-col1, col2, col3 = st.columns([2, 1, 1])
+fc1,fc2,fc3 = st.columns([2,1,1])
+fc1.caption(f"🕐 Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+fc2.caption("🔐 **Admin Mode**" if is_admin else "🔒 **Secure** • Local-first")
+fc3.caption("v7.4 Adaptive")
 
-with col1:
-    st.caption(f"🕐 Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-
-with col2:
-    if is_admin:
-        st.caption("🔐 **Admin Mode** • All Time Access")
-    else:
-        st.caption("🔒 **Secure** • Local-first")
-
-with col3:
-    st.caption("v6.0 Enhanced")
-
+st.markdown('</div>', unsafe_allow_html=True)
 st.markdown("""
-    <div style='text-align: center; padding: 20px; color: #64748b; font-size: 12px;'>
-        <p><strong>Deriverse Analytics Dashboard</strong></p>
-        <p>Read-only • No private keys required • Data stays on your machine</p>
-    </div>
-""", unsafe_allow_html=True)
+<div style='text-align:center;padding:20px;color:#64748b;font-size:12px;'>
+    <strong>Deriverse Analytics Dashboard</strong><br>
+    Read-only • No private keys required • Data stays on your machine
+</div>""", unsafe_allow_html=True)
