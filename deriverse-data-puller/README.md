@@ -14,7 +14,7 @@ uv sync
 python run.py                       # Select option 1
 ---
 
-## Setup
+##  or Setup
 
 ```bash
 git clone https://github.com/FirstBML/Deriverse-Trading-System-Analysis.git
