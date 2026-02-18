@@ -1,7 +1,6 @@
 # Python
 __pycache__/
 **/__pycache__/
-*.py[cod]
 *.pyc
 *.pyo
 *.pyd
@@ -15,18 +14,15 @@ venv/
 data/
 *.csv
 *.jsonl
+
+# JSON - ignore all except example configs
 *.json
 !configs/*.example.json
-!configs/*.example.yaml
-!configs/*.example.yml
 
-# Configs
+# Configs - ignore generated/sensitive, keep pipeline essentials
 configs/*.yaml
 configs/*.yml
-configs/*.json
-
-# Streamlit
-.streamlit/
+!configs/ingestion.yaml
 
 # IDE
 .vscode/
