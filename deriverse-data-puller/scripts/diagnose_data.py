@@ -12,6 +12,16 @@ print("=" * 60)
 print("DATA QUALITY DIAGNOSTIC")
 print("=" * 60)
 
+# Add at the top of diagnose_data.py, before any other logic
+positions_path = Path("data/analytics_output/positions.csv")
+
+if not positions_path.exists():
+    print("⚙️  Output missing — running full pipeline...\n")
+    import subprocess, sys
+    subprocess.run([sys.executable, "-m", "scripts.run_ingestion"], check=True)
+    subprocess.run([sys.executable, "scripts/run_analytics.py"], check=True)
+    print()
+    
 # Check positions file
 positions_path = Path("data/analytics_output/positions.csv")
 if positions_path.exists():

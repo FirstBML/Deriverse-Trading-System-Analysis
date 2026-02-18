@@ -413,7 +413,7 @@ emit({
     "side": "buy", "price": 2000.0, "size": 1, "fee_usd": 10.0
 }, order_type="market")
 emit({
-    "event_type": "exercise", "timestamp": base_date + timedelta(days=37),
+    "event_type": "exercise", "timestamp": now - timedelta(days=1),
     "trader_id": WALLETS["ivan"], "market_id": "BTC-CALL-50000-JAN15",
     "product_type": "option", "option_type": "call", "strike": 50000,
     "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
@@ -429,7 +429,7 @@ emit({
     "side": "buy", "price": 3.0, "size": 20, "fee_usd": 0.2
 }, order_type="market")
 emit({
-    "event_type": "expire", "timestamp": base_date + timedelta(days=38),
+    "event_type": "expire", "timestamp": now - timedelta(hours=12),
     "trader_id": WALLETS["julia"], "market_id": "SOL-PUT-80-JAN15",
     "product_type": "option", "option_type": "put", "strike": 80,
     "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
@@ -525,6 +525,10 @@ with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
     json.dump(events, f, indent=2)
 
 spot_closes = [e for e in events if e.get("product_type") == "spot" and e.get("event_type") == "close"]
-print(f"Generated {len(events)} events -> {OUTPUT_PATH}")
 print(f"\nSpot closed trades: {len(spot_closes)}")
-print(f" Data Generated Completely")
+perp_closes = [e for e in events if e.get("product_type") == "perp" and e.get("event_type") == "close"]
+print(f"\nPerp closed trades: {len(perp_closes)}")
+option_closes = [e for e in events if e.get("product_type") == "option" and e.get("event_type") == "close"]
+print(f"\nOption closed trades: {len(option_closes)}")
+print(f"\nGenerated {len(events)} events -> {OUTPUT_PATH}")
+print(f"\nAll Data Generated Completely")

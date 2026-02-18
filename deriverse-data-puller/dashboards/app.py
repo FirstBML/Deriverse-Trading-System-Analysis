@@ -11,6 +11,7 @@ import requests
 from plotly.subplots import make_subplots
 import json
 import os
+import time
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -30,7 +31,21 @@ st.set_page_config(
 )
 
 # ============================================================================
-# MINIMAL CSS - Only essential styling, no layout overrides
+# URL PARAMETER HANDLER - For secret admin activation
+# ============================================================================
+
+def check_url_for_admin():
+    """Check if URL contains admin activation parameter."""
+    try:
+        query_params = st.query_params
+        if "admin" in query_params and query_params["admin"] == "1":
+            return True
+    except:
+        pass
+    return False
+
+# ============================================================================
+# MINIMAL CSS - Only essential styling for now
 # ============================================================================
 
 st.markdown("""
@@ -117,7 +132,7 @@ st.markdown("""
         color: #34d399 !important; 
     }
     
-    /* Debug container */
+    /* Debug container - only visible to admins */
     .debug-info {
         background: #1e293b;
         border-left: 4px solid #f59e0b;
@@ -126,6 +141,24 @@ st.markdown("""
         margin: 10px 0;
         font-size: 0.85rem;
         color: #e2e8f0;
+    }
+    
+    /* ===== LARGER NAVIGATION TABS ===== */
+    div[data-baseweb="tab-list"] button {
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        padding: 12px 20px !important;
+    }
+    
+    div[data-baseweb="tab-list"] {
+        gap: 8px !important;
+    }
+    
+    /* Active tab styling */
+    div[data-baseweb="tab"][aria-selected="true"] {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+        color: white !important;
+        border-radius: 8px 8px 0 0 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -163,24 +196,6 @@ def should_show_chart(df, min_points=5, min_variance=0.1):
 # ============================================================================
 # HELPER FUNCTIONS
 # ============================================================================
-
-def check_admin_password():
-    """Verify admin password for all-time access."""
-    if "admin_authenticated" not in st.session_state:
-        st.session_state.admin_authenticated = False
-    
-    if not st.session_state.admin_authenticated:
-        with st.sidebar.expander("🔐 Admin Access"):
-            password = st.text_input("Password", type="password")
-            if st.button("Authenticate"):
-                if password == ADMIN_PASSWORD:
-                    st.session_state.admin_authenticated = True
-                    st.success("✅ Admin access granted")
-                    st.rerun()
-                else:
-                    st.error("❌ Invalid password")
-    
-    return st.session_state.admin_authenticated
 
 def mask_trader_id(trader_id):
     """Format trader wallet address for privacy."""
@@ -332,7 +347,7 @@ def create_trader_summary_table(equity_df, positions_df):
         )
         
         cols[1].plotly_chart(
-            fig, use_container_width=True,
+            fig, width='stretch',
             config={'displayModeBar': False},
             key=f"equity_curve_fixed_{i}"
         )
@@ -347,11 +362,15 @@ def create_trader_summary_table(equity_df, positions_df):
 # PROTOCOL EQUITY CHART
 # ============================================================================
 
-def create_protocol_equity_charts(positions_df):
-    """Protocol equity + drawdown as two separate charts — no trend line."""
+def create_protocol_equity_charts(positions_df, compact=False):
+    """Protocol equity + drawdown as two separate charts — with compact option."""
     
     ps = positions_df.sort_values('close_time').copy()
     ps['cumulative_pnl'] = ps['realized_pnl'].cumsum()
+    
+    
+    eq_height = 250 if compact else 350
+    dd_height = 180 if compact else 250
     
     fig_eq = go.Figure()
     fig_eq.add_trace(go.Scatter(
@@ -364,9 +383,12 @@ def create_protocol_equity_charts(positions_df):
         hovertemplate='Date: %{x}<br>PnL: $%{y:,.2f}<extra></extra>'
     ))
     fig_eq.update_layout(
-        title="📈 Protocol Cumulative PnL",
-        xaxis_title="Date", yaxis_title="Cumulative PnL ($)",
-        height=350, margin=dict(l=40, r=40, t=40, b=40), **CHART_BG
+        title="📈 Protocol PnL" if compact else "📈 Protocol Cumulative PnL",
+        xaxis_title="Date" if not compact else "",
+        yaxis_title="PnL ($)",
+        height=eq_height,
+        margin=dict(l=40, r=40, t=40 if compact else 40, b=40),
+        **CHART_BG
     )
     
     rolling_max = ps['cumulative_pnl'].cummax()
@@ -381,12 +403,15 @@ def create_protocol_equity_charts(positions_df):
         showlegend=False
     ))
     fig_dd.add_hline(y=max_dd, line_dash="dash", line_color="#ef4444",
-                    annotation_text=f"Max DD: ${max_dd:,.0f}",
+                    annotation_text=f"Max: ${max_dd:,.0f}" if compact else f"Max DD: ${max_dd:,.0f}",
                     annotation_position="bottom right")
     fig_dd.update_layout(
-        title="📉 Drawdown from Peak",
-        xaxis_title="Date", yaxis_title="Drawdown ($)",
-        height=250, margin=dict(l=40, r=40, t=40, b=40), **CHART_BG
+        title="📉 Drawdown" if compact else "📉 Drawdown from Peak",
+        xaxis_title="Date" if not compact else "",
+        yaxis_title="Drawdown ($)",
+        height=dd_height,
+        margin=dict(l=40, r=40, t=40 if compact else 40, b=40),
+        **CHART_BG
     )
     
     return fig_eq, fig_dd
@@ -395,9 +420,42 @@ def create_protocol_equity_charts(positions_df):
 # PERSONAL EQUITY CHART
 # ============================================================================
 
-def create_personal_equity_chart(trader_positions):
-    """Adaptive equity chart for personal mode — no trend line for sparse data."""
+def create_personal_equity_chart(trader_positions, is_sparse_mode=False, compact=False):
+    """Adaptive equity chart for personal mode with drawdown option."""
     
+    if is_sparse_mode:
+        # Just show a simple bar chart for sparse data
+        fig = go.Figure()
+        
+        # Sort by date for timeline
+        df = trader_positions.sort_values('close_time')
+        
+        colors = ['#10b981' if x > 0 else '#ef4444' for x in df['realized_pnl']]
+        
+        fig.add_trace(go.Bar(
+            x=df['close_time'],
+            y=df['realized_pnl'],
+            marker_color=colors,
+            text=df['realized_pnl'].apply(lambda x: f"${x:,.0f}"),
+            textposition='outside',
+            name='Trade PnL'
+        ))
+        
+        fig.add_hline(y=0, line_dash="solid", line_color="gray", opacity=0.3)
+        
+        fig.update_layout(
+            title="📊 Your Trades (Individual)",
+            xaxis_title="Date",
+            yaxis_title="PnL ($)",
+            height=300,
+            showlegend=False,
+            margin=dict(l=40, r=40, t=40, b=40),
+            **CHART_BG
+        )
+        
+        return fig, None  # Return None for drawdown chart
+    
+    # Original adaptive logic for non-sparse mode
     density = get_data_density(trader_positions)
     
     if density == "single":
@@ -409,15 +467,18 @@ def create_personal_equity_chart(trader_positions):
         ))
         fig.update_layout(
             title=f"Trade Result: {'🟢 Profit' if pnl > 0 else '🔴 Loss'}",
-            yaxis_title="PnL ($)", height=350, showlegend=False,
+            yaxis_title="PnL ($)", height=300, showlegend=False,
             margin=dict(l=40, r=40, t=40, b=40), **CHART_BG
         )
-        return fig
+        
+        # No drawdown for single trade
+        return fig, None
     
     tp = trader_positions.sort_values('close_time').copy()
     tp['cumulative'] = tp['realized_pnl'].cumsum()
     
     if density == "sparse":
+        # Step chart with markers
         fig = go.Figure()
         fig.add_trace(go.Scatter(
             x=tp['close_time'], y=tp['cumulative'],
@@ -429,10 +490,42 @@ def create_personal_equity_chart(trader_positions):
         fig.update_layout(
             title="📈 Your Trading Performance",
             xaxis_title="Date", yaxis_title="Cumulative PnL ($)",
-            height=350, margin=dict(l=40, r=40, t=40, b=40), **CHART_BG
+            height=300, margin=dict(l=40, r=40, t=40, b=40), **CHART_BG
         )
-        return fig
+        
+        # Calculate drawdown for sparse data
+        rolling_max = tp['cumulative'].cummax()
+        tp['drawdown'] = tp['cumulative'] - rolling_max
+        max_dd = tp['drawdown'].min()
+        
+        fig_dd = go.Figure()
+        fig_dd.add_trace(go.Scatter(
+            x=tp['close_time'],
+            y=tp['drawdown'],
+            line=dict(color='#ef4444', width=2.5),
+            fill='tozeroy',
+            fillcolor='rgba(239,68,68,0.15)',
+            showlegend=False
+        ))
+        fig_dd.add_hline(
+            y=max_dd,
+            line_dash="dash",
+            line_color="#ef4444",
+            annotation_text=f"Max DD: ${max_dd:,.0f}",
+            annotation_position="bottom right"
+        )
+        fig_dd.update_layout(
+            title="📉 Your Drawdown",
+            xaxis_title="Date",
+            yaxis_title="Drawdown ($)",
+            height=200,
+            margin=dict(l=40, r=40, t=40, b=40),
+            **CHART_BG
+        )
+        
+        return fig, fig_dd
     
+    # Dense: full equity curve
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=tp['close_time'], y=tp['cumulative'],
@@ -440,11 +533,186 @@ def create_personal_equity_chart(trader_positions):
         fill='tozeroy', fillcolor='rgba(99,102,241,0.1)', name='Your PnL'
     ))
     
+    # Set heights based on compact mode
+    height_eq = 250 if compact else 300
+    height_dd = 150 if compact else 200
+    
     fig.update_layout(
         title="📈 Your Equity Curve",
         xaxis_title="Date", yaxis_title="Cumulative PnL ($)",
-        height=350, margin=dict(l=40, r=40, t=40, b=40), **CHART_BG
+        height=height_eq,  # ← USE THE VARIABLE HERE
+        margin=dict(l=40, r=40, t=40, b=40),
+        **CHART_BG
     )
+    
+    # Calculate drawdown for dense data
+    rolling_max = tp['cumulative'].cummax()
+    tp['drawdown'] = tp['cumulative'] - rolling_max
+    max_dd = tp['drawdown'].min()
+    
+    fig_dd = go.Figure()
+    fig_dd.add_trace(go.Scatter(
+        x=tp['close_time'],
+        y=tp['drawdown'],
+        line=dict(color='#ef4444', width=2.5),
+        fill='tozeroy',
+        fillcolor='rgba(239,68,68,0.15)',
+        showlegend=False
+    ))
+    
+    fig_dd.add_hline(
+        y=max_dd,
+        line_dash="dash",
+        line_color="#ef4444",
+        annotation_text=f"Max DD: ${max_dd:,.0f}",
+        annotation_position="bottom right"
+    )
+    
+    fig_dd.update_layout(
+        title="📉 Your Drawdown from Peak",
+        xaxis_title="Date",
+        yaxis_title="Drawdown ($)",
+        height=height_dd,  # ← USE THE VARIABLE HERE
+        margin=dict(l=40, r=40, t=40, b=40),
+        **CHART_BG
+    )
+    
+    return fig, fig_dd
+    
+# ============================================================================
+# ADAPTIVE INFORMATION CARDS 
+# ============================================================================
+
+def display_trade_summary_cards(positions_df, title="Trade Summary"):
+    """Display key trade metrics as information cards when charts aren't meaningful."""
+    
+    if positions_df.empty:
+        st.info("No trade data available")
+        return
+    
+    st.subheader(f"📊 {title}")
+    st.caption("Detailed trade information (chart not shown due to limited data)")
+    
+    # Key metrics in cards
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        total_trades = len(positions_df)
+        st.metric("Total Trades", total_trades)
+    
+    with col2:
+        winning_trades = (positions_df['realized_pnl'] > 0).sum()
+        st.metric("Winning Trades", winning_trades)
+    
+    with col3:
+        losing_trades = (positions_df['realized_pnl'] < 0).sum()
+        st.metric("Losing Trades", losing_trades)
+    
+    with col4:
+        win_rate = (winning_trades / total_trades * 100) if total_trades > 0 else 0
+        st.metric("Win Rate", f"{win_rate:.1f}%")
+    
+    # Trade list in expander
+    with st.expander("📋 View Individual Trades", expanded=True):
+        display_df = positions_df.copy()
+        display_df['symbol'] = display_df['market_id'].apply(simplify_symbol)
+        display_df = display_df[['close_time', 'symbol', 'product_type', 'side', 
+                                 'entry_price', 'exit_price', 'size', 'realized_pnl', 'fees']]
+        
+        # Format for display
+        display_df['close_time'] = pd.to_datetime(display_df['close_time']).dt.strftime('%Y-%m-%d %H:%M')
+        display_df['entry_price'] = display_df['entry_price'].apply(lambda x: f"${x:,.2f}")
+        display_df['exit_price'] = display_df['exit_price'].apply(lambda x: f"${x:,.2f}")
+        display_df['size'] = display_df['size'].apply(lambda x: f"{x:,.4f}")
+        display_df['realized_pnl'] = display_df['realized_pnl'].apply(lambda x: f"${x:,.2f}")
+        display_df['fees'] = display_df['fees'].apply(lambda x: f"${x:,.2f}")
+        
+        st.dataframe(display_df, width='stretch', hide_index=True)
+
+
+def display_performance_cards(positions_df, title="Performance Summary"):
+    """Display performance metrics as cards for sparse data."""
+    
+    if positions_df.empty:
+        st.info("No performance data available")
+        return
+    
+    st.subheader(f"📈 {title}")
+    
+    # Calculate metrics
+    total_pnl = positions_df['realized_pnl'].sum()
+    avg_win = positions_df[positions_df['realized_pnl'] > 0]['realized_pnl'].mean() if (positions_df['realized_pnl'] > 0).any() else 0
+    avg_loss = positions_df[positions_df['realized_pnl'] < 0]['realized_pnl'].mean() if (positions_df['realized_pnl'] < 0).any() else 0
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric("Total PnL", f"${total_pnl:,.2f}")
+    
+    with col2:
+        st.metric("Avg Win", f"${avg_win:,.2f}" if avg_win != 0 else "N/A")
+    
+    with col3:
+        st.metric("Avg Loss", f"${avg_loss:,.2f}" if avg_loss != 0 else "N/A")
+    
+    with col4:
+        profit_factor = abs(avg_win / avg_loss) if avg_loss != 0 else float('inf')
+        st.metric("Profit Factor", f"{profit_factor:.2f}x" if profit_factor != float('inf') else "∞")
+    
+    # Trade timeline
+    st.subheader("📅 Trade Timeline")
+    timeline_df = positions_df.sort_values('close_time')[['close_time', 'market_id', 'realized_pnl']].copy()
+    timeline_df['market_id'] = timeline_df['market_id'].apply(simplify_symbol)
+    timeline_df['close_time'] = pd.to_datetime(timeline_df['close_time']).dt.strftime('%Y-%m-%d')
+    timeline_df.columns = ['Date', 'Symbol', 'PnL']
+    
+    st.dataframe(timeline_df, width='stretch', hide_index=True)
+    
+# ============================================================================
+# PERSONAL DRAWDOWN CHART 
+# ============================================================================
+
+def create_personal_drawdown_chart(trader_positions):
+    """Create drawdown chart for personal trader dashboard."""
+    
+    if trader_positions.empty:
+        return None
+    
+    # Calculate cumulative PnL and drawdown
+    df = trader_positions.sort_values('close_time').copy()
+    df['cumulative_pnl'] = df['realized_pnl'].cumsum()
+    rolling_max = df['cumulative_pnl'].cummax()
+    df['drawdown'] = df['cumulative_pnl'] - rolling_max
+    max_dd = df['drawdown'].min()
+    
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=df['close_time'],
+        y=df['drawdown'],
+        line=dict(color='#ef4444', width=2.5),
+        fill='tozeroy',
+        fillcolor='rgba(239,68,68,0.15)',
+        showlegend=False,
+        hovertemplate='Date: %{x}<br>Drawdown: $%{y:,.2f}<extra></extra>'
+    ))
+    
+    fig.add_hline(
+        y=max_dd,
+        line_dash="dash",
+        line_color="#ef4444",
+        annotation_text=f"Max DD: ${max_dd:,.0f}",
+        annotation_position="bottom right"
+    )
+    
+    fig.update_layout(
+        title="📉 Your Drawdown from Peak",
+        xaxis_title="Date",
+        yaxis_title="Drawdown ($)",
+        height=250,
+        margin=dict(l=40, r=40, t=40, b=40),
+        **CHART_BG
+    )
+    
     return fig
 
 # ============================================================================
@@ -452,7 +720,7 @@ def create_personal_equity_chart(trader_positions):
 # ============================================================================
 
 def display_liquidation_analytics(positions_df, is_personal_mode=False, trader_id=None):
-    """Liquidation analysis with close_reason handling."""
+    """Liquidation analysis with close_reason handling and adaptive logic."""
     
     st.header("⚠️ Liquidation Risk Monitoring")
     
@@ -460,6 +728,33 @@ def display_liquidation_analytics(positions_df, is_personal_mode=False, trader_i
         st.info("ℹ️ Liquidation tracking not available")
         return
     
+    # Get symbol filter state from session
+    has_symbol_filter = False
+    if 'selected_symbols' in st.session_state:
+        has_symbol_filter = len(st.session_state.selected_symbols) > 0
+    
+    # SPARSE DATA DETECTION - Check if we should show simplified view
+    trade_count = len(positions_df)
+    is_sparse_mode = False
+    sparse_reason = ""
+    
+    # Very few trades overall
+    if trade_count < 3:
+        is_sparse_mode = True
+        sparse_reason = "Very few trades available"
+    # Symbol filter with few trades
+    elif has_symbol_filter and trade_count < 8:
+        is_sparse_mode = True
+        symbol_text = f"for selected symbol{'s' if len(st.session_state.selected_symbols) > 1 else ''}"
+        sparse_reason = f"Limited data {symbol_text}"
+    # Date range with few trades
+    elif 'start_date' in st.session_state and 'end_date' in st.session_state:
+        days_selected = (st.session_state.end_date - st.session_state.start_date).days
+        if days_selected <= 7 and trade_count < 10:
+            is_sparse_mode = True
+            sparse_reason = "Limited data for selected period"
+    
+    # Personal mode handling
     if is_personal_mode and trader_id:
         tp = positions_df[positions_df['trader_id'] == trader_id]
         liq = tp[tp['close_reason'] == 'liquidation']
@@ -470,6 +765,30 @@ def display_liquidation_analytics(positions_df, is_personal_mode=False, trader_i
             st.success("✅ No liquidations in your history!")
             return
         
+        # Even in personal mode, check if we should show simplified view
+        if is_sparse_mode:
+            context_note(f"{sparse_reason} - showing your loss-making trades")
+            worst = tp.nsmallest(min(5, len(tp)), 'realized_pnl').copy()
+            worst['symbol'] = worst['market_id'].apply(simplify_symbol)
+            
+            # Show as table instead of chart for sparse data
+            st.dataframe(
+                worst[['close_time', 'symbol', 'side', 'realized_pnl']].assign(
+                    close_time=pd.to_datetime(worst['close_time']).dt.strftime('%Y-%m-%d %H:%M'),
+                    realized_pnl=worst['realized_pnl'].apply(lambda x: f"${x:,.2f}")
+                ),
+                width='stretch',
+                hide_index=True,
+                column_config={
+                    "close_time": "Time",
+                    "symbol": "Symbol",
+                    "side": "Side",
+                    "realized_pnl": "Loss"
+                }
+            )
+            return
+        
+        # Normal personal mode with chart
         worst = tp.nsmallest(5, 'realized_pnl').copy()
         worst['symbol'] = worst['market_id'].apply(simplify_symbol)
         
@@ -478,15 +797,42 @@ def display_liquidation_analytics(positions_df, is_personal_mode=False, trader_i
                     color='realized_pnl', color_continuous_scale='Reds_r',
                     labels={'realized_pnl': 'Loss ($)'})
         fig.update_layout(height=350, **CHART_BG)
-        st.plotly_chart(fig, use_container_width=True, key="personal_liq_bar")
+        st.plotly_chart(fig, width='stretch', key="personal_liq_bar")
         return
     
+    # Protocol mode
     liq = positions_df[positions_df['close_reason'] == 'liquidation']
     
     if liq.empty:
         st.success("✅ No liquidations in selected period")
         return
     
+    # SPARSE MODE - Show simplified view
+    if is_sparse_mode:
+        context_note(f"{sparse_reason} - showing liquidation summary")
+        
+        # Show key metrics
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Total Liquidations", len(liq))
+        c2.metric("Affected Traders", liq['trader_id'].nunique())
+        c3.metric("Total Loss", f"${abs(liq['realized_pnl'].sum()):,.0f}")
+        
+        # Show liquidation list instead of charts
+        st.subheader("📋 Liquidation Events")
+        liq_display = liq[['close_time', 'trader_id', 'market_id', 'side', 'realized_pnl']].copy()
+        liq_display['trader'] = liq_display['trader_id'].apply(mask_trader_id)
+        liq_display['symbol'] = liq_display['market_id'].apply(simplify_symbol)
+        liq_display['close_time'] = pd.to_datetime(liq_display['close_time']).dt.strftime('%Y-%m-%d %H:%M')
+        liq_display['realized_pnl'] = liq_display['realized_pnl'].apply(lambda x: f"${x:,.2f}")
+        
+        st.dataframe(
+            liq_display[['close_time', 'trader', 'symbol', 'side', 'realized_pnl']],
+            width='stretch',
+            hide_index=True
+        )
+        return
+    
+    # NORMAL MODE - Full analytics
     c1, c2, c3 = st.columns(3)
     c1.metric("Total Liquidations", len(liq))
     c2.metric("Affected Traders", liq['trader_id'].nunique())
@@ -514,7 +860,7 @@ def display_liquidation_analytics(positions_df, is_personal_mode=False, trader_i
     )])
     
     fig.update_layout(height=400, showlegend=False, **CHART_BG)
-    st.plotly_chart(fig, use_container_width=True, key="liq_pie")
+    st.plotly_chart(fig, width='stretch', key="liq_pie")
     
     st.subheader("📊 Liquidation Rate by Trader")
     
@@ -576,7 +922,7 @@ def display_liquidation_analytics(positions_df, is_personal_mode=False, trader_i
             )
             fig.update_xaxes(range=[0, 100])
             
-            st.plotly_chart(fig, use_container_width=True, key="liq_rate_top5")
+            st.plotly_chart(fig, width='stretch', key="liq_rate_top5")
             
             excluded_count = len(df[df['liq_count'] == 0])
             if excluded_count > 0:
@@ -595,7 +941,7 @@ def display_liquidation_analytics(positions_df, is_personal_mode=False, trader_i
                     title='Top 5 Markets by Liq Loss',
                     color='realized_pnl', color_continuous_scale='Reds')
         fig.update_layout(height=300, **CHART_BG)
-        st.plotly_chart(fig, use_container_width=True, key="liq_mkt")
+        st.plotly_chart(fig, width='stretch', key="liq_mkt")
     
     with c2:
         bt = liq.groupby('trader_id')['realized_pnl'].sum().abs().reset_index()
@@ -605,14 +951,188 @@ def display_liquidation_analytics(positions_df, is_personal_mode=False, trader_i
                     title='Top 5 Traders by Liq Loss',
                     color='realized_pnl', color_continuous_scale='Reds')
         fig.update_layout(height=300, **CHART_BG)
-        st.plotly_chart(fig, use_container_width=True, key="liq_trader")
+        st.plotly_chart(fig, width='stretch', key="liq_trader")
 
+# ============================================================================
+# TIME-BASED PERFORMANCE ANALYSIS
+# ============================================================================
+
+def display_time_performance(positions_df, pnl_day_df=None, pnl_hour_df=None):
+    """Daily and hourly performance analysis."""
+    
+    st.header("📅 Time-Based Performance")
+    
+    if positions_df.empty:
+        st.info("No performance data available")
+        return
+    
+    # Daily PnL chart
+    if pnl_day_df is not None and not pnl_day_df.empty:
+        st.subheader("📊 Daily Performance")
+        
+        # Ensure date column is datetime
+        if 'date' in pnl_day_df.columns:
+            pnl_day_df['date'] = pd.to_datetime(pnl_day_df['date'])
+        
+        # Daily PnL bar chart
+        fig = go.Figure()
+        
+        colors = ['#10b981' if x > 0 else '#ef4444' for x in pnl_day_df['daily_pnl']]
+        
+        fig.add_trace(go.Bar(
+            x=pnl_day_df['date'],
+            y=pnl_day_df['daily_pnl'],
+            marker_color=colors,
+            text=pnl_day_df['daily_pnl'].apply(lambda x: f"${x:,.0f}"),
+            textposition='outside',
+            hovertemplate='Date: %{x}<br>PnL: $%{y:,.2f}<br>Trades: %{customdata}<extra></extra>',
+            customdata=pnl_day_df['trade_count'] if 'trade_count' in pnl_day_df.columns else None
+        ))
+        
+        fig.add_hline(y=0, line_dash="solid", line_color="gray", opacity=0.3)
+        
+        fig.update_layout(
+            title="Daily PnL",
+            xaxis_title="Date",
+            yaxis_title="PnL ($)",
+            height=350,
+            **CHART_BG
+        )
+        
+        st.plotly_chart(fig, width='stretch', key="daily_pnl")
+        
+        # Daily statistics
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Best Day", f"${pnl_day_df['daily_pnl'].max():,.0f}")
+        c2.metric("Worst Day", f"${pnl_day_df['daily_pnl'].min():,.0f}")
+        c3.metric("Avg Daily PnL", f"${pnl_day_df['daily_pnl'].mean():,.0f}")
+        winning_days = (pnl_day_df['daily_pnl'] > 0).sum()
+        total_days = len(pnl_day_df)
+        c4.metric("Winning Days", f"{winning_days}/{total_days} ({winning_days/total_days*100:.0f}%)")
+    
+    else:
+        # Generate from positions if pnl_day not available
+        st.subheader("📊 Daily Performance")
+        
+        daily = positions_df.copy()
+        daily['date'] = pd.to_datetime(daily['close_time']).dt.date
+        
+        daily_pnl = daily.groupby('date').agg({
+            'realized_pnl': ['sum', 'count']
+        }).reset_index()
+        daily_pnl.columns = ['date', 'daily_pnl', 'trade_count']
+        
+        colors = ['#10b981' if x > 0 else '#ef4444' for x in daily_pnl['daily_pnl']]
+        
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            x=daily_pnl['date'],
+            y=daily_pnl['daily_pnl'],
+            marker_color=colors,
+            text=daily_pnl['daily_pnl'].apply(lambda x: f"${x:,.0f}"),
+            textposition='outside',
+            hovertemplate='Date: %{x}<br>PnL: $%{y:,.2f}<br>Trades: %{customdata}<extra></extra>',
+            customdata=daily_pnl['trade_count']
+        ))
+        
+        fig.add_hline(y=0, line_dash="solid", line_color="gray", opacity=0.3)
+        fig.update_layout(
+            title="Daily PnL",
+            xaxis_title="Date",
+            yaxis_title="PnL ($)",
+            height=350,
+            **CHART_BG
+        )
+        
+        st.plotly_chart(fig, width='stretch', key="daily_pnl_gen")
+    
+    # Hourly performance
+    if pnl_hour_df is not None and not pnl_hour_df.empty and 'hour' in pnl_hour_df.columns:
+        st.subheader("🕐 Hourly Performance Pattern")
+        
+        fig = go.Figure()
+        
+        fig.add_trace(go.Bar(
+            x=pnl_hour_df['hour'],
+            y=pnl_hour_df['avg_pnl'] if 'avg_pnl' in pnl_hour_df.columns else pnl_hour_df['total_pnl'],
+            marker_color='#6366f1',
+            text=pnl_hour_df['trade_count'] if 'trade_count' in pnl_hour_df.columns else None,
+            texttemplate='%{text} trades',
+            textposition='outside',
+            hovertemplate='Hour: %{x}:00<br>Avg PnL: $%{y:,.2f}<extra></extra>'
+        ))
+        
+        fig.add_hline(y=0, line_dash="solid", line_color="gray", opacity=0.3)
+        
+        fig.update_layout(
+            title="Average PnL by Hour of Day (UTC)",
+            xaxis_title="Hour (24h format)",
+            yaxis_title="Average PnL ($)",
+            height=300,
+            **CHART_BG
+        )
+        fig.update_xaxes(tickmode='linear', dtick=2)
+        
+        st.plotly_chart(fig, width='stretch', key="hourly_pnl")
+        
+        # Best/worst trading hours
+        if 'avg_pnl' in pnl_hour_df.columns:
+            best_hour = pnl_hour_df.loc[pnl_hour_df['avg_pnl'].idxmax()]
+            worst_hour = pnl_hour_df.loc[pnl_hour_df['avg_pnl'].idxmin()]
+            
+            c1, c2 = st.columns(2)
+            c1.metric(
+                "Best Trading Hour", 
+                f"{int(best_hour['hour'])}:00 UTC",
+                f"${best_hour['avg_pnl']:,.0f} avg"
+            )
+            c2.metric(
+                "Worst Trading Hour",
+                f"{int(worst_hour['hour'])}:00 UTC",
+                f"${worst_hour['avg_pnl']:,.0f} avg"
+            )
+    
+    else:
+        # Generate from positions
+        st.subheader("🕐 Hourly Performance Pattern")
+        
+        hourly = positions_df.copy()
+        hourly['hour'] = pd.to_datetime(hourly['close_time']).dt.hour
+        
+        hourly_pnl = hourly.groupby('hour').agg({
+            'realized_pnl': ['mean', 'count']
+        }).reset_index()
+        hourly_pnl.columns = ['hour', 'avg_pnl', 'trade_count']
+        
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            x=hourly_pnl['hour'],
+            y=hourly_pnl['avg_pnl'],
+            marker_color='#6366f1',
+            text=hourly_pnl['trade_count'],
+            texttemplate='%{text} trades',
+            textposition='outside',
+            hovertemplate='Hour: %{x}:00<br>Avg PnL: $%{y:,.2f}<extra></extra>'
+        ))
+        
+        fig.add_hline(y=0, line_dash="solid", line_color="gray", opacity=0.3)
+        fig.update_layout(
+            title="Average PnL by Hour of Day (UTC)",
+            xaxis_title="Hour (24h format)",
+            yaxis_title="Average PnL ($)",
+            height=300,
+            **CHART_BG
+        )
+        fig.update_xaxes(tickmode='linear', dtick=2)
+        
+        st.plotly_chart(fig, width='stretch', key="hourly_pnl_gen")
+                
 # ============================================================================
 # VOLUME ANALYSIS
 # ============================================================================
 
 def display_volume_analysis(positions_df):
-    """Volume analysis with product tabs and progress bars."""
+    """Volume analysis with product tabs, progress bars, and trade duration."""
     
     st.header("📊 Trading Volume Analysis")
     
@@ -620,8 +1140,16 @@ def display_volume_analysis(positions_df):
         st.info("No volume data available")
         return
     
-    positions_df = calculate_volume_usd(positions_df)
+    # Check if we have symbol filter applied and sparse data
+    has_symbol_filter = len(selected_symbols) > 0
+    trade_count = len(positions_df)
     
+    if has_symbol_filter and trade_count < 5:
+        context_note(f"Limited volume data for selected symbol{'s' if len(selected_symbols)>1 else ''} - showing summary cards")
+        display_trade_summary_cards(positions_df, "Volume Summary")
+        return
+    
+    positions_df = calculate_volume_usd(positions_df)  
     product_counts = positions_df['product_type'].value_counts()
     st.caption(f"Product types present: {', '.join([f'{k}({v})' for k, v in product_counts.items()])}")
     
@@ -654,7 +1182,7 @@ def display_volume_analysis(positions_df):
                 color_discrete_map={'spot':'#10b981','perp':'#6366f1','option':'#f59e0b'}
             )
             fig.update_layout(height=300, showlegend=False, **CHART_BG)
-            st.plotly_chart(fig, use_container_width=True, key="box_overall")
+            st.plotly_chart(fig, width='stretch', key="box_overall")
         
         with c2:
             fig = px.histogram(
@@ -663,7 +1191,7 @@ def display_volume_analysis(positions_df):
                 color_discrete_sequence=['#6366f1']
             )
             fig.update_layout(height=300, showlegend=False, **CHART_BG)
-            st.plotly_chart(fig, use_container_width=True, key="hist_overall")
+            st.plotly_chart(fig, width='stretch', key="hist_overall")
         
         vals = positions_df['volume_usd']
         s1, s2, s3, s4, s5 = st.columns(5)
@@ -673,6 +1201,119 @@ def display_volume_analysis(positions_df):
         s4.metric("P75", f"${vals.quantile(0.75):,.0f}")
         s5.metric("Max", f"${vals.max():,.0f}")
     
+    # ==========================================================================
+    # TRADE DURATION ANALYSIS 
+    # ==========================================================================
+    if 'duration_seconds' in positions_df.columns:
+        st.subheader("⏱️ Trade Duration Analysis")
+        
+        # Convert to hours for better readability
+        positions_df['duration_hours'] = positions_df['duration_seconds'] / 3600
+        
+        # Duration metrics
+        c1, c2, c3 = st.columns(3)
+        
+        avg_duration = positions_df['duration_hours'].mean()
+        median_duration = positions_df['duration_hours'].median()
+        max_duration = positions_df['duration_hours'].max()
+        
+        c1.metric("Average Duration", f"{avg_duration:.1f}h")
+        c2.metric("Median Duration", f"{median_duration:.1f}h")
+        c3.metric("Longest Trade", f"{max_duration:.1f}h")
+        
+        # Duration by product type - box plot
+        fig = px.box(
+            positions_df,
+            x='product_type',
+            y='duration_hours',
+            points='all',
+            title='Trade Duration by Product Type',
+            color='product_type',
+            color_discrete_map={'spot':'#10b981','perp':'#6366f1','option':'#f59e0b'},
+            labels={'duration_hours': 'Duration (hours)', 'product_type': 'Product Type'}
+        )
+        fig.update_layout(height=300, showlegend=False, **CHART_BG)
+        st.plotly_chart(fig, width='stretch', key="duration_box")
+        
+        # Duration categories for PnL analysis
+        def categorize_duration(hours):
+            if hours < 1:
+                return 'Scalp (<1h)'
+            elif hours < 24:
+                return 'Intraday (1-24h)'
+            elif hours < 168:  # 7 days
+                return 'Swing (1-7d)'
+            else:
+                return 'Position (>7d)'
+        
+        positions_df['duration_category'] = positions_df['duration_hours'].apply(categorize_duration)
+        
+        # Calculate statistics by category
+        cat_stats = positions_df.groupby('duration_category').agg({
+            'realized_pnl': ['count', 'mean', 'sum']
+        }).round(2)
+        cat_stats.columns = ['Trades', 'Avg PnL', 'Total PnL']
+        cat_stats = cat_stats.reset_index()
+        
+        # Add win rate
+        win_rates = positions_df.groupby('duration_category')['realized_pnl'].apply(
+            lambda x: (x > 0).mean() * 100
+        ).values
+        cat_stats['Win Rate'] = win_rates
+        
+        # Sort categories in logical order
+        category_order = ['Scalp (<1h)', 'Intraday (1-24h)', 'Swing (1-7d)', 'Position (>7d)']
+        cat_stats['duration_category'] = pd.Categorical(
+            cat_stats['duration_category'], 
+            categories=category_order, 
+            ordered=True
+        )
+        cat_stats = cat_stats.sort_values('duration_category')
+        
+        # Bar chart of PnL by duration category
+        fig = px.bar(
+            cat_stats,
+            x='duration_category',
+            y='Total PnL',
+            text='Trades',
+            title='PnL by Trade Duration Category',
+            color='Total PnL',
+            color_continuous_scale='RdYlGn',
+            labels={
+                'duration_category': 'Duration Category', 
+                'Total PnL': 'Total PnL ($)'
+            }
+        )
+        fig.update_traces(
+            texttemplate='%{text} trades', 
+            textposition='outside',
+            textfont=dict(size=12)
+        )
+        fig.update_layout(height=300, **CHART_BG)
+        st.plotly_chart(fig, width='stretch', key="duration_pnl")
+        
+        # Optional: Show the detailed table in an expander
+        with st.expander("📋 View Duration Category Details"):
+            display_df = cat_stats.copy()
+            display_df['Avg PnL'] = display_df['Avg PnL'].apply(lambda x: f"${x:,.2f}")
+            display_df['Total PnL'] = display_df['Total PnL'].apply(lambda x: f"${x:,.0f}")
+            display_df['Win Rate'] = display_df['Win Rate'].apply(lambda x: f"{x:.1f}%")
+            st.dataframe(
+                display_df[['duration_category', 'Trades', 'Win Rate', 'Avg PnL', 'Total PnL']],
+                width='stretch',
+                hide_index=True,
+                column_config={
+                    "duration_category": "Duration Category",
+                    "Trades": "Trade Count",
+                    "Win Rate": "Win Rate",
+                    "Avg PnL": "Avg PnL",
+                    "Total PnL": "Total PnL"
+                }
+            )
+    
+    # ==========================================================================
+    # PRODUCT TABS 
+    # ==========================================================================
     tabs = st.tabs(["📈 All", "📍 Spot", "⚡ Perp", "🎯 Options"])
     products = {
         "All": positions_df,
@@ -728,7 +1369,7 @@ def display_volume_analysis(positions_df):
                                 title='Top 5 Symbols by Fees',
                                 color=fsym.values, color_continuous_scale='Reds')
                     fig.update_layout(height=200, **CHART_BG, margin=dict(l=80))
-                    st.plotly_chart(fig, use_container_width=True, key=f"fee_{tidx}")
+                    st.plotly_chart(fig, width='stretch', key=f"fee_{tidx}")
             
             with c2:
                 st.markdown("#### Long vs Short Distribution")
@@ -757,7 +1398,7 @@ def display_volume_analysis(positions_df):
                         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
                         margin=dict(l=40, r=20, t=30, b=10), **CHART_BG
                     )
-                    st.plotly_chart(fig, use_container_width=True, key=f"ls_{tidx}")
+                    st.plotly_chart(fig, width='stretch', key=f"ls_{tidx}")
                     
                     ratio = long_vol / short_vol if short_vol > 0 else float('inf')
                     st.metric("Long/Short Ratio", f"{ratio:.2f}x" if ratio != float('inf') else "(No shorts)")
@@ -770,7 +1411,7 @@ def display_volume_analysis(positions_df):
                                       color_discrete_sequence=['#6366f1'])
                     fig.add_vline(x=0, line_dash="dash", line_color="gray")
                     fig.update_layout(height=250, **CHART_BG)
-                    st.plotly_chart(fig, use_container_width=True, key=f"pnl_hist_{tidx}")
+                    st.plotly_chart(fig, width='stretch', key=f"pnl_hist_{tidx}")
                 else:
                     context_note("Too few trades for distribution chart - showing individual trades")
                     st.dataframe(
@@ -778,53 +1419,111 @@ def display_volume_analysis(positions_df):
                             market_id=pdf['market_id'].apply(simplify_symbol),
                             realized_pnl=pdf['realized_pnl'].apply(lambda x: f"${x:,.2f}")
                         ),
-                        use_container_width=True, hide_index=True, key=f"pnl_list_{tidx}"
+                        width='stretch', hide_index=True, key=f"pnl_list_{tidx}"
                     )
-
+                    
 # ============================================================================
 # ORDER TYPE PERFORMANCE
 # ============================================================================
 
-# ============================================================================
-# INTEGRATED ORDER TYPE PERFORMANCE - Uses product type with all visualizations
-# ============================================================================
-
 def display_order_type_performance(order_df, positions_df=None):
-    """Enhanced order type performance with multiple visualizations.
-    
-    Uses PRODUCT TYPE as the primary classification (spot/perp/option) 
-    which is more meaningful than duration-based heuristics.
-    """
+    """Enhanced order type performance with multiple visualizations."""
     
     st.header("📊 Order Type Performance Analysis")
     
-    # If we have positions data, derive order types from product type
+    # Check if we have any positions data
+    if positions_df is None or positions_df.empty:
+        st.info("ℹ️ No trades in the selected period to analyze order types")
+        return
+     
+    # Get symbol filter state from session
+    has_symbol_filter = False
+    if 'selected_symbols' in st.session_state:
+        has_symbol_filter = len(st.session_state.selected_symbols) > 0
+    
+    # SPARSE DATA DETECTION - Check if we should show simplified view
+    is_sparse_mode = False
+    sparse_reason = ""
+    
+    if positions_df is not None and not positions_df.empty:
+        trade_count = len(positions_df)
+        
+        # Very few trades overall
+        if trade_count < 3:
+            is_sparse_mode = True
+            sparse_reason = "Very few trades available"
+        # Symbol filter with few trades
+        elif has_symbol_filter and trade_count < 8:
+            is_sparse_mode = True
+            symbol_text = f"for selected symbol{'s' if len(st.session_state.selected_symbols) > 1 else ''}"
+            sparse_reason = f"Limited data {symbol_text}"
+        # Date range with few trades
+        elif 'start_date' in st.session_state and 'end_date' in st.session_state:
+            days_selected = (st.session_state.end_date - st.session_state.start_date).days
+            if days_selected <= 7 and trade_count < 10:
+                is_sparse_mode = True
+                sparse_reason = "Limited data for selected period"
+    
+    # If sparse mode, show simplified card view
+    if is_sparse_mode and positions_df is not None and not positions_df.empty:
+        context_note(f"{sparse_reason} - showing individual trade breakdown")
+        
+        # Prepare data for display
+        display_df = positions_df.copy()
+        display_df['symbol'] = display_df['market_id'].apply(simplify_symbol)
+        display_df = display_df[['close_time', 'symbol', 'product_type', 'side', 
+                                 'entry_price', 'exit_price', 'size', 'realized_pnl', 'fees']]
+        
+        # Format for display
+        display_df['close_time'] = pd.to_datetime(display_df['close_time']).dt.strftime('%Y-%m-%d %H:%M')
+        display_df['entry_price'] = display_df['entry_price'].apply(lambda x: f"${x:,.2f}")
+        display_df['exit_price'] = display_df['exit_price'].apply(lambda x: f"${x:,.2f}")
+        display_df['size'] = display_df['size'].apply(lambda x: f"{x:,.4f}")
+        display_df['realized_pnl'] = display_df['realized_pnl'].apply(lambda x: f"${x:,.2f}")
+        display_df['fees'] = display_df['fees'].apply(lambda x: f"${x:,.2f}")
+        
+        st.subheader("📋 Individual Trades by Type")
+        st.dataframe(display_df, width='stretch', hide_index=True)
+        
+        # Show summary metrics
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Total Trades", len(positions_df))
+        with col2:
+            win_rate = (positions_df['realized_pnl'] > 0).mean() * 100
+            st.metric("Win Rate", f"{win_rate:.1f}%")
+        with col3:
+            total_pnl = positions_df['realized_pnl'].sum()
+            st.metric("Total PnL", f"${total_pnl:,.2f}")
+        with col4:
+            product_types = positions_df['product_type'].nunique()
+            st.metric("Product Types", product_types)
+        
+        return
+    
+    # NORMAL MODE - Full analysis
+    # ALWAYS derive from positions_df if available
     if positions_df is not None and not positions_df.empty:
         df = positions_df.copy()
         
-        # Ensure volume_usd exists
         if 'volume_usd' not in df.columns:
             df['volume_usd'] = df['exit_price'] * df['size']
         
-        # Use PRODUCT TYPE as the primary classification (more meaningful)
         if 'product_type' in df.columns:
             df['order_category'] = df['product_type']
             category_name = "Product Type"
-            
-            # Show distribution of product types
             product_counts = df['product_type'].value_counts()
             st.caption(f"📊 Distribution: {', '.join([f'{k}({v})' for k, v in product_counts.items()])}")
         else:
-            # Fallback to duration-based if product_type missing
             df['order_category'] = df.apply(lambda row: 
-                'scalp' if row['duration_seconds'] < 300 else
-                'intraday' if row['duration_seconds'] < 3600 else
-                'swing' if row['duration_seconds'] < 86400 else
+                'scalp' if row.get('duration_seconds', 0) < 300 else
+                'intraday' if row.get('duration_seconds', 0) < 3600 else
+                'swing' if row.get('duration_seconds', 0) < 86400 else
                 'position', axis=1
             )
             category_name = "Trade Duration"
         
-        # Calculate metrics by category
+        # Calculate metrics
         order_stats = df.groupby('order_category').agg({
             'realized_pnl': ['count', 'mean', 'sum'],
             'fees': 'sum',
@@ -834,28 +1533,43 @@ def display_order_type_performance(order_df, positions_df=None):
         order_stats.columns = ['trade_count', 'avg_pnl', 'total_pnl', 'total_fees', 'total_volume']
         order_stats = order_stats.reset_index()
         
-        # Calculate win rate
         order_stats['win_rate'] = df.groupby('order_category')['realized_pnl'].apply(
             lambda x: (x > 0).mean() * 100
         ).values
         
-        # Calculate fee ratio
         order_stats['fee_ratio'] = (order_stats['total_fees'] / order_stats['total_volume'] * 100).fillna(0)
-        
-        # Rename for consistency with rest of dashboard
         order_stats.rename(columns={'order_category': 'order_type'}, inplace=True)
         
-        # Add classification info
         st.info(f"📌 Classified by: **{category_name}**")
-        
-        # Use this as our order_df
         order_df = order_stats
     
-    # Check if we have data
-    if order_df.empty or len(order_df) == 0:
-        st.warning("⚠️ No order type data available. Generate more trades to see patterns.")
+    # SAFETY CHECK - if still no data or missing columns
+    if order_df is None or order_df.empty:
+        st.warning("⚠️ No order type data available for selected filters.")
+        st.info("💡 Try selecting a wider date range or different symbols.")
         return
     
+    # Ensure required columns exist
+    required_cols = ['order_type', 'trade_count', 'win_rate', 'avg_pnl']
+    missing_cols = [col for col in required_cols if col not in order_df.columns]
+    
+    if missing_cols:
+        st.error(f"❌ Missing required columns: {', '.join(missing_cols)}")
+        st.info("💡 This usually happens when the date filter excludes all trades.")
+        return
+    
+    # Add total_pnl 
+    if 'total_pnl' not in order_df.columns:
+        order_df['total_pnl'] = order_df['avg_pnl'] * order_df['trade_count']
+    
+    # Add volume/fee columns 
+    if 'total_volume' not in order_df.columns:
+        order_df['total_volume'] = 0
+    if 'total_fees' not in order_df.columns:
+        order_df['total_fees'] = 0
+    if 'fee_ratio' not in order_df.columns:
+        order_df['fee_ratio'] = 0
+           
     # Create four columns for key metrics
     col1, col2, col3, col4 = st.columns(4)
     
@@ -926,7 +1640,7 @@ def display_order_type_performance(order_df, positions_df=None):
         )
         
         fig.update_layout(height=500, **CHART_BG)
-        st.plotly_chart(fig, use_container_width=True, key="order_matrix")
+        st.plotly_chart(fig, width='stretch', key="order_matrix")
         
         # Add explanation
         with st.expander("📖 How to read this chart"):
@@ -982,7 +1696,7 @@ def display_order_type_performance(order_df, positions_df=None):
         )
         fig.update_xaxes(range=[0, 100])
         
-        st.plotly_chart(fig, use_container_width=True, key="order_winrate")
+        st.plotly_chart(fig, width='stretch', key="order_winrate")
         
         # Win rate confidence intervals
         st.subheader("📊 Statistical Confidence")
@@ -1061,7 +1775,7 @@ def display_order_type_performance(order_df, positions_df=None):
         fig.update_yaxes(title_text="Average PnL ($)", secondary_y=True)
         fig.add_hline(y=0, line_dash="dash", line_color="gray", opacity=0.5, secondary_y=True)
         
-        st.plotly_chart(fig, use_container_width=True, key="order_pnl")
+        st.plotly_chart(fig, width='stretch', key="order_pnl")
         
         # Fee analysis
         if 'total_fees' in order_df.columns and 'total_volume' in order_df.columns:
@@ -1079,9 +1793,8 @@ def display_order_type_performance(order_df, positions_df=None):
             )
             fig.update_traces(textposition='outside')
             fig.update_layout(height=300, **CHART_BG)
-            st.plotly_chart(fig, use_container_width=True, key="order_fees")
+            st.plotly_chart(fig, width='stretch', key="order_fees")
             
-            # Add fee efficiency explanation
             st.caption("💰 Lower fee ratio means more cost-efficient trading")
     
     with tab4:
@@ -1096,13 +1809,12 @@ def display_order_type_performance(order_df, positions_df=None):
         display_df['total_volume'] = display_df['total_volume'].apply(lambda x: f"${x:,.0f}")
         display_df['fee_ratio'] = display_df['fee_ratio'].apply(lambda x: f"{x:.2f}%")
         
-        # Reorder columns for better readability
         column_order = ['order_type', 'trade_count', 'win_rate', 'avg_pnl', 
                        'total_pnl', 'total_volume', 'total_fees', 'fee_ratio']
         
         st.dataframe(
             display_df[column_order], 
-            use_container_width=True, 
+            width='stretch', 
             hide_index=True,
             column_config={
                 "order_type": "Product Type",
@@ -1116,7 +1828,6 @@ def display_order_type_performance(order_df, positions_df=None):
             }
         )
         
-        # Download button
         csv = order_df.to_csv(index=False)
         st.download_button(
             "📥 Download Order Data",
@@ -1124,11 +1835,193 @@ def display_order_type_performance(order_df, positions_df=None):
             f"order_analysis_{datetime.now().strftime('%Y%m%d')}.csv",
             "text/csv"
         )
-
+        
 # ============================================================================
 # GREEKS ANALYSIS
 # ============================================================================
 
+def display_greeks_analysis(greeks_df, positions_df, is_personal=False):
+    """Greeks analysis with symbol filter adaptation."""
+    
+    st.header("🔬 Options Greeks Exposure")
+    
+    # Get symbol filter state from session
+    has_symbol_filter = False
+    if 'selected_symbols' in st.session_state:
+        has_symbol_filter = len(st.session_state.selected_symbols) > 0
+    
+    # If we have positions data, recalculate Greeks based on filtered positions
+    if positions_df is not None and not positions_df.empty:
+        # Filter to only option positions
+        option_positions = positions_df[positions_df['product_type'] == 'option'].copy()
+        
+        if option_positions.empty:
+            st.info("No options positions match the current filters")
+            return
+        
+        # Calculate per-position Greeks using the helper function
+        per_position_greeks = compute_greeks_per_position(option_positions)
+        
+        if per_position_greeks.empty:
+            st.info("No Greeks data available for filtered options")
+            return
+        
+        # Aggregate by trader
+        trader_greeks = per_position_greeks.groupby('trader_id').agg({
+            'delta': 'sum'
+        }).reset_index()
+        trader_greeks.columns = ['trader_id', 'net_delta']
+        trader_greeks['total_option_positions'] = per_position_greeks.groupby('trader_id').size().values
+        
+        # Use this filtered data instead of the pre-calculated greeks_df
+        greeks_df = trader_greeks.copy()
+    
+    # If still no data, show message
+    if greeks_df.empty:
+        st.info("No options Greeks data available for current filters")
+        return
+    
+    # SPARSE DATA DETECTION
+    trade_count = len(positions_df) if positions_df is not None else 0
+    is_sparse_mode = False
+    sparse_reason = ""
+    
+    if has_symbol_filter and trade_count < 8:
+        is_sparse_mode = True
+        symbol_text = f"for selected symbol{'s' if len(st.session_state.selected_symbols) > 1 else ''}"
+        sparse_reason = f"Limited options data {symbol_text}"
+    elif trade_count < 5:
+        is_sparse_mode = True
+        sparse_reason = "Very few options trades"
+    
+    # SPARSE MODE - Show simplified view
+    if is_sparse_mode:
+        st.info(f"ℹ️ {sparse_reason} - showing per-position breakdown")
+        
+        # Show per-position details instead of aggregated charts
+        if positions_df is not None and not positions_df.empty:
+            option_details = positions_df[positions_df['product_type'] == 'option'].copy()
+            
+            if not option_details.empty:
+                option_details['symbol'] = option_details['market_id'].apply(simplify_symbol)
+                option_details['delta'] = option_details.apply(
+                    lambda row: compute_single_delta(row), axis=1
+                )
+                
+                display_df = option_details[['close_time', 'symbol', 'side', 'size', 'delta', 'realized_pnl']].copy()
+                display_df['close_time'] = pd.to_datetime(display_df['close_time']).dt.strftime('%Y-%m-%d %H:%M')
+                display_df['realized_pnl'] = display_df['realized_pnl'].apply(lambda x: f"${x:,.2f}")
+                
+                st.subheader("📋 Individual Option Positions")
+                st.dataframe(display_df, width='stretch', hide_index=True)
+                
+                # Show simple totals
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.metric("Total Options", len(option_details))
+                with col2:
+                    st.metric("Net Delta", f"{greeks_df['net_delta'].sum():.2f}")
+                with col3:
+                    total_pnl = option_details['realized_pnl'].sum()
+                    st.metric("Options PnL", f"${total_pnl:,.2f}")
+                return
+    
+    # NORMAL MODE - Full Greeks analysis
+    total_delta = greeks_df['net_delta'].sum()
+    delta_color = "#10b981" if total_delta > 0 else "#ef4444"
+    total_pos = greeks_df['total_option_positions'].sum()
+    
+    # Show symbol filter context
+    if has_symbol_filter:
+        st.caption(f"📊 Showing Greeks for selected symbol{'s' if len(st.session_state.selected_symbols) > 1 else ''}")
+    
+    # Metrics cards
+    c1, c2, c3, c4 = st.columns(4)
+    
+    with c1:
+        st.metric("Net Delta", f"{total_delta:,.2f}", delta=None)
+    with c2:
+        st.metric("Gamma", "🔜 Soon", delta=None)
+    with c3:
+        st.metric("Theta", "🔜 Soon", delta=None)
+    with c4:
+        st.metric("Positions", f"{int(total_pos)}", delta=None)
+    
+    # Prepare display data
+    disp = greeks_df.copy()
+    disp['trader'] = disp['trader_id'].apply(mask_trader_id)
+    disp = disp.sort_values('net_delta', ascending=False)
+    
+    # Limit to top 5 traders in multi-view
+    if not is_personal and len(disp) > 5:
+        st.info("Showing top 5 traders by delta exposure")
+        disp = disp.head(5)
+    
+    # Single trader or personal mode
+    if is_personal or disp['trader_id'].nunique() == 1:
+        st.subheader("📊 Per-Position Delta")
+        
+        # Show per-position breakdown
+        if positions_df is not None and not positions_df.empty:
+            option_details = positions_df[positions_df['product_type'] == 'option'].copy()
+            if not option_details.empty:
+                option_details['symbol'] = option_details['market_id'].apply(simplify_symbol)
+                option_details['delta'] = option_details.apply(
+                    lambda row: compute_single_delta(row), axis=1
+                )
+                
+                display_df = option_details[['close_time', 'symbol', 'side', 'size', 'delta', 'realized_pnl']].copy()
+                display_df['close_time'] = pd.to_datetime(display_df['close_time']).dt.strftime('%Y-%m-%d %H:%M')
+                display_df['realized_pnl'] = display_df['realized_pnl'].apply(lambda x: f"${x:,.2f}")
+                
+                st.dataframe(display_df, width='stretch', hide_index=True)
+        
+        # Delta gauge
+        max_range = max(abs(total_delta) * 2, 10) if total_delta != 0 else 10
+        fig = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=total_delta,
+            title={'text': "Net Delta Exposure"},
+            gauge={
+                'axis': {'range': [-max_range, max_range]},
+                'bar': {'color': "#10b981" if total_delta >= 0 else "#ef4444"},
+                'steps': [
+                    {'range': [-max_range, 0], 'color': 'rgba(239,68,68,0.1)'},
+                    {'range': [0, max_range], 'color': 'rgba(16,185,129,0.1)'}
+                ]
+            }
+        ))
+        fig.update_layout(height=280, **CHART_BG)
+        st.plotly_chart(fig, width='stretch', key="delta_gauge")
+    
+    else:
+        # Multi-trader view - bar chart
+        st.subheader("📊 Delta Exposure by Trader")
+        
+        fig = px.bar(disp, x='trader', y='net_delta', color='net_delta',
+                    color_continuous_scale='RdBu', color_continuous_midpoint=0,
+                    title='Net Delta by Trader')
+        fig.update_layout(height=350, **CHART_BG)
+        fig.update_xaxes(tickangle=-45)
+        st.plotly_chart(fig, width='stretch', key="delta_bar_multi")
+    
+    # Full table
+    st.subheader("📋 Greeks Breakdown")
+    st.dataframe(
+        disp[['trader','total_option_positions','net_delta']].style.format(
+            {'net_delta':'{:,.2f}','total_option_positions':'{:.0f}'}
+        ),
+        width='stretch', hide_index=True
+    )
+
+def compute_single_delta(row):
+    """Compute delta for a single option position."""
+    is_call = 'CALL' in str(row['market_id']).upper()
+    if row['side'] == 'buy':
+        return abs(row['size']) if is_call else -abs(row['size'])
+    else:
+        return -abs(row['size']) if is_call else abs(row['size'])
+    
 def compute_greeks_per_position(positions_df):
     """Compute delta for each option position."""
     opts = positions_df[positions_df['product_type'] == 'option'].copy()
@@ -1148,83 +2041,25 @@ def compute_greeks_per_position(positions_df):
             'delta': delta
         })
     return pd.DataFrame(rows)
-
-def display_greeks_analysis(greeks_df, is_personal=False):
-    """Greeks analysis — limited to 5 traders in multi-view."""
     
-    st.header("🔬 Options Greeks Exposure")
-    
-    if greeks_df.empty:
-        st.info("No options Greeks data available")
-        return
-    
-    total_delta = greeks_df['net_delta'].sum()
-    delta_color = "#10b981" if total_delta > 0 else "#ef4444"
-    total_pos = greeks_df['total_option_positions'].sum()
-    
-    c1, c2, c3, c4 = st.columns(4)
-    
-    with c1:
-        st.metric("Net Delta", f"{total_delta:,.2f}", delta=None)
-    with c2:
-        st.metric("Gamma", "🔜 Soon", delta=None)
-    with c3:
-        st.metric("Theta", "🔜 Soon", delta=None)
-    with c4:
-        st.metric("Positions", f"{int(total_pos)}", delta=None)
-    
-    disp = greeks_df.copy()
-    disp['trader'] = disp['trader_id'].apply(mask_trader_id)
-    disp = disp.sort_values('net_delta', ascending=False)
-    
-    if not is_personal and len(disp) > 5:
-        st.info("Showing top 5 traders by delta exposure")
-        disp = disp.head(5)
-    
-    if is_personal or disp['trader_id'].nunique() == 1:
-        st.subheader("📊 Per-Position Delta")
-        
-        per_pos = compute_greeks_per_position(
-            pd.DataFrame({'product_type': ['option'], 'market_id': ['CALL'],
-                         'side': ['buy'], 'size': [1], 'position_id': [0], 'trader_id': [0]})
-        )
-        
-        disp2 = disp[['trader','net_delta','total_option_positions']].copy()
-        disp2.columns = ['Trader','Net Delta','Option Positions']
-        disp2['Net Delta'] = disp2['Net Delta'].apply(lambda x: f"{x:+.3f}")
-        st.dataframe(disp2, use_container_width=True, hide_index=True)
-    
-    else:
-        st.subheader("📊 Delta Exposure by Trader")
-        
-        fig = px.bar(disp, x='trader', y='net_delta', color='net_delta',
-                    color_continuous_scale='RdBu', color_continuous_midpoint=0,
-                    title='Net Delta by Trader')
-        fig.update_layout(height=350, **CHART_BG)
-        fig.update_xaxes(tickangle=-45)
-        st.plotly_chart(fig, use_container_width=True, key="delta_bar_multi")
-    
-    st.subheader("📋 Greeks Breakdown")
-    st.dataframe(
-        disp[['trader','total_option_positions','net_delta']].style.format(
-            {'net_delta':'{:,.2f}','total_option_positions':'{:.0f}'}
-        ),
-        use_container_width=True, hide_index=True
-    )
-
 # ============================================================================
 # TRANSACTION HISTORY
 # ============================================================================
 
 def display_transaction_history(positions_df):
-    """Transaction history with pagination and blockchain verify links."""
+    """Transaction history with pagination and blockchain verify links ahead of real injection."""
     
     st.markdown("### 📋 Transaction History")
+    
+    # Add info about expired options
+    if not positions_df.empty and 'close_reason' in positions_df.columns:
+        if (positions_df['close_reason'] == 'expire').any():
+            st.info("ℹ️ **Expired Options:** When options expire worthless, exit price = $0, so volume = $0. The PnL shows the premium paid + fees.")
     
     if positions_df.empty:
         st.info("No transactions to display")
         return
-    
+           
     df = positions_df.copy()
     
     df['symbol'] = df['market_id'].apply(simplify_symbol)
@@ -1296,25 +2131,45 @@ def display_transaction_history(positions_df):
 # GLOBAL KPIs
 # ============================================================================
 
-def display_global_kpis(closed_positions, summary_df, selected_trader=None):
-    """Display global KPIs using ONLY closed positions."""
-    
-    total_pnl = closed_positions['realized_pnl'].sum() if not closed_positions.empty else 0
-    win_rate = (closed_positions['realized_pnl'] > 0).mean() * 100 if not closed_positions.empty else 0
-    trade_count = len(closed_positions)  # This now counts ONLY closed trades
-    
-    if selected_trader and not summary_df.empty:
-        td = summary_df[summary_df['trader_id'] == selected_trader]
-        sharpe = td['sharpe_ratio'].iloc[0] if not td.empty else 0
-        sortino = td['sortino_ratio'].iloc[0] if not td.empty and 'sortino_ratio' in td.columns else 0
+def compute_ratios(positions_df):
+    """Calculate Sharpe and Sortino from actual filtered positions."""
+    if positions_df.empty or len(positions_df) < 2:
+        return 0, 0
+    returns = positions_df['realized_pnl'].values
+    mean_r = returns.mean()
+    std_r = returns.std()
+    sharpe = round(mean_r / std_r, 2) if std_r > 0 else 0
+    downside = returns[returns < 0]
+    sortino = round(mean_r / downside.std(), 2) if len(downside) > 1 and downside.std() > 0 else 0
+    return sharpe, sortino
+
+def display_global_kpis(closed_positions, summary_df, selected_trader=None, is_personal_mode=False):
+    """Display global KPIs - ratios computed live from filtered positions."""
+
+    if is_personal_mode and selected_trader:
+        trader_positions = closed_positions[closed_positions['trader_id'] == selected_trader]
+        total_pnl = trader_positions['realized_pnl'].sum() if not trader_positions.empty else 0
+        win_rate = (trader_positions['realized_pnl'] > 0).mean() * 100 if not trader_positions.empty else 0
+        trade_count = len(trader_positions)
+        sharpe, sortino = compute_ratios(trader_positions)
+        mode_label = "YOUR PERFORMANCE"
     else:
-        sharpe = summary_df['sharpe_ratio'].mean() if not summary_df.empty and 'sharpe_ratio' in summary_df.columns else 0
-        sortino = summary_df['sortino_ratio'].mean() if not summary_df.empty and 'sortino_ratio' in summary_df.columns else 0
-    
+        total_pnl = closed_positions['realized_pnl'].sum() if not closed_positions.empty else 0
+        win_rate = (closed_positions['realized_pnl'] > 0).mean() * 100 if not closed_positions.empty else 0
+        trade_count = len(closed_positions)
+        sharpe, sortino = compute_ratios(closed_positions)
+        mode_label = "PROTOCOL PERFORMANCE"
+
+    if is_personal_mode:
+        st.markdown(f"<div style='text-align:center; color:#10b981; font-size:0.75rem; font-weight:600; margin-bottom:8px;'>📊 {mode_label}</div>", unsafe_allow_html=True)
+
     cols = st.columns(5)
-    values = [f"${total_pnl:,.2f}", f"{win_rate:.1f}%", str(trade_count), f"{sharpe:.2f}", f"{sortino:.2f}"]
+    sharpe_display = f"{sharpe:.2f}" if trade_count > 0 else "N/A"
+    sortino_display = f"{sortino:.2f}" if trade_count > 0 else "N/A"
+
+    values = [f"${total_pnl:,.2f}", f"{win_rate:.1f}%", str(trade_count), sharpe_display, sortino_display]
     labels = ["NET PNL", "WIN RATE", "TRADES", "SHARPE", "SORTINO"]
-    
+
     for col, label, val in zip(cols, labels, values):
         col.markdown(f"""
         <div class='metric-major'>
@@ -1322,7 +2177,7 @@ def display_global_kpis(closed_positions, summary_df, selected_trader=None):
             <div class='metric-major-value'>{val}</div>
         </div>
         """, unsafe_allow_html=True)
-
+        
 # ============================================================================
 # DATA LOADING
 # ============================================================================
@@ -1367,6 +2222,22 @@ if data is None or (data['positions'].empty and data['open_positions'].empty):
     st.stop()
 
 # ============================================================================
+# INITIALIZE ADMIN STATE - HIDDEN FROM REGULAR USERS
+# ============================================================================
+
+# Check URL for admin activation
+if check_url_for_admin():
+    st.session_state.show_admin = True
+
+# Initialize admin states
+if "admin_authenticated" not in st.session_state:
+    st.session_state.admin_authenticated = False
+if "show_admin" not in st.session_state:
+    st.session_state.show_admin = False
+
+is_admin = st.session_state.admin_authenticated
+
+# ============================================================================
 # SIDEBAR
 # ============================================================================
 
@@ -1386,8 +2257,9 @@ st.sidebar.markdown("---")
 st.sidebar.success("🔒 **Secure & Private**\nRead-only • Local-first")
 st.sidebar.markdown("---")
 
-st.sidebar.header("🔐 Access Control")
-is_admin = check_admin_password()
+# ============================================================================
+# TRADER ACCESS 
+# ============================================================================
 
 st.sidebar.header("👤 Trader Access")
 
@@ -1425,35 +2297,42 @@ else:
 
 st.sidebar.markdown("---")
 
+# ============================================================================
+# FILTERS - Admin features only visible when authenticated
+# ============================================================================
+
 st.sidebar.header("🎛️ Filters")
 st.sidebar.markdown("**📅 Date Range**")
 
+# Regular users see limited options
 if is_admin:
     date_option = st.sidebar.radio("Range",
         ["Last 7 Days", "Last 30 Days", "All Time", "Custom"],
         index=1, horizontal=True, label_visibility="collapsed")
 else:
     date_option = st.sidebar.radio("Range",
-        ["Last 7 Days", "Last 30 Days", "Custom (Admin Only)"],
+        ["Last 7 Days", "Last 30 Days"],
         index=1, horizontal=True, label_visibility="collapsed")
-    if date_option == "Custom (Admin Only)":
-        st.sidebar.warning("🔐 Requires admin authentication")
-        date_option = "Last 30 Days"
+
+from datetime import date
 
 if not data['positions'].empty:
     min_date = data['positions']['close_time'].min().date()
     max_date = data['positions']['close_time'].max().date()
-    
+    today = date.today()
+
     if date_option == "Last 7 Days":
-        start_date, end_date = max_date - timedelta(7), max_date
+        start_date, end_date = today - timedelta(7), today
     elif date_option == "Last 30 Days":
-        start_date, end_date = max_date - timedelta(30), max_date
-    elif date_option in ("Custom", "Custom (Admin Only)") and is_admin:
+        start_date, end_date = today - timedelta(30), today
+    elif date_option == "All Time" and is_admin:
+        start_date, end_date = min_date, max_date
+    elif date_option == "Custom" and is_admin:
         sc1, sc2 = st.sidebar.columns(2)
         start_date = sc1.date_input("From", min_date, min_value=min_date, max_value=max_date)
         end_date = sc2.date_input("To", max_date, min_value=min_date, max_value=max_date)
     else:
-        start_date, end_date = min_date, max_date
+        start_date, end_date = today - timedelta(30), today
 
 all_markets = sorted(data['positions']['market_id'].unique()) if not data['positions'].empty else []
 unique_symbols = sorted(set(simplify_symbol(m) for m in all_markets))
@@ -1463,20 +2342,65 @@ selected_markets = [m for m in all_markets if simplify_symbol(m) in selected_sym
 st.sidebar.markdown("---")
 
 # ============================================================================
-# APPLY FILTERS
+# ADMIN ACCESS - COMPLETELY HIDDEN FROM REGULAR USERS
+# ============================================================================
+
+# Initialize admin attempts if not exists
+if "admin_attempts" not in st.session_state:
+    st.session_state.admin_attempts = 0
+
+# Only show admin section if activated via URL
+if st.session_state.show_admin:
+    st.sidebar.header("🔐 Admin Access")
+    
+    if not st.session_state.admin_authenticated:
+        with st.sidebar.expander("Admin Login", expanded=False):
+            st.caption("Internal use only")
+            
+            # Check for rate limiting
+            if st.session_state.admin_attempts >= 5:
+                st.error("Too many attempts. Try again in 30 seconds.")
+                time.sleep(30)
+                st.session_state.admin_attempts = 0  # Reset after wait
+            else:
+                password = st.text_input("Password", type="password", key="admin_pass_hidden")
+                if st.button("Authenticate", key="admin_auth_hidden"):
+                    if password == ADMIN_PASSWORD:
+                        st.session_state.admin_authenticated = True
+                        st.session_state.admin_attempts = 0  # Reset on success
+                        st.success("✅ Admin access granted")
+                        st.rerun()
+                    else:
+                        st.session_state.admin_attempts += 1  # Increment on failure
+                        remaining = 5 - st.session_state.admin_attempts
+                        st.error(f"❌ Invalid password ({remaining} attempts remaining)")
+    else:
+        # Show logout when authenticated
+        st.sidebar.success("✅ Admin Mode Active")
+        if st.sidebar.button("🔓 Logout", key="admin_logout_hidden"):
+            st.session_state.admin_authenticated = False
+            st.rerun()
+
+# Update is_admin after authentication check
+is_admin = st.session_state.admin_authenticated
+
+# ============================================================================
+# APPLY FILTERS - Admin debug info completely hidden
 # ============================================================================
 
 filtered_positions = data['positions'].copy() if not data['positions'].empty else pd.DataFrame()
 filtered_open = data['open_positions'].copy() if not data['open_positions'].empty else pd.DataFrame()
 
-# Debug info in sidebar
-with st.sidebar.expander("📊 Quick Data check", expanded=False):
-    st.write(f"Total positions: {len(filtered_positions)}")
-    if not filtered_positions.empty:
-        st.write(f"Spot: {len(filtered_positions[filtered_positions['product_type'] == 'spot'])}")
-        st.write(f"Perp: {len(filtered_positions[filtered_positions['product_type'] == 'perp'])}")
-        st.write(f"Option: {len(filtered_positions[filtered_positions['product_type'] == 'option'])}")
-closed_positions = filtered_positions.copy()  
+# Admin debug info - COMPLETELY HIDDEN from regular users
+if is_admin:
+    with st.sidebar.expander("📊 Data Debug (Admin)", expanded=False):
+        st.write(f"Total positions: {len(filtered_positions)}")
+        if not filtered_positions.empty:
+            st.write(f"Spot: {len(filtered_positions[filtered_positions['product_type'] == 'spot'])}")
+            st.write(f"Perp: {len(filtered_positions[filtered_positions['product_type'] == 'perp'])}")
+            st.write(f"Option: {len(filtered_positions[filtered_positions['product_type'] == 'option'])}")
+        st.write(f"Open positions: {len(filtered_open)}")
+        st.write(f"Date range: {start_date} to {end_date}")
 
 # Trader filter
 if st.session_state.view_mode == "personal" and "authenticated_trader" in st.session_state:
@@ -1526,11 +2450,20 @@ if st.session_state.view_mode == "personal" and "authenticated_trader" in st.ses
 
 # Global KPIs
 
-display_global_kpis(closed_positions, data['summary'], selected_trader)
+# Global KPIs - MUST use filtered_positions, not closed_positions
+
+is_personal = (st.session_state.view_mode == "personal" and "authenticated_trader" in st.session_state)
+display_global_kpis(
+    filtered_positions, 
+    data['summary'], 
+    selected_trader,
+    is_personal_mode=is_personal
+)
 
 # Navigation tabs
-tab_overview, tab_performance, tab_risk, tab_volume, tab_orders, tab_greeks, tab_journal = st.tabs([
-    "📊 Overview", "📈 Performance", "⚠️ Risk", "📊 Volume", "📋 Orders", "🔬 Greeks", "📝 Journal"
+
+tab_overview, tab_performance, tab_time, tab_risk, tab_volume, tab_orders, tab_greeks, tab_journal = st.tabs([
+    "📊 Overview", "📈 Performance", "📅 Time Analysis", "⚠️ Risk", "📊 Volume", "📋 Orders", "🔬 Greeks", "📝 Journal"
 ])
 
 # ============================================================================
@@ -1563,11 +2496,11 @@ with tab_overview:
                             text='Total PnL')
                 fig.update_traces(texttemplate='$%{text:.0f}', textposition='outside')
                 fig.update_layout(height=200, showlegend=False, **CHART_BG)
-                st.plotly_chart(fig, use_container_width=True, key="top_profit")
+                st.plotly_chart(fig, width='stretch', key="top_profit")
                 
                 st.dataframe(
                     df2.style.format({'Total PnL':'${:,.2f}','Win Rate':'{:.1f}%'}),
-                    use_container_width=True, hide_index=True
+                    width='stretch', hide_index=True
                 )
         
         with c2:
@@ -1591,11 +2524,11 @@ with tab_overview:
                             text='Total PnL')
                 fig.update_traces(texttemplate='$%{text:.0f}', textposition='outside')
                 fig.update_layout(height=200, showlegend=False, **CHART_BG)
-                st.plotly_chart(fig, use_container_width=True, key="top_loss")
+                st.plotly_chart(fig, width='stretch', key="top_loss")
                 
                 st.dataframe(
                     df2.style.format({'Total PnL':'${:,.2f}','Win Rate':'{:.1f}%'}),
-                    use_container_width=True, hide_index=True
+                    width='stretch', hide_index=True
                 )
         
         st.markdown("---")
@@ -1612,78 +2545,233 @@ with tab_overview:
         
         st.dataframe(
             od[['trader','symbol','product_type','side','entry_price','size']],
-            use_container_width=True, hide_index=True
+            width='stretch', hide_index=True
         )
 
 # ============================================================================
 # PERFORMANCE TAB
 # ============================================================================
 
+# ============================================================================
+# PERFORMANCE TAB - FIXED logic
+# ============================================================================
+
 with tab_performance:
-    if not filtered_positions.empty:
-        if st.session_state.view_mode == "personal" and selected_trader:
-            fig = create_personal_equity_chart(filtered_positions)
-            st.plotly_chart(fig, use_container_width=True, key="personal_eq")
-        else:
-            fig_eq, fig_dd = create_protocol_equity_charts(filtered_positions)
-            st.plotly_chart(fig_eq, use_container_width=True, key="proto_eq")
-            st.caption("Protocol cumulative PnL")
-            st.plotly_chart(fig_dd, use_container_width=True, key="proto_dd")
-            st.caption("Drawdown from peak equity")
-        
-        if not selected_trader and not data['equity'].empty:
-            create_trader_summary_table(data['equity'], filtered_positions)
+    if filtered_positions.empty:
+        st.info("📈 No performance data available for the selected filters")
+        st.caption("Try expanding your date range or selecting different symbols")
     else:
-        st.info("No performance data for selected filters")
+        # Determine if we should use sparse mode - now includes symbol filter
+        days_selected = (end_date - start_date).days
+        trade_count = len(filtered_positions)
+        has_symbol_filter = len(selected_symbols) > 0
+        
+        is_sparse_mode = False
+        
+        # Check various conditions that indicate sparse data:
+        # 1. Very short date range (< 7 days) with few trades
+        # 2. Any date range but very few trades (< 5)
+        # 3. Symbol filter applied AND few trades for that symbol
+        # 4. Personal mode with few trades
+        
+        if trade_count < 5:
+            is_sparse_mode = True
+            context_note("Very few trades in selected period - showing compact view with trade details")
+        elif days_selected <= 7 and trade_count < 10:
+            is_sparse_mode = True
+            context_note("Limited data for selected period - showing compact charts + trade cards")
+        elif has_symbol_filter and trade_count < 8:
+            is_sparse_mode = True
+            context_note(f"Limited data for selected symbol{'s' if len(selected_symbols)>1 else ''} - showing compact view")
+        
+        if st.session_state.view_mode == "personal" and selected_trader:
+            # Personal mode - show equity + drawdown
+            fig, fig_dd = create_personal_equity_chart(filtered_positions, is_sparse_mode, compact=is_sparse_mode)
+            
+            if is_sparse_mode and fig_dd is not None:
+                # Side-by-side charts for sparse data
+                col_left, col_right = st.columns(2)
+                with col_left:
+                    st.plotly_chart(fig, width='stretch', key="personal_eq")
+                with col_right:
+                    st.plotly_chart(fig_dd, width='stretch', key="personal_dd")
+                st.caption("Equity (left) and Drawdown (right) - compact view")
+            else:
+                # Stacked charts for normal data
+                st.plotly_chart(fig, width='stretch', key="personal_eq")
+                if fig_dd is not None:
+                    st.plotly_chart(fig_dd, width='stretch', key="personal_dd")
+                    st.caption("Drawdown from peak equity")
+            
+            # Show performance cards for sparse mode
+            if is_sparse_mode:
+                display_performance_cards(filtered_positions, "Your Performance Details")
+        else:
+            # Protocol mode - standard equity + drawdown
+            fig_eq, fig_dd = create_protocol_equity_charts(filtered_positions, compact=is_sparse_mode)
+            
+            if is_sparse_mode:
+                # Side-by-side charts for sparse protocol data
+                col_left, col_right = st.columns(2)
+                with col_left:
+                    st.plotly_chart(fig_eq, width='stretch', key="proto_eq")
+                with col_right:
+                    st.plotly_chart(fig_dd, width='stretch', key="proto_dd")
+                st.caption("Protocol PnL (left) and Drawdown (right) - compact view")
+            else:
+                # Stacked charts for normal data
+                st.plotly_chart(fig_eq, width='stretch', key="proto_eq")
+                st.caption("Protocol cumulative PnL")
+                st.plotly_chart(fig_dd, width='stretch', key="proto_dd")
+                st.caption("Drawdown from peak equity")
+            
+            # Show performance cards for sparse protocol data
+            if is_sparse_mode:
+                display_performance_cards(filtered_positions, "Protocol Performance Details")
+        
+        # Trader summary table (only for all traders mode with enough data)
+        if not selected_trader and not data['equity'].empty and not is_sparse_mode:
+            create_trader_summary_table(data['equity'], filtered_positions)
+                                    
+# ============================================================================
+# TIME ANALYSIS TAB 
+# ============================================================================
+
+with tab_time:
+    if filtered_positions.empty:
+        st.info("📅 No time-based data available for the selected filters")
+        st.caption("Try expanding your date range or selecting different symbols")
+    else:
+        # Determine if we should use sparse mode - now includes symbol filter
+        days_selected = (end_date - start_date).days
+        trade_count = len(filtered_positions)
+        has_symbol_filter = len(selected_symbols) > 0
+        
+        is_sparse_mode = False
+        
+        if trade_count < 5:
+            is_sparse_mode = True
+            context_note("Very few trades - showing trade timeline instead of daily/hourly charts")
+        elif days_selected <= 7 and trade_count < 10:
+            is_sparse_mode = True
+            context_note("Limited time data - showing trade timeline instead of daily/hourly charts")
+        elif has_symbol_filter and trade_count < 8:
+            is_sparse_mode = True
+            context_note(f"Limited data for selected symbol{'s' if len(selected_symbols)>1 else ''} - showing individual trades")
+        
+        if is_sparse_mode:
+            display_trade_summary_cards(filtered_positions, "Trade Timeline")
+        else:
+            # Filter the daily/hourly data by date range
+            trader_pnl_day = None
+            trader_pnl_hour = None
+            
+            if st.session_state.view_mode == "personal" and selected_trader:
+                # Personal mode - filter to trader AND date range
+                trader_positions = filtered_positions.copy()
+                
+                if data.get('pnl_day') is not None and not data['pnl_day'].empty:
+                    day_df = data['pnl_day'].copy()
+                    if 'trader_id' in day_df.columns:
+                        day_df = day_df[day_df['trader_id'] == selected_trader]
+                    if 'date' in day_df.columns:
+                        day_df['date'] = pd.to_datetime(day_df['date'])
+                        trader_pnl_day = day_df[
+                            (day_df['date'].dt.date >= start_date) & 
+                            (day_df['date'].dt.date <= end_date)
+                        ].copy()
+                
+                if data.get('pnl_hour') is not None and not data['pnl_hour'].empty:
+                    hour_df = data['pnl_hour'].copy()
+                    if 'trader_id' in hour_df.columns:
+                        trader_pnl_hour = hour_df[hour_df['trader_id'] == selected_trader].copy()
+                
+                display_time_performance(
+                    trader_positions,
+                    trader_pnl_day,
+                    trader_pnl_hour
+                )
+            else:
+                # Protocol view - filter by date range only
+                pnl_day_filtered = None
+                if data.get('pnl_day') is not None and not data['pnl_day'].empty:
+                    day_df = data['pnl_day'].copy()
+                    if 'date' in day_df.columns:
+                        day_df['date'] = pd.to_datetime(day_df['date'])
+                        pnl_day_filtered = day_df[
+                            (day_df['date'].dt.date >= start_date) & 
+                            (day_df['date'].dt.date <= end_date)
+                        ].copy()
+                
+                display_time_performance(
+                    filtered_positions,
+                    pnl_day_filtered,
+                    data.get('pnl_hour')
+                )
 
 # ============================================================================
 # RISK TAB
 # ============================================================================
 
+# ============================================================================
+# RISK TAB - Already has check, but ensure it's there
+# ============================================================================
+
 with tab_risk:
-    if not filtered_positions.empty:
+    if filtered_positions.empty:
+        st.info("⚠️ No risk data available for the selected filters")
+        st.caption("Try expanding your date range or selecting different symbols")
+    else:
         display_liquidation_analytics(
             filtered_positions,
             is_personal_mode=(st.session_state.view_mode == "personal"),
             trader_id=selected_trader
         )
-    else:
-        st.info("No risk data for selected filters")
-
 # ============================================================================
 # VOLUME TAB
 # ============================================================================
 
 with tab_volume:
-    if not filtered_positions.empty:
-        display_volume_analysis(filtered_positions)
+    if filtered_positions.empty:
+        st.info("📊 No volume data available for the selected filters")
+        st.caption("Try expanding your date range or selecting different symbols")
     else:
-        st.info("No volume data for selected filters")
-
+        display_volume_analysis(filtered_positions)
+        
 # ============================================================================
 # ORDERS TAB
 # ============================================================================
 
 with tab_orders:
-    display_order_type_performance(data['order_perf'], filtered_positions)
+    # Check if we have any trades in the filtered period
+    if filtered_positions.empty:
+        st.info("📊 No order data available for the selected filters")
+        st.caption("Try expanding your date range or selecting different symbols")
+    else:
+        display_order_type_performance(data['order_perf'], filtered_positions)
+
 # ============================================================================
 # GREEKS TAB
 # ============================================================================
 
 with tab_greeks:
-    if not data['greeks'].empty:
-        gf = data['greeks'].copy()
-        if selected_trader:
-            gf = gf[gf['trader_id'] == selected_trader]
-        if not gf.empty:
-            display_greeks_analysis(gf, is_personal=(selected_trader is not None))
-        else:
-            st.info("No Greeks data for selected trader")
+    # Check if we have any options in the filtered period
+    has_options = False
+    if not filtered_positions.empty:
+        has_options = (filtered_positions['product_type'] == 'option').any()
+    
+    if filtered_positions.empty or not has_options:
+        st.info("📊 No options data available for the selected filters")
+        st.caption("Try expanding your date range or selecting different symbols")
     else:
-        st.info("No Greeks data available")
-
+        # Pass both the pre-calculated Greeks and the filtered positions
+        display_greeks_analysis(
+            data['greeks'].copy() if not data['greeks'].empty else pd.DataFrame(),
+            filtered_positions,
+            is_personal=(selected_trader is not None)
+        )        
 # ============================================================================
-# JOURNAL TAB
+# JOURNAL TAB 
 # ============================================================================
 
 with tab_journal:
@@ -1695,28 +2783,73 @@ with tab_journal:
     elif st.session_state.view_mode == "personal" and selected_trader:
         trader = selected_trader
         
-        st.info("📌 Click any cell in the 'Notes' column to add your observations. Notes auto-save.")
+        st.info("📌 Type your notes and press Enter to save. Changes are saved automatically.")
         
+        # Load notes ONLY for this trader
         trader_notes = load_trader_notes(trader)
-        greeks_df = compute_greeks_per_position(filtered_positions)
         
-        jdf = filtered_positions.sort_values('close_time', ascending=False).copy()
+        if 'journal_last_saved' not in st.session_state:
+            st.session_state.journal_last_saved = trader_notes.copy()
+        
+        # Get ONLY this trader's positions
+        jdf = filtered_positions[filtered_positions['trader_id'] == trader].sort_values('close_time', ascending=False).copy()
+        
+        # If still empty after filtering, show message
+        if jdf.empty:
+            st.info("No trades found for this trader in the selected date range")
+            st.stop()
+        
         jdf['symbol'] = jdf['market_id'].apply(simplify_symbol)
         jdf['volume_usd'] = jdf['exit_price'] * jdf['size']
         jdf['notes'] = jdf['position_id'].map(lambda pid: trader_notes.get(str(pid), ""))
         
-        if not greeks_df.empty:
-            jdf = jdf.merge(greeks_df[['position_id','delta']], on='position_id', how='left')
+        # Calculate Greeks for option positions if needed
+        option_positions = jdf[jdf['product_type'] == 'option'].copy()
+        if not option_positions.empty:
+            per_position_greeks = compute_greeks_per_position(option_positions)
+            if not per_position_greeks.empty:
+                jdf = jdf.merge(per_position_greeks[['position_id', 'delta']], on='position_id', how='left')
         
-        notes_count = sum(1 for n in jdf['notes'] if n and str(n).strip())
-        st.info(f"📝 {notes_count} annotated trade{'s' if notes_count != 1 else ''}")
+        # Remove duplicate position_ids BEFORE counting
+        jdf_unique = jdf.drop_duplicates(subset=['position_id']).copy()
         
+        # Count notes correctly - only count non-empty notes in the unique dataframe
+        notes_count = sum(1 for n in jdf_unique['notes'].values if n and str(n).strip() != "")
+        total_trades = len(jdf_unique)
+                
+        # ═══════════════════════════════════════════════════════════════
+        # PAGINATION FOR PERSONAL JOURNAL
+        # ═══════════════════════════════════════════════════════════════
+        page_size = 10  
+        total_pages = max(1, (len(jdf_unique) - 1) // page_size + 1)
+        
+        # Pagination controls
+        col_p1, col_p2, col_p3 = st.columns([2, 1, 2])
+        with col_p2:
+            journal_page = st.number_input(
+                "Page", 
+                min_value=1, 
+                max_value=total_pages, 
+                value=1, 
+                key="journal_personal_page"
+            )
+        
+        # Slice data for current page from the unique dataframe
+        start_idx = (journal_page - 1) * page_size
+        end_idx = min(journal_page * page_size, len(jdf_unique))
+        jdf_page = jdf_unique.iloc[start_idx:end_idx].copy()
+        
+        st.caption(f"Showing trades {start_idx + 1}–{end_idx} of {len(jdf_unique)}")
+        
+                
         avail_cols = ['close_time','symbol','product_type','side',
                       'entry_price','exit_price','size','volume_usd','realized_pnl','fees']
-        if 'delta' in jdf.columns:
+
+        if 'delta' in jdf_page.columns and (jdf_page['product_type'] == 'option').any():
             avail_cols.append('delta')
+            
         avail_cols.append('notes')
-        
+
         col_cfg = {
             "close_time": st.column_config.DatetimeColumn("Closed At", format="DD/MM/YYYY HH:mm"),
             "symbol": "Symbol",
@@ -1728,58 +2861,172 @@ with tab_journal:
             "volume_usd": st.column_config.NumberColumn("Volume", format="$%.0f"),
             "realized_pnl": st.column_config.NumberColumn("PnL", format="$%.2f"),
             "fees": st.column_config.NumberColumn("Fees", format="$%.2f"),
-            "delta": st.column_config.NumberColumn("Delta", format="%.2f"),
-            "notes": st.column_config.TextColumn("📝 Notes", max_chars=500, width="large"),
+            "notes": st.column_config.TextColumn("📝 Your Notes", max_chars=500, width="large"),
         }
+
+        if 'delta' in avail_cols:
+            col_cfg["delta"] = st.column_config.NumberColumn("Delta", format="%.2f")
         
+        # jdf_page is already unique, so no need for drop_duplicates again
+        editor_key = f"journal_editor_{selected_trader}_{journal_page}"
+
         edited = st.data_editor(
-            jdf[avail_cols], column_config=col_cfg,
-            use_container_width=True, hide_index=True, num_rows="fixed",
-            disabled=[c for c in avail_cols if c != 'notes']
+            jdf_page[avail_cols],
+            column_config=col_cfg,
+            width='stretch', 
+            hide_index=True, 
+            num_rows="fixed",
+            disabled=[c for c in avail_cols if c != 'notes'],
+            key=editor_key
         )
         
+        # AUTO-SAVE - Only save notes for this trader
         updated = {}
-        for idx, row in edited.iterrows():
-            pid = jdf.loc[idx, 'position_id']
-            note = row.get('notes', '')
-            if pd.notna(note) and str(note).strip():
-                updated[str(pid)] = note
+        has_changes = False
         
-        if updated != trader_notes:
-            save_trader_notes(trader, updated)
-            st.success("✅ Notes saved!")
+        # Use iloc to safely access by position, not by index label
+        for position_idx in range(len(edited)):
+            # Get the original position_id from jdf_page using iloc
+            pid = str(jdf_page.iloc[position_idx]['position_id'])
+            note = str(edited.iloc[position_idx]['notes']).strip() if 'notes' in edited.columns else ""
+            
+            if note:
+                updated[pid] = note
+            
+            old_note = st.session_state.journal_last_saved.get(pid, "")
+            if note != old_note:
+                has_changes = True
         
+        if has_changes:
+            # Save ONLY this trader's notes
+            all_notes = load_trader_notes(trader)
+            all_notes.update(updated)
+            save_trader_notes(trader, all_notes)
+            st.session_state.journal_last_saved = all_notes.copy()
+            st.success("✅ Notes saved automatically!")
+            st.rerun()
+        
+        # Action buttons
         col1, col2, col3 = st.columns([3, 1, 1])
         with col2:
-            st.download_button("📥 Export CSV",
-                jdf[avail_cols].to_csv(index=False),
-                f"journal_{trader[:8]}.csv", "text/csv")
+            csv_data = jdf_unique[avail_cols].copy()
+            csv_data['close_time'] = pd.to_datetime(csv_data['close_time']).dt.strftime('%Y-%m-%d %H:%M:%S')
+            st.download_button(
+                "📥 Export All",
+                csv_data.to_csv(index=False),
+                f"journal_{mask_trader_id(trader)}.csv",
+                "text/csv"
+            )
         with col3:
-            if st.button("🗑️ Clear Notes"):
+            if st.button("🗑️ Clear All Notes"):
                 save_trader_notes(trader, {})
+                st.session_state.journal_last_saved = {}
+                st.success("🗑️ All notes cleared")
                 st.rerun()
     
     else:
+        # ═══════════════════════════════════════════════════════════════
+        # ALL TRADERS VIEW WITH PAGINATION
+        # ═══════════════════════════════════════════════════════════════
         if selected_trader:
             st.info(f"👁️ Read-Only View: {mask_trader_id(selected_trader)}")
         else:
-            st.info("👥 Authenticate your wallet to add notes")
+            st.info("📖 Viewing all traders' annotated trades")
+        
+        # Load notes from ALL traders
+        all_notes = {}
+        notes_dir = Path("data/trader_notes")
+        if notes_dir.exists():
+            for notes_file in notes_dir.glob("*.json"):
+                trader_id = notes_file.stem
+                try:
+                    with open(notes_file, 'r') as f:
+                        trader_notes_data = json.load(f)
+                        for pos_id, note in trader_notes_data.items():
+                            if note and str(note).strip():
+                                all_notes[pos_id] = {'trader_id': trader_id, 'note': note}
+                except Exception:
+                    continue
         
         jdf = filtered_positions.sort_values('close_time', ascending=False).copy()
         jdf['trader'] = jdf['trader_id'].apply(mask_trader_id)
         jdf['symbol'] = jdf['market_id'].apply(simplify_symbol)
         jdf['volume_usd'] = jdf['exit_price'] * jdf['size']
+        jdf['notes'] = jdf['position_id'].map(
+            lambda pid: all_notes.get(str(pid), {}).get('note', '')
+        )
+        
+        jdf_unique = jdf.drop_duplicates(subset=['position_id']).copy()
+        
+        annotated_count = sum(1 for n in jdf_unique['notes'].values if n and str(n).strip() != "")
+        total_count = len(jdf_unique)
+        
+        if annotated_count > 0:
+            st.success(f"📝 **{annotated_count}** of **{total_count}** trades have annotations ({annotated_count/total_count*100:.1f}%)")
+        else:
+            st.info("📝 No trades have been annotated yet")
+        
+        show_all = st.checkbox("Show all trades", value=True, key="show_all_trades")
+        
+        if not show_all:
+            jdf_unique = jdf_unique[jdf_unique['notes'].str.strip() != '']
+            if jdf_unique.empty:
+                st.info("No annotated trades to display")
+                st.stop()
+            st.caption(f"Showing {len(jdf_unique)} annotated trades")
+        
+        # PAGINATION
+        page_size = 10
+        total_pages = max(1, (len(jdf_unique) - 1) // page_size + 1)
+        
+        col_p1, col_p2, col_p3 = st.columns([2, 1, 2])
+        with col_p2:
+            all_journal_page = st.number_input(
+                "Page", 
+                min_value=1, 
+                max_value=total_pages, 
+                value=1, 
+                key="journal_all_page"
+            )
+        
+        start_idx = (all_journal_page - 1) * page_size
+        end_idx = min(all_journal_page * page_size, len(jdf_unique))
+        jdf_page = jdf_unique.iloc[start_idx:end_idx].copy()
+        
+        st.caption(f"Showing trades {start_idx + 1}–{end_idx} of {len(jdf_unique)}")
+        
+        display_cols = ['close_time','trader','symbol','product_type','side',
+                       'entry_price','exit_price','size','volume_usd','realized_pnl','fees','notes']
+        
+        display_df = jdf_page[display_cols].copy()
+        display_df['close_time'] = pd.to_datetime(display_df['close_time']).dt.strftime('%Y-%m-%d %H:%M')
         
         st.dataframe(
-            jdf[['close_time','trader','symbol','product_type','side',
-                 'entry_price','exit_price','size','volume_usd','realized_pnl','fees']].style.format({
-                'entry_price': '${:,.2f}', 'exit_price': '${:,.2f}',
-                'size': '{:,.4f}', 'volume_usd': '${:,.0f}',
-                'realized_pnl':'${:,.2f}', 'fees': '${:,.2f}'
-            }),
-            use_container_width=True, hide_index=True
+            display_df.style.format({
+                'entry_price': '${:,.2f}', 
+                'exit_price': '${:,.2f}',
+                'size': '{:,.4f}', 
+                'volume_usd': '${:,.0f}',
+                'realized_pnl':'${:,.2f}', 
+                'fees': '${:,.2f}'
+            }).apply(lambda x: ['background-color: rgba(99,102,241,0.1)' if x['notes'] else '' for _ in x], axis=1),
+            width='stretch', 
+            hide_index=True,
+            column_config={
+                "notes": st.column_config.TextColumn("📝 Trader Notes", width="large")
+            }
         )
-
+        
+        # Download ALL trades 
+        csv_data = jdf_unique[display_cols].copy()
+        csv_data['close_time'] = pd.to_datetime(csv_data['close_time']).dt.strftime('%Y-%m-%d %H:%M:%S')
+        st.download_button(
+            "📥 Download All Trades with Notes",
+            csv_data.to_csv(index=False),
+            f"all_trades_with_notes_{datetime.now().strftime('%Y%m%d')}.csv",
+            "text/csv"
+        )
+                         
 # ============================================================================
 # FOOTER
 # ============================================================================

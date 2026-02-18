@@ -32,7 +32,7 @@ def test_simple_open_close_pnl():
         },
     ])
 
-    positions, pnl = compute_realized_pnl(events)
+    positions, pnl, _ = compute_realized_pnl(events)
 
     assert len(positions) == 1
     assert positions.iloc[0]["realized_pnl"] == 9.0
