@@ -1,14 +1,32 @@
 # Python
 __pycache__/
+**/__pycache__/
 *.py[cod]
+*.pyc
+*.pyo
+*.pyd
 .venv/
 venv/
+
+# Environment
 .env
 
 # Data
 data/
 *.csv
 *.jsonl
+*.json
+!configs/*.example.json
+!configs/*.example.yaml
+!configs/*.example.yml
+
+# Configs
+configs/*.yaml
+configs/*.yml
+configs/*.json
+
+# Streamlit
+.streamlit/
 
 # IDE
 .vscode/
@@ -16,12 +34,6 @@ data/
 
 # Logs
 *.log
-
-# Configs (but keep examples)
-configs/*.yaml
-!configs/*.example.yaml
-configs/*.yml
-!configs/*.example.yml
 
 # Temp files
 temp.txt
@@ -34,5 +46,5 @@ Thumbs.db
 
 # Project specific
 Archive_TS/
-.Deriverse/
 .Archive_TS/
+.Deriverse/
