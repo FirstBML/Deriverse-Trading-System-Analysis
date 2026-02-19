@@ -1,7 +1,7 @@
 # Deriverse Trading Analytics
 
 Derivatives protocol simulation with spot, perp, and options markets. Includes an adaptive Streamlit dashboard with PnL tracking, Greeks exposure, liquidation monitoring, and personal trade journaling.
-The data used are mock to mimick real solana ecosystem data format.
+The data used are mock to simulate solana ecosystem data structure.
 
 
 ## quick setup

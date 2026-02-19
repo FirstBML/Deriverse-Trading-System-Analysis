@@ -39,12 +39,9 @@ OPTION_REQUIRED_FIELDS = {
 }
 
 OPTION_OPTIONAL_FIELDS = {
-    "delta",
-    "gamma",
-    "theta",
-    "vega",
-    "implied_vol",
-    "underlying_price"
+    "delta", "gamma", "theta", "vega",
+    "implied_vol", "implied_volatility",   
+    "underlying_price", "time_to_expiry"   
 }
 
 EVENT_TYPE_SCHEMAS = {

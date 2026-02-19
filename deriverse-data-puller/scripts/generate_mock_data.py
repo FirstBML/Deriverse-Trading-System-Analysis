@@ -353,7 +353,7 @@ emit({
 
 
 # ================================================================================
-# OPTION TRADES — Full lifecycle
+# OPTION TRADES — Full lifecycle  
 # ================================================================================
 
 # Fiona: long SOL call, profitable close  (+$29)
@@ -362,14 +362,18 @@ emit({
     "trader_id": WALLETS["fiona"], "market_id": "SOL-CALL-120-JAN15",
     "product_type": "option", "option_type": "call", "strike": 120,
     "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
-    "side": "buy", "price": 5.0, "size": 10, "fee_usd": 0.5, "delta": 0.65, "implied_vol": 0.45
+    "side": "buy", "price": 5.0, "size": 10, "fee_usd": 0.5,
+    "underlying_price": 115.0, "time_to_expiry": round(18/365, 6),
+    "implied_volatility": 0.45
 }, order_type="stop")
 emit({
     "event_type": "close", "timestamp": base_date + timedelta(days=21, hours=0),
     "trader_id": WALLETS["fiona"], "market_id": "SOL-CALL-120-JAN15",
     "product_type": "option", "option_type": "call", "strike": 120,
     "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
-    "side": "sell", "price": 8.0, "size": 10, "fee_usd": 0.5, "delta": 0.85, "implied_vol": 0.50
+    "side": "sell", "price": 8.0, "size": 10, "fee_usd": 0.5,
+    "underlying_price": 122.0, "time_to_expiry": round(17/365, 6),
+    "implied_volatility": 0.50
 }, order_type="stop")
 
 # George: short SOL put, profitable buyback  (+$36.10)
@@ -378,14 +382,18 @@ emit({
     "trader_id": WALLETS["george"], "market_id": "SOL-PUT-90-JAN15",
     "product_type": "option", "option_type": "put", "strike": 90,
     "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
-    "side": "sell", "price": 4.0, "size": 15, "fee_usd": 0.7, "delta": -0.25, "implied_vol": 0.40
+    "side": "sell", "price": 4.0, "size": 15, "fee_usd": 0.7,
+    "underlying_price": 118.0, "time_to_expiry": round(17/365, 6),
+    "implied_volatility": 0.40
 }, order_type="stop")
 emit({
     "event_type": "close", "timestamp": base_date + timedelta(days=22, hours=12),
     "trader_id": WALLETS["george"], "market_id": "SOL-PUT-90-JAN15",
     "product_type": "option", "option_type": "put", "strike": 90,
     "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
-    "side": "buy", "price": 1.5, "size": 15, "fee_usd": 0.7, "delta": -0.10, "implied_vol": 0.30
+    "side": "buy", "price": 1.5, "size": 15, "fee_usd": 0.7,
+    "underlying_price": 120.0, "time_to_expiry": round(15/365, 6),
+    "implied_volatility": 0.30
 }, order_type="market")
 
 # Hannah: long ETH put, losing close  (-$127)
@@ -394,14 +402,18 @@ emit({
     "trader_id": WALLETS["hannah"], "market_id": "ETH-PUT-1900-JAN15",
     "product_type": "option", "option_type": "put", "strike": 1900,
     "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
-    "side": "buy", "price": 45.0, "size": 5, "fee_usd": 1.0, "delta": -0.35, "implied_vol": 0.55
+    "side": "buy", "price": 45.0, "size": 5, "fee_usd": 1.0,
+    "underlying_price": 2050.0, "time_to_expiry": round(16/365, 6),
+    "implied_volatility": 0.55
 }, order_type="stop")
 emit({
     "event_type": "close", "timestamp": base_date + timedelta(days=24, hours=0),
     "trader_id": WALLETS["hannah"], "market_id": "ETH-PUT-1900-JAN15",
     "product_type": "option", "option_type": "put", "strike": 1900,
     "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
-    "side": "sell", "price": 20.0, "size": 5, "fee_usd": 1.0, "delta": -0.15, "implied_vol": 0.40
+    "side": "sell", "price": 20.0, "size": 5, "fee_usd": 1.0,
+    "underlying_price": 2100.0, "time_to_expiry": round(14/365, 6),
+    "implied_volatility": 0.40
 }, order_type="limit")
 
 # Ivan: long BTC call, exercised ITM  (+$2980)
@@ -410,14 +422,18 @@ emit({
     "trader_id": WALLETS["ivan"], "market_id": "BTC-CALL-50000-JAN15",
     "product_type": "option", "option_type": "call", "strike": 50000,
     "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
-    "side": "buy", "price": 2000.0, "size": 1, "fee_usd": 10.0
+    "side": "buy", "price": 2000.0, "size": 1, "fee_usd": 10.0,
+    "underlying_price": 51000.0, "time_to_expiry": round(14/365, 6),
+    "implied_volatility": 0.60
 }, order_type="market")
 emit({
     "event_type": "exercise", "timestamp": now - timedelta(days=1),
     "trader_id": WALLETS["ivan"], "market_id": "BTC-CALL-50000-JAN15",
     "product_type": "option", "option_type": "call", "strike": 50000,
     "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
-    "side": "exercise", "size": 1, "fee_usd": 10.0, "underlying_price": 55000
+    "side": "exercise", "size": 1, "fee_usd": 10.0,
+    "underlying_price": 55000.0, "time_to_expiry": round(1/365, 6),
+    "implied_volatility": 0.65
 })
 
 # Julia: long SOL put, expired worthless  (-$60.20)
@@ -426,14 +442,18 @@ emit({
     "trader_id": WALLETS["julia"], "market_id": "SOL-PUT-80-JAN15",
     "product_type": "option", "option_type": "put", "strike": 80,
     "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
-    "side": "buy", "price": 3.0, "size": 20, "fee_usd": 0.2
+    "side": "buy", "price": 3.0, "size": 20, "fee_usd": 0.2,
+    "underlying_price": 117.0, "time_to_expiry": round(13/365, 6),
+    "implied_volatility": 0.50
 }, order_type="market")
 emit({
     "event_type": "expire", "timestamp": now - timedelta(hours=12),
     "trader_id": WALLETS["julia"], "market_id": "SOL-PUT-80-JAN15",
     "product_type": "option", "option_type": "put", "strike": 80,
     "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
-    "side": "expire", "price": 0.0, "size": 20, "fee_usd": 0.0, "underlying_price": 95
+    "side": "expire", "price": 0.0, "size": 20, "fee_usd": 0.0,
+    "underlying_price": 95.0, "time_to_expiry": 0.0,
+    "implied_volatility": 0.50
 })
 
 # Alice: long SOL call, partial close (2 legs)  (+$108)
@@ -442,23 +462,28 @@ emit({
     "trader_id": WALLETS["alice"], "market_id": "SOL-CALL-110-JAN15",
     "product_type": "option", "option_type": "call", "strike": 110,
     "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
-    "side": "buy", "price": 8.0, "size": 20, "fee_usd": 1.0
+    "side": "buy", "price": 8.0, "size": 20, "fee_usd": 1.0,
+    "underlying_price": 116.0, "time_to_expiry": round(12/365, 6),
+    "implied_volatility": 0.48
 }, order_type="market")
 emit({
     "event_type": "close", "timestamp": base_date + timedelta(days=27, hours=2),
     "trader_id": WALLETS["alice"], "market_id": "SOL-CALL-110-JAN15",
     "product_type": "option", "option_type": "call", "strike": 110,
     "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
-    "side": "sell", "price": 12.0, "size": 10, "fee_usd": 0.5
+    "side": "sell", "price": 12.0, "size": 10, "fee_usd": 0.5,
+    "underlying_price": 119.0, "time_to_expiry": round(11/365, 6),
+    "implied_volatility": 0.52
 }, order_type="market")
 emit({
     "event_type": "close", "timestamp": base_date + timedelta(days=28, hours=2),
     "trader_id": WALLETS["alice"], "market_id": "SOL-CALL-110-JAN15",
     "product_type": "option", "option_type": "call", "strike": 110,
     "expiry": (base_date + timedelta(days=38)).isoformat().replace("+00:00", "Z"),
-    "side": "sell", "price": 15.0, "size": 10, "fee_usd": 0.5
+    "side": "sell", "price": 15.0, "size": 10, "fee_usd": 0.5,
+    "underlying_price": 123.0, "time_to_expiry": round(10/365, 6),
+    "implied_volatility": 0.55
 }, order_type="market")
-
 
 # ================================================================================
 # OPEN POSITIONS

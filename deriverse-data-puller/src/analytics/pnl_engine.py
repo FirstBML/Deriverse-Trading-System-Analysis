@@ -94,9 +94,12 @@ def compute_realized_pnl(events: pd.DataFrame):
             }
             
             if event["product_type"] == "option":
-                open_positions[key]["option_type"] = event.get("option_type")
-                open_positions[key]["strike"] = event.get("strike")
-                open_positions[key]["expiry"] = event.get("expiry")
+                open_positions[key]["option_type"]      = event.get("option_type")
+                open_positions[key]["strike"]           = event.get("strike")
+                open_positions[key]["expiry"]           = event.get("expiry")
+                open_positions[key]["underlying_price"] = event.get("underlying_price")
+                open_positions[key]["time_to_expiry"]   = event.get("time_to_expiry")
+                open_positions[key]["implied_volatility"] = event.get("implied_volatility")
 
         elif event["event_type"] in {"close", "liquidation", "exercise", "expire"}:
             if key not in open_positions:
@@ -162,6 +165,10 @@ def compute_realized_pnl(events: pd.DataFrame):
                 "close_reason": event["event_type"],
                 "open_tx_hash": pos.get("open_tx_hash"),
                 "close_tx_hash": event.get("tx_hash"),
+                "underlying_price":   pos.get("underlying_price"),
+                "time_to_expiry":     pos.get("time_to_expiry"),
+                "implied_volatility": pos.get("implied_volatility"),
+                "option_type":        pos.get("option_type"),
             })
 
             pos["size"] -= close_size

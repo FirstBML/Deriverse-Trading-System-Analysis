@@ -8,7 +8,9 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 from datetime import datetime
+import re
 import logging
+from scipy.stats import norm
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +72,9 @@ class AnalyticsBuilder:
             pd.DataFrame().to_csv(self.output_dir / 'positions.csv', index=False)
             return
         
+        if 'strike' not in self.positions.columns:
+            self.positions['strike'] = self.positions['market_id'].str.extract(r'(?:CALL|PUT)-(\d+(?:\.\d+)?)', flags=re.IGNORECASE)[0].astype(float)
+        
         output_cols = [
             'position_id', 'trader_id', 'market_id', 'product_type', 'side',
             'open_time', 'close_time', 'duration_seconds',
@@ -82,6 +87,11 @@ class AnalyticsBuilder:
         
         if 'close_tx_hash' in self.positions.columns:
             output_cols.insert(output_cols.index('close_time'), 'close_tx_hash')
+        
+        # Preserve option-specific fields for BS delta calculation downstream
+        for col in ['underlying_price', 'strike', 'time_to_expiry', 'implied_volatility', 'option_type']:
+            if col in self.positions.columns:
+                output_cols.append(col)
         
         available_cols = [col for col in output_cols if col in self.positions.columns]
         output = self.positions[available_cols].copy()
@@ -332,58 +342,57 @@ class AnalyticsBuilder:
         output.to_csv(self.output_dir / 'order_type_performance.csv', index=False)
     
     def _build_greeks_exposure(self):
-        """Options analytics: greeks_exposure.csv."""
-        options = self.positions[self.positions['product_type'] == 'option'].copy()
+        """Options analytics: greeks_exposure.csv using Black-Scholes delta."""
         
+        options = self.positions[self.positions['product_type'] == 'option'].copy()
+
         if options.empty:
             pd.DataFrame().to_csv(self.output_dir / 'greeks_exposure.csv', index=False)
             return
-        
+
+        def bs_delta(S, K, T, sigma, is_call, side):
+            if T <= 0 or sigma <= 0 or S <= 0 or K <= 0:
+                raw = (1.0 if S > K else 0.0) if is_call else (-1.0 if S < K else 0.0)
+                return raw if side in ['buy', 'long'] else -raw
+            d1 = (np.log(S / K) + 0.5 * sigma ** 2 * T) / (sigma * np.sqrt(T))
+            raw = norm.cdf(d1) if is_call else -norm.cdf(-d1)
+            return raw if side in ['buy', 'long'] else -raw
+
+        def compute_delta(row):
+            is_call = 'CALL' in str(row['market_id']).upper()
+            required = ['underlying_price', 'strike', 'time_to_expiry', 'implied_volatility']
+            has_all = all(col in row.index and pd.notna(row.get(col)) for col in required)
+
+            if not has_all:
+                # Fallback: 0.5 proxy
+                option_type = str(row.get('option_type', 'call')).lower()
+                raw = 0.5 if option_type == 'call' else -0.5
+                direction = 1 if row['side'] in ['buy', 'long'] else -1
+                return direction * raw * row['size']
+
+            return bs_delta(
+                S=float(row['underlying_price']),
+                K=float(row['strike']),
+                T=float(row['time_to_expiry']),
+                sigma=float(row['implied_volatility']),
+                is_call=is_call,
+                side=row['side']
+            ) * float(row['size'])
+
+        options['computed_delta'] = options.apply(compute_delta, axis=1)
+
         result = []
-        for trader in options['trader_id'].unique():
-            trader_opts = options[options['trader_id'] == trader]
-            
-            net_delta = 0
-            net_gamma = 0
-            net_theta = 0
-            
-            for _, opt in trader_opts.iterrows():
-                if opt['side'] in ['buy', 'long']:
-                    direction = 1
-                else:
-                    direction = -1
-                
-                if 'delta' in opt and pd.notna(opt['delta']):
-                    option_delta = opt['delta']
-                else:
-                    if 'option_type' in opt and pd.notna(opt['option_type']):
-                        if opt['option_type'] == 'call':
-                            option_delta = 0.5
-                        else:
-                            option_delta = -0.5
-                    else:
-                        option_delta = 0.5
-                
-                position_delta = direction * option_delta * opt['size']
-                net_delta += position_delta
-                
-                if 'gamma' in opt and pd.notna(opt['gamma']):
-                    net_gamma += direction * opt['gamma'] * opt['size']
-                
-                if 'theta' in opt and pd.notna(opt['theta']):
-                    net_theta += direction * opt['theta'] * opt['size']
-            
+        for trader, group in options.groupby('trader_id'):
             result.append({
                 'trader_id': trader,
-                'total_option_positions': len(trader_opts),
-                'net_delta': round(net_delta, 4),
-                'gamma_exposure': round(net_gamma, 4),
-                'theta_decay': round(net_theta, 4)
+                'total_option_positions': len(group),
+                'net_delta': round(group['computed_delta'].sum(), 4),
+                'gamma_exposure': 0.0,  # placeholder until gamma fields added
+                'theta_decay': 0.0
             })
-        
-        df = pd.DataFrame(result)
-        df.to_csv(self.output_dir / 'greeks_exposure.csv', index=False)
-    
+
+        pd.DataFrame(result).to_csv(self.output_dir / 'greeks_exposure.csv', index=False)
+
     def _generate_empty_outputs(self):
         """Generate empty CSV files when no data available."""
         empty_files = [

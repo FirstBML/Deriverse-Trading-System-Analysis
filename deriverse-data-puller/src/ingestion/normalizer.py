@@ -89,8 +89,9 @@ def normalize_event(raw_event: Dict[str, Any]) -> Dict[str, Any]:
         raw = "|".join(raw_parts)
         event["event_id"] = hashlib.sha256(raw.encode()).hexdigest()
 
-    numeric_fields = ["price", "size", "fee_usd", "pnl", "strike", "delta", 
-                     "gamma", "theta", "vega", "implied_vol", "underlying_price", "entry_price"]
+    numeric_fields = ["price", "size", "fee_usd", "pnl", "strike", "delta",
+                  "gamma", "theta", "vega", "implied_vol", "implied_volatility",
+                  "underlying_price", "entry_price", "time_to_expiry"]  
     
     for field in numeric_fields:
         if field in event and event[field] is not None:
