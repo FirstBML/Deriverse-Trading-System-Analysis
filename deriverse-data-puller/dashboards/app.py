@@ -1998,35 +1998,11 @@ def display_order_type_performance(order_df, positions_df=None):
         )
         
 # ============================================================================
-# GREEKS ANALYSIS
-# ============================================================================
-# ============================================================================
-# GREEKS ANALYSIS - USING PRE-CALCULATED DATA FROM ANALYTICS BUILDER
-# ============================================================================
-
-def extract_strike_from_market_id(market_id):
-    """Extract strike price from market_id string for display purposes only."""
-    import re
-    match = re.search(r'(?:CALL|PUT)-(\d+)', str(market_id))
-    return float(match.group(1)) if match else None
-
-def extract_option_type_from_market_id(market_id):
-    """Extract option type (call/put) from market_id string for display purposes only."""
-    if 'CALL' in str(market_id).upper():
-        return 'call'
-    elif 'PUT' in str(market_id).upper():
-        return 'put'
-    return None
-
-# ============================================================================
 # GREEKS ANALYSIS 
-# ============================================================================
-# ============================================================================
-# GREEKS ANALYSIS - FIXED VERSION (NO position_id ASSUMPTION)
 # ============================================================================
 
 def display_greeks_analysis(greeks_df, positions_df, is_personal=False):
-    """Greeks analysis with adaptive filtering across date, symbol, and personal mode."""
+    """Greeks analysis with adaptive filtering - correctly handling position-weighted delta."""
     
     st.header("🔬 Options Greeks Exposure")
     
@@ -2079,49 +2055,17 @@ def display_greeks_analysis(greeks_df, positions_df, is_personal=False):
         show_positions_only(option_positions)
         return
     
-    # IMPROVED SPARSE DATA DETECTION
-    trade_count = len(option_positions)
-    is_sparse_mode = False
-    sparse_reason = ""
-    
-    # Only trigger sparse mode for VERY few options
-    if trade_count < 3:
-        is_sparse_mode = True
-        sparse_reason = "Very few options trades"
-    elif has_symbol_filter and trade_count < 3:
-        is_sparse_mode = True
-        symbol_text = f"for selected symbol{'s' if len(st.session_state.selected_symbols) > 1 else ''}"
-        sparse_reason = f"Limited options data {symbol_text}"
-    
-    if is_sparse_mode:
-        st.info(f"ℹ️ {sparse_reason} - showing per-position breakdown")
-        
-        # Format display without trying to merge per-position delta
-        display_df = option_positions[['close_time', 'symbol', 'side', 'size', 
-                                      'strike', 'option_type', 'underlying_price', 
-                                      'realized_pnl']].copy()
-        
-        display_df['close_time'] = pd.to_datetime(display_df['close_time']).dt.strftime('%Y-%m-%d %H:%M')
-        display_df['realized_pnl'] = display_df['realized_pnl'].apply(lambda x: f"${x:,.2f}")
-        display_df['underlying_price'] = display_df['underlying_price'].apply(lambda x: f"${x:,.2f}")
-        
-        st.subheader("📋 Individual Option Positions")
-        st.dataframe(display_df, width='stretch', hide_index=True)
-        
-        # Show simple totals from filtered data
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("Total Options", len(option_positions))
-        with col2:
-            st.metric("Net Delta", f"{filtered_greeks['net_delta'].sum():.2f}" if 'net_delta' in filtered_greeks.columns else "N/A")
-        with col3:
-            total_pnl = option_positions['realized_pnl'].sum()
-            st.metric("Options PnL", f"${total_pnl:,.2f}")
-        return
-    
-    # NORMAL MODE - Full Greeks analysis using pre-calculated data
+    # IMPORTANT: net_delta in greeks_df is already position-weighted (delta × size)
     total_delta_exposure = filtered_greeks['net_delta'].sum() if 'net_delta' in filtered_greeks.columns else 0
-    total_pos = len(option_positions)
+    total_positions = len(option_positions)
+    
+    # Calculate theoretical average delta per contract (should be between -1 and +1)
+    # This requires dividing by total size, not just position count
+    total_size = option_positions['size'].sum()
+    theoretical_avg_delta = total_delta_exposure / total_size if total_size > 0 else 0
+    
+    # Clip to realistic range (-1 to +1) in case of calculation issues
+    theoretical_avg_delta = max(-1, min(1, theoretical_avg_delta))
     
     # Show filter context
     if has_symbol_filter:
@@ -2129,21 +2073,20 @@ def display_greeks_analysis(greeks_df, positions_df, is_personal=False):
     if is_personal:
         st.caption(f"👤 Showing Greeks for your positions only")
     
-    # Metrics cards using pre-calculated data
-    c1, c2, c3, c4 = st.columns(4)
+    # Metrics cards with clear explanations
+    st.subheader("📊 Greeks Summary")
+    col1, col2, col3, col4 = st.columns(4)
     
-    with c1:
+    with col1:
+        st.metric("Total Positions", f"{int(total_positions)}")
+    with col2:
+        st.metric("Total Size", f"{total_size:.1f}")
+    with col3:
+        st.metric("Avg Delta/Contract", f"{theoretical_avg_delta:.3f}")
+    with col4:
         st.metric("Net Delta Exposure", f"{total_delta_exposure:,.2f}")
-    with c2:
-        gamma_value = filtered_greeks['gamma'].sum() if 'gamma' in filtered_greeks.columns else 0
-        st.metric("Gamma", f"{gamma_value:,.4f}" if 'gamma' in filtered_greeks.columns else "N/A")
-    with c3:
-        theta_value = filtered_greeks['theta'].sum() if 'theta' in filtered_greeks.columns else 0
-        st.metric("Theta", f"${theta_value:,.2f}" if 'theta' in filtered_greeks.columns else "N/A")
-    with c4:
-        st.metric("Positions", f"{int(total_pos)}")
-    
-    # Show option positions WITHOUT trying to merge per-position delta
+            
+    # Show option positions
     st.subheader("📊 Option Positions")
     
     display_df = option_positions[['close_time', 'symbol', 'side', 'size', 
@@ -2155,30 +2098,26 @@ def display_greeks_analysis(greeks_df, positions_df, is_personal=False):
     display_df['underlying_price'] = display_df['underlying_price'].apply(lambda x: f"${x:,.2f}")
     
     st.dataframe(display_df, width='stretch', hide_index=True)
-    st.caption(f"Note: Net delta exposure = {total_delta_exposure:,.2f} (sum of delta × size)")
     
-    # MULTI-TRADER VIEW - Fixed aggregation without position_id
+    # Calculate per-position theoretical delta (if we had the data)
+    # For now, just show the positions
+    
+    # MULTI-TRADER VIEW
     if not is_personal and len(filtered_traders) > 1:
         st.subheader("📊 Delta Exposure by Trader")
         
-        # Safely aggregate based on what columns exist
-        agg_dict = {'net_delta': 'sum'}
-        
-        # Add position count if we have a way to count
-        if 'trader_id' in filtered_greeks.columns:
-            # Count rows per trader as position count proxy
-            trader_exposure = filtered_greeks.groupby('trader_id').agg({
-                'net_delta': 'sum',
-                'trader_id': 'count'  # This counts rows per trader
-            }).rename(columns={'trader_id': 'position_count'}).reset_index()
-        else:
-            trader_exposure = filtered_greeks.groupby('trader_id').agg({
-                'net_delta': 'sum'
-            }).reset_index()
-            trader_exposure['position_count'] = 0
+        # Aggregate by trader
+        trader_exposure = filtered_greeks.groupby('trader_id').agg({
+            'net_delta': 'sum',
+            'trader_id': 'count'  # Count positions per trader
+        }).rename(columns={'trader_id': 'position_count'}).reset_index()
         
         trader_exposure['trader'] = trader_exposure['trader_id'].apply(mask_trader_id)
         trader_exposure = trader_exposure.sort_values('net_delta', ascending=False)
+        
+        # Calculate average delta per position for each trader
+        # This is still position-weighted average.
+        trader_exposure['avg_weighted_delta'] = trader_exposure['net_delta'] / trader_exposure['position_count']
         
         # Limit to top 10 traders
         if len(trader_exposure) > 10:
@@ -2187,7 +2126,7 @@ def display_greeks_analysis(greeks_df, positions_df, is_personal=False):
         else:
             display_trader = trader_exposure
         
-        # Bar chart
+        # Bar chart for total exposure
         fig = px.bar(display_trader, x='trader', y='net_delta', color='net_delta',
                     color_continuous_scale='RdBu', color_continuous_midpoint=0,
                     title='Net Delta Exposure by Trader (delta × size)',
@@ -2196,16 +2135,18 @@ def display_greeks_analysis(greeks_df, positions_df, is_personal=False):
         fig.update_xaxes(tickangle=-45)
         st.plotly_chart(fig, width='stretch', key="delta_bar_multi")
         
-        # Simple table
+        # Detailed table
         st.subheader("📋 Greeks Breakdown by Trader")
         st.dataframe(
-            display_trader[['trader', 'position_count', 'net_delta']].style.format({
+            display_trader[['trader', 'position_count', 'avg_weighted_delta', 'net_delta']].style.format({
+                'avg_weighted_delta': '{:.3f}',
                 'net_delta': '{:,.2f}',
                 'position_count': '{:.0f}'
             }),
             width='stretch', hide_index=True
         )
-
+        
+        
 def show_positions_only(option_positions):
     """Helper function to show positions when no Greeks data is available."""
     st.subheader("📋 Option Positions (No Greeks Data)")
@@ -2217,6 +2158,28 @@ def show_positions_only(option_positions):
     display_df['realized_pnl'] = display_df['realized_pnl'].apply(lambda x: f"${x:,.2f}")
     display_df['underlying_price'] = display_df['underlying_price'].apply(lambda x: f"${x:,.2f}")
     
+    st.dataframe(display_df, width='stretch', hide_index=True)
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Total Options", len(option_positions))
+    with col2:
+        st.metric("Unique Traders", option_positions['trader_id'].nunique())
+    with col3:
+        total_pnl = option_positions['realized_pnl'].sum()
+        st.metric("Options PnL", f"${total_pnl:,.2f}")
+            
+    st.dataframe(display_df, width='stretch', hide_index=True)
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Total Options", len(option_positions))
+    with col2:
+        st.metric("Unique Traders", option_positions['trader_id'].nunique())
+    with col3:
+        total_pnl = option_positions['realized_pnl'].sum()
+        st.metric("Options PnL", f"${total_pnl:,.2f}")
+
     st.dataframe(display_df, width='stretch', hide_index=True)
     
     col1, col2, col3 = st.columns(3)
@@ -2886,14 +2849,14 @@ elif st.session_state.active_tab == "📈 Performance":
             """Render the extended metrics row — always dynamic to current filters."""
             avg_win, avg_loss, long_pct, short_pct, max_dd, sharpe, sortino = perf_metrics(pos)
             st.markdown("#### 📊 Key Metrics")
-            c1, c2, c3, c4, c5, c6, c7 = st.columns(7)
-            c1.metric("Avg Win",    f"${avg_win:,.2f}"  if avg_win  != 0 else "N/A")
-            c2.metric("Avg Loss",   f"${avg_loss:,.2f}" if avg_loss != 0 else "N/A")
-            c3.metric("Long %",     f"{long_pct:.1f}%")
-            c4.metric("Short %",    f"{short_pct:.1f}%")
-            c5.metric("Max DD",     f"${max_dd:,.2f}")
-            c6.metric("Sharpe",     f"{sharpe:.2f}" if len(pos) > 1 else "N/A")
-            c7.metric("Sortino",    f"{sortino:.2f}" if len(pos) > 1 else "N/A")
+            # Create 5 columns - removed Avg Win and Avg Loss, keeping other metrics
+            c1, c2, c3, c4, c5 = st.columns(5)
+            
+            c1.metric("Long %",     f"{long_pct:.1f}%")
+            c2.metric("Short %",    f"{short_pct:.1f}%")
+            c3.metric("Max DD",     f"${max_dd:,.2f}")
+            c4.metric("Sharpe",     f"{sharpe:.2f}" if len(pos) > 1 else "N/A")
+            c5.metric("Sortino",    f"{sortino:.2f}" if len(pos) > 1 else "N/A")
             st.markdown("---")
 
         if st.session_state.view_mode == "personal" and selected_trader:

@@ -44,3 +44,6 @@ Thumbs.db
 Archive_TS/
 .Archive_TS/
 .Deriverse/
+
+# Dashboard test files
+dashboards/app_test.py
